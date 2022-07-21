@@ -36,4 +36,4 @@ repos:
       - id: black
         language_version: "3.10"
         args:
-          - --line-length=100
+          - --line-length=119
