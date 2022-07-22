@@ -17,10 +17,10 @@ class Modifiers:
     """
 
     def __init__(self, file_contents: list[str], difficulty: int = 1) -> None:
-        self.file_contents = file_contents
+        self.file_contents = file_contents[:-1]  # Removes the last "\n"
         self.difficulty = difficulty
 
-        self.modified_contents = file_contents
+        self.modified_contents = file_contents[:-1]
 
     @property
     def output(self) -> list[str]:
@@ -45,9 +45,9 @@ class Modifiers:
             if line.startswith(FOUR_SPACES):
                 line_numbers.append(num)
 
-        line_subset = random.sample(line_numbers, self.difficulty)
+        line_subset = random.sample(line_numbers, min(self.difficulty, len(line_numbers)))
         for num in line_subset:
-            self.modified_contents[num] = self.file_contents[num].replace(FOUR_SPACES, TWO_SPACES)
+            self.modified_contents[num] = self.modified_contents[num].replace(FOUR_SPACES, TWO_SPACES)
 
         return self
 
@@ -61,9 +61,9 @@ class Modifiers:
             if line.endswith(":\n"):
                 line_numbers.append(num)
 
-        line_subset = random.sample(line_numbers, self.difficulty)
+        line_subset = random.sample(line_numbers, min(self.difficulty, len(line_numbers)))
         for num in line_subset:
-            self.modified_contents[num] = self.file_contents[num].replace(":", "")
+            self.modified_contents[num] = self.modified_contents[num].replace(":", "")
 
         return self
 
@@ -79,9 +79,9 @@ class Modifiers:
             if any(key in line for key in python_keywords):
                 number_keyword_pairs.extend([(num, key) for key in python_keywords if key in line])
 
-        line_subset = random.sample(number_keyword_pairs, self.difficulty)
+        line_subset = random.sample(number_keyword_pairs, min(self.difficulty, len(number_keyword_pairs)))
         for num, key in line_subset:
-            self.modified_contents[num] = self.file_contents[num].replace(key, "kappa")
+            self.modified_contents[num] = self.modified_contents[num].replace(key, "kappa")
 
         return self
 
