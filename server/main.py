@@ -1,3 +1,7 @@
+"""The main WebSocket server.
+
+This server handles user connection, disconnection and events.
+"""
 from uuid import uuid4
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
@@ -7,16 +11,17 @@ app = FastAPI()
 
 
 class Client:
-    """This class represents a client.
+    """A WebSocket client.
 
-    A client is identified by an `id` and contains the corresponding WebSocket that is
-    used to send and receive messages.
+    A client is identified by an ID and contains the corresponding WebSocket
+    that is used to send and receive messages.
     """
 
     def __init__(self, websocket: WebSocket) -> None:
-        """The initializer method.
+        """Initializes the WebSocket and the ID.
 
-        It initializes a private property `__websocket` and a public property `id`.
+        Args:
+            websocket: A WebSocket instance that can send and receive messages.
         """
         self.__websocket = websocket
         self.id = uuid4()
@@ -26,42 +31,68 @@ class Client:
         await self.__websocket.accept()
 
     async def send(self, data: dict) -> None:
-        """Send JSON data over the WebSocket connection."""
+        """Send JSON data over the WebSocket connection.
+
+        Args:
+            data: The data to send to the server, it should always contain a
+                "type" key, indicating the type of event.
+        """
         await self.__websocket.send_json(data)
 
     async def receive(self) -> dict:
-        """Receive JSON data over the WebSocket connection."""
+        """Receive JSON data over the WebSocket connection.
+
+        Returns:
+            The data received from the server, it should always contain a "type"
+            key, indicating the type of event.
+        """
         return await self.__websocket.receive_json()
 
 
 class ConnectionManager:
-    """This class manages the client connections.
+    """Manager for the WebSocket clients.
 
-    It stores the active connections in the private property `__active_connections`.
+    It stores the active connections and is able to broadcast data.
     """
 
     def __init__(self) -> None:
-        """The initializer method.
-
-        It initializes the active connections.
-        """
+        """Initializes the active connections."""
         self.__active_connections: set[Client] = set()
 
     async def connect(self, client: Client) -> None:
-        """Handles a client connection and adds it to the active connections."""
+        """Accepts the connection and adds it to the active connections.
+
+        Args:
+            client: The Client to which the connection belongs to.
+        """
         await client.accept()
         self.__active_connections.add(client)
 
     def disconnect(self, client: Client) -> None:
-        """Handles a client connection by removing it from the active connections."""
+        """Removes the connection from the active connections.
+
+        Args:
+            client: The Client to which the connection belongs to.
+        """
         self.__active_connections.remove(client)
 
     async def send(self, data: dict, client: Client) -> None:
-        """Sends data to a given client."""
+        """Sends data to a given client.
+
+        Args:
+            data: The data to send to the server, it should always contain a
+                "type" key, indicating the type of event.
+            client: The client that will receive the data.
+        """
         await client.send(data)
 
     async def broadcast(self, data: dict) -> None:
-        """Broadcasts data to all active connections."""
+        """Broadcasts data to all active connections.
+
+        Args:
+            data: The data to send to the server, it should always contain a
+                "type" key, indicating the type of event.
+        """
         for connection in self.__active_connections:
             await connection.send(data)
 
@@ -111,10 +142,11 @@ html = """
 
 
 @app.get("/")
-async def chat() -> None:
+async def chat() -> HTMLResponse:
     """This is the index route for the app.
 
-    It returns the index HTML page.
+    Returns:
+        The HTML page in which the user can chat.
     """
     return HTMLResponse(html)
 
@@ -123,8 +155,8 @@ async def chat() -> None:
 async def websocket_endpoint(websocket: WebSocket) -> None:
     """This is the endpoint for the WebSocket connection.
 
-    It creates a client and handles the connection with the ConnectionManager. It continuosly receives, sends and
-    broadcasts data accross the active clients.
+    It creates a client and handles the connection with the ConnectionManager.
+    It continuosly receives, sends and broadcasts data to the active clients.
     """
     client = Client(websocket)
     await manager.connect(client)
