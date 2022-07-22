@@ -111,9 +111,12 @@ class Modifiers:
         Returns:
             The modifier instance.
         """
-        total_lines = len(self.file_contents)
+        line_numbers = []
+        for num, line in enumerate(self.file_contents):
+            if line != "\n":
+                line_numbers.append(num)
 
-        line_subset = random.sample(range(total_lines), min(self.difficulty, total_lines))
+        line_subset = random.sample(line_numbers, min(self.difficulty, len(line_numbers)))
         for num in line_subset:
             self.modified_contents[num] = f"# {self.modified_contents[num]}"
 
