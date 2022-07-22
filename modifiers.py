@@ -21,7 +21,10 @@ class Modifiers:
         return self.modified_contents
 
     def remove_indentation(self) -> Self:
-        """A code modifier that reduces indentation from four spaces to two spaces."""
+        """A code modifier that causes an IndentationError.
+
+        This will reduce indentation from four spaces to two spaces.
+        """
         line_numbers = []
         for num, line in enumerate(self.file_contents):
             if line.startswith(FOUR_SPACES):
