@@ -128,7 +128,7 @@ class Modifiers:
         Where a function is called, the name of that function will be changed to `cj9_kappa`.
 
         Returns:
-            The modifier instance
+            The modifier instance.
         """
         function_names = []
         for num, line in enumerate(self.file_contents):
@@ -157,6 +157,22 @@ class Modifiers:
 
                 if func_match:
                     self.modified_contents[num] = self.modified_contents[num].replace(func_name, "cj9_kappa")
+
+        return self
+
+    def insert_empty_statements(self) -> Self:
+        """A code modifier that causes an IndentationError.
+
+        This will randomly insert empty if statements.
+
+        Returns:
+            The modifier instance.
+        """
+        total_length = len(self.file_contents)
+        random_position = random.randrange(total_length)
+
+        statement = "if kappa_cj9:\n"
+        self.modified_contents[random_position] = f"{self.modified_contents[random_position]}\n{statement}"
 
         return self
 
