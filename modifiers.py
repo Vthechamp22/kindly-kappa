@@ -43,7 +43,8 @@ class Modifiers:
             if line.startswith(FOUR_SPACES):
                 line_numbers.append(num)
 
-        for num in line_numbers[: self.difficulty]:
+        line_subset = random.sample(line_numbers, self.difficulty)
+        for num in line_subset:
             self.modified_contents[num] = self.file_contents[num].replace(FOUR_SPACES, TWO_SPACES)
 
         return self
@@ -58,7 +59,8 @@ class Modifiers:
             if line.endswith(":\n"):
                 line_numbers.append(num)
 
-        for num in line_numbers[: self.difficulty]:
+        line_subset = random.sample(line_numbers, self.difficulty)
+        for num in line_subset:
             self.modified_contents[num] = self.file_contents[num].replace(":", "")
 
         return self
