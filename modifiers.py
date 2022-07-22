@@ -1,3 +1,4 @@
+import keyword
 import random
 from operator import methodcaller
 
@@ -11,7 +12,8 @@ class Modifiers:
     """This class has different functions which introduce different types of bugs.
 
     All the functions should return Self so they can be chained to get the final
-    output. The number of chained functions is determined by the difficulty.
+    output. The number of chained functions is determined by the difficulty but
+    they are randomly sampled across the entire codebase.
     """
 
     def __init__(self, file_contents: list[str], difficulty: int = 1) -> None:
@@ -62,6 +64,24 @@ class Modifiers:
         line_subset = random.sample(line_numbers, self.difficulty)
         for num in line_subset:
             self.modified_contents[num] = self.file_contents[num].replace(":", "")
+
+        return self
+
+    def change_keyword(self) -> Self:
+        """A code modifier that causes a SyntaxError.
+
+        This will change any of the python keywords to "kappa".
+        """
+        python_keywords = keyword.kwlist
+
+        number_keyword_pairs = []
+        for num, line in enumerate(self.file_contents):
+            if any(key in line for key in python_keywords):
+                number_keyword_pairs.extend([(num, key) for key in python_keywords if key in line])
+
+        line_subset = random.sample(number_keyword_pairs, self.difficulty)
+        for num, key in line_subset:
+            self.modified_contents[num] = self.file_contents[num].replace(key, "kappa")
 
         return self
 
