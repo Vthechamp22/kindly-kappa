@@ -9,14 +9,17 @@ TWO_SPACES = "  "
 
 
 class Modifiers:
-    """This class has different functions which introduce different types of bugs.
-
-    All the functions should return Self so they can be chained to get the final
-    output. The number of chained functions is determined by the difficulty but
-    they are randomly sampled across the entire codebase.
-    """
-
     def __init__(self, file_contents: list[str], difficulty: int = 1) -> None:
+        """This class has different functions which introduce different types of bugs.
+
+        All the functions should return Self so they can be chained to get the final
+        output. The number of chained functions is determined by the difficulty but
+        they are randomly sampled across the entire codebase.
+
+        Args:
+            file_contents: The raw data received from the websocket.
+            difficulty: The level of difficulty selected. Defaults to 1.
+        """
         self.file_contents = file_contents[:-1]  # Removes the last "\n"
         self.difficulty = difficulty
 
@@ -24,7 +27,11 @@ class Modifiers:
 
     @property
     def output(self) -> list[str]:
-        """Returns the modified code, if any modifications have been done."""
+        """Returns the modified code, if any modifications have been done.
+
+        Returns:
+            Modified lines of code, in the same format as the input data.
+        """
         method_names = [
             func for func in dir(Modifiers) if callable(getattr(Modifiers, func)) and not func.startswith("__")
         ]
@@ -39,6 +46,9 @@ class Modifiers:
         """A code modifier that causes an IndentationError.
 
         This will reduce indentation from four spaces to two spaces.
+
+        Returns:
+            The modifier instance.
         """
         line_numbers = []
         for num, line in enumerate(self.file_contents):
@@ -55,6 +65,9 @@ class Modifiers:
         """A code modifier that causes a SyntaxError.
 
         This will remove the colon after a function definition, loop, or if statement.
+
+        Returns:
+            The modifier instance.
         """
         line_numbers = []
         for num, line in enumerate(self.file_contents):
@@ -71,6 +84,9 @@ class Modifiers:
         """A code modifier that causes a SyntaxError.
 
         This will change any of the python keywords to "kappa".
+
+        Returns:
+            The modifier instance.
         """
         python_keywords = keyword.kwlist
 
@@ -89,6 +105,9 @@ class Modifiers:
         """A code modifier that could raise an error.
 
         This will comment out a line of code.
+
+        Returns:
+            The modifier instance.
         """
         total_lines = len(self.file_contents)
 
