@@ -1,11 +1,13 @@
 import keyword
 import random
+import re
 from operator import methodcaller
 
 from typing_extensions import Self
 
 FOUR_SPACES = "    "
 TWO_SPACES = "  "
+STARTSWITH_DEF = re.compile(r"^\s*(async\s+def|def)\s(.*):")
 
 
 class Modifiers:
@@ -117,10 +119,47 @@ class Modifiers:
 
         return self
 
+    def change_function_call_name(self) -> Self:
+        """A code modifier that causes a NameError.
+
+        Where a function is called, the name of that function will be changed to `cj9_kappa`.
+
+        Returns:
+            The modifier instance
+        """
+        function_names = []
+        for num, line in enumerate(self.file_contents):
+            match = STARTSWITH_DEF.match(line)
+
+            if match:
+                func_name = match.groups()[1].split("(")[0]
+
+                # Don't include dunder methods
+                if func_name.startswith("__"):
+                    continue
+
+                # If the method is a property, don't use it as it's not callable
+                if self.file_contents[num - 1] == f"{FOUR_SPACES}@property\n":
+                    continue
+
+                function_names.append((num, func_name))
+
+        line_subset = random.sample(function_names, min(self.difficulty, len(function_names)))
+        for num, line in enumerate(self.file_contents):
+            for def_num, func_name in line_subset:
+                if num == def_num:
+                    continue
+
+                func_match = re.match(rf".*\.?({func_name}\().*", line)
+
+                if func_match:
+                    self.modified_contents[num] = self.modified_contents[num].replace(func_name, "cj9_kappa")
+
+        return self
+
 
 if __name__ == "__main__":
-    test_lines = ["def say_hello() -> str:\n", '    return "Hello!"\n', "\n"]
+    test_lines = ["def say_hello() -> str:\n", '    return "Hello!"\n', "say_hello()\n", "\n"]
 
     modifiers = Modifiers(test_lines)
-
     print(modifiers.output)
