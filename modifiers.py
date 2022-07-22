@@ -85,6 +85,19 @@ class Modifiers:
 
         return self
 
+    def comment(self) -> Self:
+        """A code modifier that could raise an error.
+
+        This will comment out a line of code.
+        """
+        total_lines = len(self.file_contents)
+
+        line_subset = random.sample(range(total_lines), min(self.difficulty, total_lines))
+        for num in line_subset:
+            self.modified_contents[num] = f"# {self.modified_contents[num]}"
+
+        return self
+
 
 if __name__ == "__main__":
     test_lines = ["def say_hello() -> str:\n", '    return "Hello!"\n', "\n"]
