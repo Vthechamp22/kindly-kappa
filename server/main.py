@@ -23,12 +23,12 @@ class Client:
         Args:
             websocket: A WebSocket instance that can send and receive messages.
         """
-        self.__websocket = websocket
+        self._websocket = websocket
         self.id = uuid4()
 
     async def accept(self) -> None:
         """Accepts a WebSocket connection."""
-        await self.__websocket.accept()
+        await self._websocket.accept()
 
     async def send(self, data: dict) -> None:
         """Send JSON data over the WebSocket connection.
@@ -37,7 +37,7 @@ class Client:
             data: The data to send to the server, it should always contain a
                 "type" key, indicating the type of event.
         """
-        await self.__websocket.send_json(data)
+        await self._websocket.send_json(data)
 
     async def receive(self) -> dict:
         """Receive JSON data over the WebSocket connection.
@@ -46,7 +46,7 @@ class Client:
             The data received from the server, it should always contain a "type"
             key, indicating the type of event.
         """
-        return await self.__websocket.receive_json()
+        return await self._websocket.receive_json()
 
 
 class ConnectionManager:
@@ -57,7 +57,7 @@ class ConnectionManager:
 
     def __init__(self) -> None:
         """Initializes the active connections."""
-        self.__active_connections: set[Client] = set()
+        self._active_connections: set[Client] = set()
 
     async def connect(self, client: Client) -> None:
         """Accepts the connection and adds it to the active connections.
@@ -66,7 +66,7 @@ class ConnectionManager:
             client: The Client to which the connection belongs to.
         """
         await client.accept()
-        self.__active_connections.add(client)
+        self._active_connections.add(client)
 
     def disconnect(self, client: Client) -> None:
         """Removes the connection from the active connections.
@@ -74,7 +74,7 @@ class ConnectionManager:
         Args:
             client: The Client to which the connection belongs to.
         """
-        self.__active_connections.remove(client)
+        self._active_connections.remove(client)
 
     async def send(self, data: dict, client: Client) -> None:
         """Sends data to a given client.
@@ -93,7 +93,7 @@ class ConnectionManager:
             data: The data to send to the server, it should always contain a
                 "type" key, indicating the type of event.
         """
-        for connection in self.__active_connections:
+        for connection in self._active_connections:
             await connection.send(data)
 
 
