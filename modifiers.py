@@ -1,3 +1,6 @@
+import random
+from operator import methodcaller
+
 from typing_extensions import Self
 
 FOUR_SPACES = "    "
@@ -13,11 +16,20 @@ class Modifiers:
 
     def __init__(self, file_contents: list[str]) -> None:
         self.file_contents = file_contents
+
         self.modified_contents = file_contents
 
     @property
     def output(self) -> list[str]:
         """Returns the modified code, if any modifications have been done."""
+        method_names = [
+            func for func in dir(Modifiers) if callable(getattr(Modifiers, func)) and not func.startswith("__")
+        ]
+        methods = map(methodcaller, random.sample(method_names, 1))
+
+        for method in list(methods):
+            method(self)
+
         return self.modified_contents
 
     def remove_indentation(self) -> Self:
@@ -55,5 +67,5 @@ if __name__ == "__main__":
     test_lines = ["def say_hello() -> str:\n", '    return "Hello!"\n', "\n"]
 
     modifiers = Modifiers(test_lines)
-    new_lines = modifiers.remove_indentation().remove_end_colon()
-    print(new_lines.output)
+
+    print(modifiers.output)
