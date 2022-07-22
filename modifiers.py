@@ -14,8 +14,9 @@ class Modifiers:
     output. The number of chained functions is determined by the difficulty.
     """
 
-    def __init__(self, file_contents: list[str]) -> None:
+    def __init__(self, file_contents: list[str], difficulty: int = 1) -> None:
         self.file_contents = file_contents
+        self.difficulty = difficulty
 
         self.modified_contents = file_contents
 
@@ -25,7 +26,7 @@ class Modifiers:
         method_names = [
             func for func in dir(Modifiers) if callable(getattr(Modifiers, func)) and not func.startswith("__")
         ]
-        methods = map(methodcaller, random.sample(method_names, 1))
+        methods = map(methodcaller, random.sample(method_names, self.difficulty))
 
         for method in list(methods):
             method(self)
@@ -42,7 +43,7 @@ class Modifiers:
             if line.startswith(FOUR_SPACES):
                 line_numbers.append(num)
 
-        for num in line_numbers:
+        for num in line_numbers[: self.difficulty]:
             self.modified_contents[num] = self.file_contents[num].replace(FOUR_SPACES, TWO_SPACES)
 
         return self
@@ -57,7 +58,7 @@ class Modifiers:
             if line.endswith(":\n"):
                 line_numbers.append(num)
 
-        for num in line_numbers:
+        for num in line_numbers[: self.difficulty]:
             self.modified_contents[num] = self.file_contents[num].replace(":", "")
 
         return self
