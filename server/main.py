@@ -123,8 +123,8 @@ class ConnectionManager:
 manager = ConnectionManager()
 
 
-@app.websocket("/ws/{room}")
-async def websocket_endpoint(websocket: WebSocket, room: str) -> None:
+@app.websocket("/room/{room_name}")
+async def room(websocket: WebSocket, room_name: str) -> None:
     """This is the endpoint for the WebSocket connection.
 
     It creates a client and handles connection and disconnection with the
@@ -132,11 +132,11 @@ async def websocket_endpoint(websocket: WebSocket, room: str) -> None:
     active clients.
     """
     client = Client(websocket)
-    await manager.connect(client, room)
+    await manager.connect(client, room_name)
 
     try:
         while True:
             data = await client.receive()
-            await manager.broadcast(data, room, everyone=True)
+            await manager.broadcast(data, room_name, everyone=True)
     except WebSocketDisconnect:
-        manager.disconnect(client, room)
+        manager.disconnect(client, room_name)
