@@ -188,7 +188,7 @@ class Modifiers:
         total_length = len(self.file_contents)
         random_position = random.randrange(total_length)
 
-        statement = f"{random.choice(STATEMENTS)}\n"
+        statement = f"if {random.choice(STATEMENTS)}\n"
         self.modified_contents[random_position] = f"{self.modified_contents[random_position]}\n{statement}"
 
         return self
