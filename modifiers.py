@@ -7,7 +7,9 @@ from typing_extensions import Self
 
 FOUR_SPACES = "    "
 TWO_SPACES = "  "
-STARTSWITH_DEF = re.compile(r"^\s*(async\s+def|def)\s(.*):")
+STATEMENTS = {"cj9_kappa", "kindly_kappas", "buggy_feature", "jammers"}
+
+STARTSWITH_DEF_REGEX = re.compile(r"^\s*(async\s+def|def)\s(.*):")
 
 
 class Modifiers:
@@ -99,7 +101,7 @@ class Modifiers:
 
         line_subset = random.sample(number_keyword_pairs, min(self.difficulty, len(number_keyword_pairs)))
         for num, key in line_subset:
-            self.modified_contents[num] = self.modified_contents[num].replace(key, "kappa")
+            self.modified_contents[num] = self.modified_contents[num].replace(key, random.choice(STATEMENTS))
 
         return self
 
@@ -132,7 +134,7 @@ class Modifiers:
         """
         function_names = []
         for num, line in enumerate(self.file_contents):
-            match = STARTSWITH_DEF.match(line)
+            match = STARTSWITH_DEF_REGEX.match(line)
 
             if match:
                 func_name = match.groups()[1].split("(")[0]
@@ -171,7 +173,7 @@ class Modifiers:
         total_length = len(self.file_contents)
         random_position = random.randrange(total_length)
 
-        statement = "if kappa_cj9:\n"
+        statement = f"{random.choice(STATEMENTS)}\n"
         self.modified_contents[random_position] = f"{self.modified_contents[random_position]}\n{statement}"
 
         return self
