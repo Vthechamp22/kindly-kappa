@@ -13,6 +13,8 @@ STARTSWITH_DEF_REGEX = re.compile(r"^\s*(async\s+def|def)\s(.*):")
 
 
 class Modifiers:
+    """A set of code modifying methods."""
+
     def __init__(self, file_contents: list[str], difficulty: int = 1) -> None:
         """This class has different functions which introduce different types of bugs.
 
