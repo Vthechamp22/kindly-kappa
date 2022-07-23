@@ -11,14 +11,13 @@ app = FastAPI()
 
 
 class Client:
-    """A WebSocket client.
-
-    A client is identified by an ID and contains the corresponding WebSocket
-    that is used to send and receive messages.
-    """
+    """A WebSocket client."""
 
     def __init__(self, websocket: WebSocket) -> None:
         """Initializes the WebSocket and the ID.
+
+        A client is identified by an ID and contains the corresponding WebSocket
+        that is used to send and receive messages.
 
         Args:
             websocket: A WebSocket instance.
@@ -50,13 +49,13 @@ class Client:
 
 
 class ConnectionManager:
-    """Manager for the WebSocket clients.
-
-    It stores the active connections and is able to broadcast data.
-    """
+    """Manager for the WebSocket clients."""
 
     def __init__(self) -> None:
-        """Initializes the active connections."""
+        """Initializes the active connections.
+
+        It stores the active connections and is able to broadcast data.
+        """
         self._active_connections: set[Client] = set()
 
     async def connect(self, client: Client) -> None:
