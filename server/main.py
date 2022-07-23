@@ -103,7 +103,7 @@ class ConnectionManager:
         if len(self._rooms[room]["clients"]) == 0:
             del self._rooms[room]
 
-    async def broadcast(self, data: dict, room: str, everyone=False) -> None:
+    async def broadcast(self, data: dict, room: str, everyone: bool = False) -> None:
         """Broadcasts data to all active connections.
 
         Args:
