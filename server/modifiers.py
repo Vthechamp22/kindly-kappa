@@ -40,7 +40,9 @@ class Modifiers:
             Only the modified lines of code, including the line number.
         """
         method_names = [
-            func for func in dir(Modifiers) if callable(getattr(Modifiers, func)) and not func.startswith("__")
+            func
+            for func in dir(Modifiers)
+            if callable(getattr(Modifiers, func)) and not func.startswith("__")
         ]
         methods = map(methodcaller, random.sample(method_names, self.difficulty))
 
@@ -52,7 +54,9 @@ class Modifiers:
 
         try:
             for line_num, values in diff["values_changed"].items():
-                (num,) = list(filter(lambda x: x.isdigit(), re.split(r"(\d*)", line_num)))
+                (num,) = list(
+                    filter(lambda x: x.isdigit(), re.split(r"(\d*)", line_num))
+                )
                 new_value = values["new_value"]
                 line_diffs.append((int(num), new_value))
         except KeyError:
@@ -74,9 +78,13 @@ class Modifiers:
             if line.startswith(FOUR_SPACES):
                 line_numbers.append(num)
 
-        line_subset = random.sample(line_numbers, min(self.difficulty, len(line_numbers)))
+        line_subset = random.sample(
+            line_numbers, min(self.difficulty, len(line_numbers))
+        )
         for num in line_subset:
-            self.modified_contents[num] = self.modified_contents[num].replace(FOUR_SPACES, TWO_SPACES)
+            self.modified_contents[num] = self.modified_contents[num].replace(
+                FOUR_SPACES, TWO_SPACES
+            )
 
         return self
 
@@ -93,7 +101,9 @@ class Modifiers:
             if line.endswith(":\n"):
                 line_numbers.append(num)
 
-        line_subset = random.sample(line_numbers, min(self.difficulty, len(line_numbers)))
+        line_subset = random.sample(
+            line_numbers, min(self.difficulty, len(line_numbers))
+        )
         for num in line_subset:
             self.modified_contents[num] = self.modified_contents[num].replace(":", "")
 
@@ -112,11 +122,17 @@ class Modifiers:
         number_keyword_pairs = []
         for num, line in enumerate(self.file_contents):
             if any(key in line for key in python_keywords):
-                number_keyword_pairs.extend([(num, key) for key in python_keywords if key in line])
+                number_keyword_pairs.extend(
+                    [(num, key) for key in python_keywords if key in line]
+                )
 
-        line_subset = random.sample(number_keyword_pairs, min(self.difficulty, len(number_keyword_pairs)))
+        line_subset = random.sample(
+            number_keyword_pairs, min(self.difficulty, len(number_keyword_pairs))
+        )
         for num, key in line_subset:
-            self.modified_contents[num] = self.modified_contents[num].replace(key, random.choice(STATEMENTS))
+            self.modified_contents[num] = self.modified_contents[num].replace(
+                key, random.choice(STATEMENTS)
+            )
 
         return self
 
@@ -133,7 +149,9 @@ class Modifiers:
             if line != "\n":
                 line_numbers.append(num)
 
-        line_subset = random.sample(line_numbers, min(self.difficulty, len(line_numbers)))
+        line_subset = random.sample(
+            line_numbers, min(self.difficulty, len(line_numbers))
+        )
         for num in line_subset:
             self.modified_contents[num] = f"# {self.modified_contents[num]}"
 
@@ -164,7 +182,9 @@ class Modifiers:
 
                 function_names.append((num, func_name))
 
-        line_subset = random.sample(function_names, min(self.difficulty, len(function_names)))
+        line_subset = random.sample(
+            function_names, min(self.difficulty, len(function_names))
+        )
         for num, line in enumerate(self.file_contents):
             for def_num, func_name in line_subset:
                 if num == def_num:
@@ -173,7 +193,9 @@ class Modifiers:
                 func_match = re.match(rf".*\.?({func_name}\().*", line)
 
                 if func_match:
-                    self.modified_contents[num] = self.modified_contents[num].replace(func_name, "cj9_kappa")
+                    self.modified_contents[num] = self.modified_contents[num].replace(
+                        func_name, "cj9_kappa"
+                    )
 
         return self
 
@@ -189,13 +211,20 @@ class Modifiers:
         random_position = random.randrange(total_length)
 
         statement = f"if {random.choice(STATEMENTS)}\n"
-        self.modified_contents[random_position] = f"{self.modified_contents[random_position]}\n{statement}"
+        self.modified_contents[
+            random_position
+        ] = f"{self.modified_contents[random_position]}\n{statement}"
 
         return self
 
 
 if __name__ == "__main__":
-    test_lines = ["def say_hello() -> str:\n", '    return "Hello!"\n', "say_hello()\n", "\n"]
+    test_lines = [
+        "def say_hello() -> str:\n",
+        '    return "Hello!"\n',
+        "say_hello()\n",
+        "\n",
+    ]
 
     modifiers = Modifiers(test_lines)
     print(modifiers.output)
