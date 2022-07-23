@@ -58,8 +58,8 @@ class Modifiers:
         except KeyError:
             # No values were changed
             pass
-        finally:
-            return line_diffs
+
+        return line_diffs
 
     def remove_indentation(self) -> Self:
         """A code modifier that causes an IndentationError.
