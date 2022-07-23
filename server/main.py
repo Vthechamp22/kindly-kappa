@@ -64,7 +64,6 @@ class ConnectionManager:
             client: The Client to which the connection belongs.
         """
         await client.accept()
-        self._active_connections.add(client)
 
     def disconnect(self, client: Client) -> None:
         """Removes the connection from the active connections.
