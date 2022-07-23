@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Kindly Kappa</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <script src="theme.js"></script>
+</head>
+
+<body>
+    <div id="main" role="main">
+        <div class="sidebar">
+            <h1>Collaborators</h1>
+            <ul>
+                <li>You</li>
+                <li>Someone else</li>
+            </ul>
+        </div>
+        <div id="container"></div>
+    </div>
+
+    </script>
+    <script src="node_modules/monaco-editor/min/vs/loader.js"></script>
+    <script>
+        require.config({ paths: { vs: 'node_modules/monaco-editor/min/vs' } });
+
+        require(['vs/editor/editor.main'], function () {
+            monaco.editor.defineTheme('Dracula', dracula);
+            monaco.editor.setTheme('Dracula');
+
+            var editor = monaco.editor.create(document.getElementById('container'), {
+                value: ['def x():', '\tprint("Hello world!")'].join('\n'),
+                language: 'python',
+                insertSpaces: true,
+                theme: 'Dracula',
+            });
+        });
+    </script>
+</body>
+
+</html>
+
+</body>
+
+</html>

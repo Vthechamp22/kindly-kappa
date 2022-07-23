@@ -1,0 +1,36 @@
+html, body {
+    margin: 0;
+}
+
+html, body, #main, #container {
+    height: 100%;
+    background: #282a36;
+    color: #f8f8f2;
+    font-family: 'Robot', sans-serif;
+}
+
+#main {
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+}
+
+.sidebar, #container {
+    border: 1px #f8f8f2 solid;
+}
+
+.sidebar {
+}
+
+.sidebar h1 {
+    text-align: center;
+}
+
+ul {
+    text-align: center;
+    list-style: url('/images/bullet.png');
+    font-size: 2em;
+}
+
+li {
+    margin: 30px;
+}
