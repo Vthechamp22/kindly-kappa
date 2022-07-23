@@ -38,6 +38,7 @@ function updateDifficulty(value) {
 }
 
 function leaveRoom() {
+    monaco.editor.getModels().forEach(model => model.dispose());
     document.getElementById("room").style.display = "none";
     document.getElementById("login").style.display = "block";
 }
