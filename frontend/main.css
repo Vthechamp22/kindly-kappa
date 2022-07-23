@@ -11,7 +11,7 @@ body {
 
 #login {
     box-sizing: border-box;
-    border: solid white;
+    border: 4px solid white;
 
     display: grid;
     grid-template-columns: auto 512px auto;
