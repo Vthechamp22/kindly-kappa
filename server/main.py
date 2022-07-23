@@ -2,7 +2,9 @@
 
 This server handles user connection, disconnection and events.
 """
-from uuid import uuid4
+from dataclasses import dataclass
+from typing import TypedDict
+from uuid import UUID, uuid4
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 
@@ -47,6 +49,21 @@ class Client:
         return await self._websocket.receive_json()
 
 
+@dataclass
+class RoomData:
+    """A dataclass for data about a specific room."""
+
+    owner_id: UUID
+    clients: set[Client]
+
+
+class ActiveRooms(TypedDict):
+    """A data structure for active rooms."""
+
+    name: str
+    data: RoomData
+
+
 class ConnectionManager:
     """Manager for the WebSocket clients."""
 
@@ -55,7 +72,7 @@ class ConnectionManager:
 
         It stores the active connections and is able to broadcast data.
         """
-        self._rooms: dict[str, set[Client]] = {}
+        self._rooms: ActiveRooms = {}
 
     async def connect(self, client: Client, room: str) -> None:
         """Accepts the connection and adds it to a room.
@@ -69,8 +86,8 @@ class ConnectionManager:
         await client.accept()
 
         if room not in self._rooms:
-            self._rooms[room] = set()
-        self._rooms[room].add(client)
+            self._rooms[room] = {"owner_id": client.id, "clients": set()}
+        self._rooms[room]["clients"].add(client)
 
     def disconnect(self, client: Client, room: str) -> None:
         """Removes the connection from the active connections.
@@ -81,12 +98,12 @@ class ConnectionManager:
             client: The Client to which the connection belongs.
             room: The room from which the client will be disconnected.
         """
-        self._rooms[room].remove(client)
+        self._rooms[room]["clients"].remove(client)
 
-        if len(self._rooms[room]) == 0:
+        if len(self._rooms[room]["clients"]) == 0:
             del self._rooms[room]
 
-    async def broadcast(self, data: dict, room: str) -> None:
+    async def broadcast(self, data: dict, room: str, everyone=False) -> None:
         """Broadcasts data to all active connections.
 
         Args:
@@ -94,8 +111,13 @@ class ConnectionManager:
                 "type" key to indicate the event type.
             room: The room to which the data will be sent.
         """
-        for connection in self._rooms[room]:
-            await connection.send(data)
+        for connection in self._rooms[room]["clients"]:
+            if everyone:
+                await connection.send(data)
+            else:
+                if connection.id == self._rooms[room]["owner_id"]:
+                    continue
+                await connection.send(data)
 
 
 manager = ConnectionManager()
@@ -115,6 +137,6 @@ async def websocket_endpoint(websocket: WebSocket, room: str) -> None:
     try:
         while True:
             data = await client.receive()
-            await manager.broadcast(data, room)
+            await manager.broadcast(data, room, everyone=True)
     except WebSocketDisconnect:
         manager.disconnect(client, room)
