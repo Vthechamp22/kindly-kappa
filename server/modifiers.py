@@ -198,5 +198,4 @@ if __name__ == "__main__":
     test_lines = ["def say_hello() -> str:\n", '    return "Hello!"\n', "say_hello()\n", "\n"]
 
     modifiers = Modifiers(test_lines)
-    output = modifiers.output
     print(modifiers.output)
