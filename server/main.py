@@ -21,21 +21,21 @@ class Client:
         """Initializes the WebSocket and the ID.
 
         Args:
-            websocket: A WebSocket instance that can send and receive messages.
+            websocket: A WebSocket instance.
         """
         self._websocket = websocket
         self.id = uuid4()
 
     async def accept(self) -> None:
-        """Accepts a WebSocket connection."""
+        """Accepts the WebSocket connection."""
         await self._websocket.accept()
 
     async def send(self, data: dict) -> None:
         """Send JSON data over the WebSocket connection.
 
         Args:
-            data: The data to send to the server, it should always contain a
-                "type" key, indicating the type of event.
+            data: The data to be sent to the client, it should always contain a
+                "type" key to indicate the event type.
         """
         await self._websocket.send_json(data)
 
@@ -43,8 +43,8 @@ class Client:
         """Receive JSON data over the WebSocket connection.
 
         Returns:
-            The data received from the server, it should always contain a "type"
-            key, indicating the type of event.
+            The data received from the client, it should always contain a "type"
+            key to indicate the event type.
         """
         return await self._websocket.receive_json()
 
@@ -63,7 +63,7 @@ class ConnectionManager:
         """Accepts the connection and adds it to the active connections.
 
         Args:
-            client: The Client to which the connection belongs to.
+            client: The Client to which the connection belongs.
         """
         await client.accept()
         self._active_connections.add(client)
@@ -72,7 +72,7 @@ class ConnectionManager:
         """Removes the connection from the active connections.
 
         Args:
-            client: The Client to which the connection belongs to.
+            client: The Client to which the connection belongs.
         """
         self._active_connections.remove(client)
 
@@ -80,8 +80,8 @@ class ConnectionManager:
         """Sends data to a given client.
 
         Args:
-            data: The data to send to the server, it should always contain a
-                "type" key, indicating the type of event.
+            data: The data to be sent to the client, it should always contain a
+                "type" key to indicate the event type.
             client: The client that will receive the data.
         """
         await client.send(data)
@@ -90,8 +90,8 @@ class ConnectionManager:
         """Broadcasts data to all active connections.
 
         Args:
-            data: The data to send to the server, it should always contain a
-                "type" key, indicating the type of event.
+            data: The data to be sent to the clients, it should always contain a
+                "type" key to indicate the event type.
         """
         for connection in self._active_connections:
             await connection.send(data)
