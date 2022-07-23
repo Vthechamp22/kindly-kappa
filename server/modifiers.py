@@ -17,11 +17,12 @@ class Modifiers:
     """A set of code modifying methods."""
 
     def __init__(self, file_contents: list[str], difficulty: int = 1) -> None:
-        """This class has different functions which introduce different types of bugs.
+        """This class has functions which introduce different types of bugs.
 
-        All the functions should return Self so they can be chained to get the final
-        output. The number of chained functions is determined by the difficulty but
-        they are randomly sampled across the entire codebase.
+        All the functions should return Self so they can be chained to
+        get the final output. The number of chained functions is
+        determined by the difficulty but they are randomly sampled
+        across the entire codebase.
 
         Args:
             file_contents: The raw data received from the websocket.
@@ -85,7 +86,8 @@ class Modifiers:
     def remove_end_colon(self) -> Self:
         """A code modifier that causes a SyntaxError.
 
-        This will remove the colon after a function definition, loop, or if statement.
+        This will remove the colon after a function definition,
+        loop, or if statement.
 
         Returns:
             The modifier instance.
