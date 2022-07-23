@@ -2,6 +2,8 @@
 
 This server handles user connection, disconnection and events.
 """
+from __future__ import annotations
+
 from dataclasses import dataclass
 from typing import TypedDict
 from uuid import UUID, uuid4
@@ -47,6 +49,9 @@ class Client:
             key to indicate the event type.
         """
         return await self._websocket.receive_json()
+
+    def __eq__(self, client: Client) -> bool:
+        return self.id == client.id
 
 
 @dataclass
