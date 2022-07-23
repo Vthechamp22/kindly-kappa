@@ -3,6 +3,7 @@ import random
 import re
 from operator import methodcaller
 
+from deepdiff import DeepDiff
 from typing_extensions import Self
 
 FOUR_SPACES = "    "
@@ -32,11 +33,11 @@ class Modifiers:
         self.modified_contents = file_contents[:-1]
 
     @property
-    def output(self) -> list[str]:
+    def output(self) -> list[tuple[int, str]]:
         """Returns the modified code, if any modifications have been done.
 
         Returns:
-            Modified lines of code, in the same format as the input data.
+            Only the modified lines of code, including the line number.
         """
         method_names = [
             func for func in dir(Modifiers) if callable(getattr(Modifiers, func)) and not func.startswith("__")
@@ -46,7 +47,19 @@ class Modifiers:
         for method in list(methods):
             method(self)
 
-        return self.modified_contents
+        diff = DeepDiff(self.file_contents, self.modified_contents)
+        line_diffs = []
+
+        try:
+            for line_num, values in diff["values_changed"].items():
+                (num,) = list(filter(lambda x: x.isdigit(), re.split(r"(\d*)", line_num)))
+                new_value = values["new_value"]
+                line_diffs.append((int(num), new_value))
+        except KeyError:
+            # No values were changed
+            return [(0, "")]
+        else:
+            return line_diffs
 
     def remove_indentation(self) -> Self:
         """A code modifier that causes an IndentationError.
@@ -185,4 +198,5 @@ if __name__ == "__main__":
     test_lines = ["def say_hello() -> str:\n", '    return "Hello!"\n', "say_hello()\n", "\n"]
 
     modifiers = Modifiers(test_lines)
+    output = modifiers.output
     print(modifiers.output)
