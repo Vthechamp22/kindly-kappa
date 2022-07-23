@@ -30,7 +30,7 @@ dependency_file_paths = [
 
 [[transformers]]
 name = "black"
-enabled = true
+enabled = false
 
 [[transformers]]
 name = "prettier"
