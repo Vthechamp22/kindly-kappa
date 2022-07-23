@@ -7,7 +7,7 @@ from typing_extensions import Self
 
 FOUR_SPACES = "    "
 TWO_SPACES = "  "
-STATEMENTS = {"cj9_kappa", "kindly_kappas", "buggy_feature", "jammers"}
+STATEMENTS = ["cj9_kappa", "kindly_kappas", "buggy_feature", "jammers"]
 
 STARTSWITH_DEF_REGEX = re.compile(r"^\s*(async\s+def|def)\s(.*):")
 
