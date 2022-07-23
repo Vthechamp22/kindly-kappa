@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kindly Kappa</title>
+
+    <link rel="stylesheet" href="main.css">
+    <script src="main.js"></script>
+    <script src="theme.js"></script>
+    <script src="node_modules/monaco-editor/min/vs/loader.js"></script>
+</head>
+
+<body>
+    <div id="login">
+        <div>
+            <img style="float: right;" src="kappa-left.png" alt="kappa">
+        </div>
+        <div style="text-align: center;">
+            <h2>Kindly Kappas</h2>
+            <form>
+                <input type="text" id="rcinput" placeholder="Room Code">
+                <input type="submit" value="Submit" onclick="connect()">
+                <button id="scrd" onclick="showCRDialog()">Create Room</button>
+            </form>
+        </div>
+        <div>
+            <img src="kappa-right.png" alt="kappa">
+        </div>
+    </div>
+
+    <div id="myModal" class="modal">
+
+        <div class="modal-content" style="text-align: center;">
+            <span class="close" style="transform: translateY(-30%);">&times;</span>
+            <h2 style="color:black;margin:12px 12px 64px 12px">Difficulty</h2>
+            <input type="range" id="difficulty"min="0" max="3"
+            value="0" oninput="updateDifficulty(this.value)">
+        </div>
+
+    </div>
+
+    <div id="room">
+        <div id="sidebar" style="text-align:center;">
+            <h2>Collaborators</h2>
+            <ul>
+                <li>Kappa</li>
+                <li>Luke</li>
+                <li>Evorage</li>
+                <li>Ekl1pse</li>
+                <li>Moloom</li>
+            </ul>
+            <button id="leaveroom" onclick="leaveRoom()">Leave Room</button>
+        </div>
+
+        <div id="content"></div>
+    </div>
+</body>
+
+</html>
