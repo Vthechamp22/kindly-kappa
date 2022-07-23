@@ -74,7 +74,7 @@ class ConnectionManager:
         """
         self._rooms: ActiveRooms = {}
 
-    async def connect(self, client: Client, room: str) -> None:
+    async def connect(self, client: Client, room_name: str) -> None:
         """Accepts the connection and adds it to a room.
 
         If the room doesn't exist, create it.
@@ -85,11 +85,11 @@ class ConnectionManager:
         """
         await client.accept()
 
-        if room not in self._rooms:
-            self._rooms[room] = {"owner_id": client.id, "clients": set()}
-        self._rooms[room]["clients"].add(client)
+        if room_name not in self._rooms:
+            self._rooms[room_name] = {"owner_id": client.id, "clients": set()}
+        self._rooms[room_name]["clients"].add(client)
 
-    def disconnect(self, client: Client, room: str) -> None:
+    def disconnect(self, client: Client, room_name: str) -> None:
         """Removes the connection from the active connections.
 
         If, after the disconnection, the room is empty, delete it.
@@ -98,26 +98,24 @@ class ConnectionManager:
             client: The Client to which the connection belongs.
             room: The room from which the client will be disconnected.
         """
-        self._rooms[room]["clients"].remove(client)
+        self._rooms[room_name]["clients"].remove(client)
 
-        if len(self._rooms[room]["clients"]) == 0:
-            del self._rooms[room]
+        if len(self._rooms[room_name]["clients"]) == 0:
+            del self._rooms[room_name]
 
-    async def broadcast(self, data: dict, room: str, everyone: bool = False) -> None:
+    async def broadcast(self, data: dict, room_name: str, sender: Client | None = None) -> None:
         """Broadcasts data to all active connections.
 
         Args:
             data: The data to be sent to the clients, it should always contain a
                 "type" key to indicate the event type.
             room: The room to which the data will be sent.
+            sender (optional): The client who sent the message.
         """
-        for connection in self._rooms[room]["clients"]:
-            if everyone:
-                await connection.send(data)
-            else:
-                if connection.id == self._rooms[room]["owner_id"]:
-                    continue
-                await connection.send(data)
+        for connection in self._rooms[room_name]["clients"]:
+            if connection == sender:
+                continue
+            await connection.send(data)
 
 
 manager = ConnectionManager()
@@ -137,6 +135,6 @@ async def room(websocket: WebSocket, room_name: str) -> None:
     try:
         while True:
             data = await client.receive()
-            await manager.broadcast(data, room_name, everyone=True)
+            await manager.broadcast(data, room_name, sender=client)
     except WebSocketDisconnect:
         manager.disconnect(client, room_name)
