@@ -5,7 +5,6 @@ This server handles user connection, disconnection and events.
 from uuid import uuid4
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
-from fastapi.responses import HTMLResponse
 
 app = FastAPI()
 
@@ -97,57 +96,6 @@ class ConnectionManager:
 
 
 manager = ConnectionManager()
-
-html = """
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Chat</title>
-    </head>
-    <body>
-        <h1>WebSocket Chat</h1>
-        <input id="input" type="text" autocomplete="off">
-        <button onclick="sendMessage(event)">Send</button>
-        <ul id="messages"></ul>
-        <script>
-            let ws = new WebSocket("ws://localhost:8000/ws");
-
-            ws.onmessage = function(event) {
-                let data = JSON.parse(event.data);
-                switch (data.type) {
-                    case "message":
-                        let messages = document.getElementById("messages");
-                        let message = document.createElement("li");
-                        let content = document.createTextNode(data.msg);
-                        message.appendChild(content);
-                        messages.appendChild(message);
-                        break;
-                    default:
-                        console.log(`Unknown event type '${data.type}'`);
-                }
-            };
-
-            function sendMessage(event) {
-                let input = document.getElementById("input");
-                let data = {type: "message", msg: input.value};
-                ws.send(JSON.stringify(data));
-                input.value = "";
-                event.preventDefault();
-            }
-        </script>
-    </body>
-</html>
-"""
-
-
-@app.get("/")
-async def chat() -> HTMLResponse:
-    """This is the index route for the app.
-
-    Returns:
-        The HTML page in which the user can chat.
-    """
-    return HTMLResponse(html)
 
 
 @app.websocket("/ws")
