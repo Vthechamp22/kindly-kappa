@@ -33,7 +33,7 @@ class Modifiers:
         self.modified_contents = file_contents[:-1]
 
     @property
-    def output(self) -> list[tuple[int, str]]:
+    def output(self) -> list[tuple[int, str]] | list:
         """Returns the modified code, if any modifications have been done.
 
         Returns:
@@ -57,8 +57,8 @@ class Modifiers:
                 line_diffs.append((int(num), new_value))
         except KeyError:
             # No values were changed
-            return [(0, "")]
-        else:
+            pass
+        finally:
             return line_diffs
 
     def remove_indentation(self) -> Self:
