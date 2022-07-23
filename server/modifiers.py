@@ -31,6 +31,7 @@ class Modifiers:
         self.difficulty = difficulty
 
         self.modified_contents = file_contents[:-1]
+        self.modified_count = 0
 
     @property
     def output(self) -> list[tuple[int, str]] | list:
@@ -77,6 +78,7 @@ class Modifiers:
         line_subset = random.sample(line_numbers, min(self.difficulty, len(line_numbers)))
         for num in line_subset:
             self.modified_contents[num] = self.modified_contents[num].replace(FOUR_SPACES, TWO_SPACES)
+            self.modified_count += 1
 
         return self
 
@@ -96,6 +98,7 @@ class Modifiers:
         line_subset = random.sample(line_numbers, min(self.difficulty, len(line_numbers)))
         for num in line_subset:
             self.modified_contents[num] = self.modified_contents[num].replace(":", "")
+            self.modified_count += 1
 
         return self
 
@@ -117,6 +120,7 @@ class Modifiers:
         line_subset = random.sample(number_keyword_pairs, min(self.difficulty, len(number_keyword_pairs)))
         for num, key in line_subset:
             self.modified_contents[num] = self.modified_contents[num].replace(key, random.choice(STATEMENTS))
+            self.modified_count += 1
 
         return self
 
@@ -136,6 +140,7 @@ class Modifiers:
         line_subset = random.sample(line_numbers, min(self.difficulty, len(line_numbers)))
         for num in line_subset:
             self.modified_contents[num] = f"# {self.modified_contents[num]}"
+            self.modified_count += 1
 
         return self
 
@@ -176,6 +181,7 @@ class Modifiers:
                     self.modified_contents[num] = self.modified_contents[num].replace(
                         func_name, random.choice(STATEMENTS)
                     )
+                    self.modified_count += 1
 
         return self
 
@@ -192,17 +198,6 @@ class Modifiers:
 
         statement = f"if {random.choice(STATEMENTS)}\n"
         self.modified_contents[random_position] = f"{self.modified_contents[random_position]}\n{statement}"
+        self.modified_count += 1
 
         return self
-
-
-if __name__ == "__main__":
-    test_lines = [
-        "def say_hello() -> str:\n",
-        '    return "Hello!"\n',
-        "say_hello()\n",
-        "\n",
-    ]
-
-    modifiers = Modifiers(test_lines)
-    print(modifiers.output)
