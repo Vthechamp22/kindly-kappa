@@ -55,63 +55,66 @@ class ConnectionManager:
 
         It stores the active connections and is able to broadcast data.
         """
-        self._active_connections: set[Client] = set()
+        self._rooms: dict[str, set[Client]] = {}
 
-    async def connect(self, client: Client) -> None:
-        """Accepts the connection and adds it to the active connections.
+    async def connect(self, client: Client, room: str) -> None:
+        """Accepts the connection and adds it to a room.
+
+        If the room doesn't exist, create it.
 
         Args:
             client: The Client to which the connection belongs.
+            room: The room to which the client will be connected.
         """
         await client.accept()
 
-    def disconnect(self, client: Client) -> None:
+        if room not in self._rooms:
+            self._rooms[room] = set()
+        self._rooms[room].add(client)
+
+    def disconnect(self, client: Client, room: str) -> None:
         """Removes the connection from the active connections.
+
+        If, after the disconnection, the room is empty, delete it.
 
         Args:
             client: The Client to which the connection belongs.
+            room: The room from which the client will be disconnected.
         """
-        self._active_connections.remove(client)
+        self._rooms[room].remove(client)
 
-    async def send(self, data: dict, client: Client) -> None:
-        """Sends data to a given client.
+        if len(self._rooms[room]) == 0:
+            del self._rooms[room]
 
-        Args:
-            data: The data to be sent to the client, it should always contain a
-                "type" key to indicate the event type.
-            client: The client that will receive the data.
-        """
-        await client.send(data)
-
-    async def broadcast(self, data: dict) -> None:
+    async def broadcast(self, data: dict, room: str) -> None:
         """Broadcasts data to all active connections.
 
         Args:
             data: The data to be sent to the clients, it should always contain a
                 "type" key to indicate the event type.
+            room: The room to which the data will be sent.
         """
-        for connection in self._active_connections:
+        for connection in self._rooms[room]:
             await connection.send(data)
 
 
 manager = ConnectionManager()
 
 
-@app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket) -> None:
+@app.websocket("/ws/{room}")
+async def websocket_endpoint(websocket: WebSocket, room: str) -> None:
     """This is the endpoint for the WebSocket connection.
 
-    It creates a client and handles the connection with the ConnectionManager.
-    It continuosly receives, sends and broadcasts data to the active clients.
+    It creates a client and handles connection and disconnection with the
+    ConnectionManager. It continuously receives and broadcasts data to the
+    active clients.
     """
     client = Client(websocket)
-    await manager.connect(client)
-    await manager.broadcast({"type": "message", "msg": f"{client.id} joined the chat"})
+    await manager.connect(client, room)
 
     try:
         while True:
             data = await client.receive()
-            await manager.broadcast(data)
+            await manager.broadcast(data, room)
     except WebSocketDisconnect:
-        manager.disconnect(client)
-        await manager.broadcast({"type": "message", "msg": f"{client.id} left the chat"})
+        manager.disconnect(client, room)
