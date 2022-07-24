@@ -107,7 +107,6 @@ class ConnectionManager:
         Args:
             client: The Client to which the connection belongs.
             room: The room to which the client will be connected.
-            created: To create a new room or join an existing room.
         """
         await client.accept()
 
