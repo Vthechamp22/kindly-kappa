@@ -21,7 +21,12 @@ watch(difficulty, (newDiff) => {
 <template>
   <div id="main">
     <div id="login">
-      <img class="float-right" src="kappa-left.png" alt="kappa" />
+      <div
+        class="tooltip"
+        data-tip="japan PNG Designed By tsuki from https://pngtree.com/freepng/cute-kappa-in-japanese-mythology-cartoon-style_6544405.html?sol=downref&id=bef"
+      >
+        <img class="mx-auto" src="kappa-left.png" alt="kappa1" />
+      </div>
       <div class="text-center">
         <h2>Kindly Kappas</h2>
         <form>
@@ -40,7 +45,12 @@ watch(difficulty, (newDiff) => {
           >
         </form>
       </div>
-      <img src="kappa-right.png" alt="kappa" />
+      <div
+        class="tooltip"
+        data-tip="cute PNG Designed By Reiko from https://pngtree.com/freepng/japanese-kappa-monster-cartoon_6544406.html?sol=downref&id=bef"
+      >
+        <img class="mx-auto" src="kappa-right.png" alt="kappa2" />
+      </div>
     </div>
 
     <input type="checkbox" id="create-room-modal" class="modal-toggle" />
