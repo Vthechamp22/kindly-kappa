@@ -59,7 +59,7 @@ class Client:
             other: The object to compare the Client to.
 
         Returns:
-            True of the ID of the client is equal to the other client's ID,
+            True if the id of the client is equal to the other client's id,
             False otherwise.
         """
         if not isinstance(other, Client):
