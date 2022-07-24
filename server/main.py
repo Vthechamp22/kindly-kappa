@@ -16,7 +16,7 @@ app = FastAPI()
 class Client:
     """A WebSocket client."""
 
-    def __init__(self, websocket: WebSocket) -> None:
+    def __init__(self, websocket: WebSocket, username: str) -> None:
         """Initializes the WebSocket and the ID.
 
         A client is identified by an ID and contains the corresponding WebSocket
@@ -24,8 +24,10 @@ class Client:
 
         Args:
             websocket: A WebSocket instance.
+            username: The username of the client.
         """
         self._websocket = websocket
+        self.username = username
         self.id = uuid4()
 
     async def accept(self) -> None:
@@ -144,19 +146,20 @@ manager = ConnectionManager()
 
 
 @app.websocket("/room/{room_name}")
-async def room(websocket: WebSocket, room_name: str) -> None:
+async def room(websocket: WebSocket, room_name: str, username: str) -> None:
     """This is the endpoint for the WebSocket connection.
 
     It creates a client and handles connection and disconnection with the
     ConnectionManager. It continuously receives and broadcasts data to the
     active clients.
     """
-    client = Client(websocket)
+    client = Client(websocket, username)
     await manager.connect(client, room_name)
 
     try:
         while True:
             data = await client.receive()
-            await manager.broadcast(data, room_name, sender=client)
+            await client.send({"msg": f"You: {data['msg']}"})
+            await manager.broadcast({"msg": f"{client.username}: {data['msg']}"}, room_name, sender=client)
     except WebSocketDisconnect:
         manager.disconnect(client, room_name)
