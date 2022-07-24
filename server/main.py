@@ -10,7 +10,7 @@ from uuid import UUID, uuid4
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 
-from server.errors import InvalidCodeError, KappaCloseCodes
+from server.errors import KappaCloseCodes
 
 app = FastAPI()
 
@@ -98,7 +98,7 @@ class ConnectionManager:
         """
         self._rooms: ActiveRooms = {}
 
-    async def connect(self, client: Client, room_name: str, created: bool) -> None:
+    async def connect(self, client: Client, room_name: str) -> None:
         """Accepts the connection and adds it to a room.
 
         If the room doesn't exist, create it.
@@ -111,10 +111,7 @@ class ConnectionManager:
         await client.accept()
 
         if room_name not in self._rooms:
-            if created:
-                self._rooms[room_name] = {"owner_id": client.id, "clients": set()}
-            else:
-                raise InvalidCodeError(f"There is no active room with code: {room_name}", KappaCloseCodes.InvalidError)
+            self._rooms[room_name] = {"owner_id": client.id, "clients": set()}
         self._rooms[room_name]["clients"].add(client)
 
     def disconnect(self, client: Client, room_name: str) -> None:
@@ -126,11 +123,7 @@ class ConnectionManager:
             client: The Client to which the connection belongs.
             room: The room from which the client will be disconnected.
         """
-        try:
-            self._rooms[room_name]["clients"].remove(client)
-        except KeyError:
-            # The client isn't in the room
-            return
+        self._rooms[room_name]["clients"].remove(client)
 
         if len(self._rooms[room_name]["clients"]) == 0:
             del self._rooms[room_name]
@@ -144,21 +137,30 @@ class ConnectionManager:
             room: The room to which the data will be sent.
             sender (optional): The client who sent the message.
         """
-        try:
-            for connection in self._rooms[room_name]["clients"]:
-                if connection == sender:
-                    continue
-                await connection.send(data)
-        except KeyError:
-            # Room code might not be in self._rooms
-            await sender.send(data)
+        for connection in self._rooms[room_name]["clients"]:
+            if connection == sender:
+                continue
+            await connection.send(data)
+
+    def room_exists(self, room_code: str) -> bool:
+        """Checks if a room exists.
+
+        Args:
+            room_code: The code associated with a particular room.
+
+        Returns:
+            True fi the room exists. False otherwise.
+        """
+        if room_code in self._rooms:
+            return True
+        return False
 
 
 manager = ConnectionManager()
 
 
 @app.websocket("/room/{room_name}")
-async def room(websocket: WebSocket, room_name: str, created: bool) -> None:
+async def room(websocket: WebSocket, room_name: str) -> None:
     """This is the endpoint for the WebSocket connection.
 
     It creates a client and handles connection and disconnection with the
@@ -166,21 +168,22 @@ async def room(websocket: WebSocket, room_name: str, created: bool) -> None:
     active clients.
     """
     client = Client(websocket)
-    try:
-        await manager.connect(client, room_name, created)
-    except InvalidCodeError as e:
-        await manager.broadcast(
-            {
-                "type": "error",
-                "data": {
-                    "message": e.message,
-                },
-                "status": e.code,
-            },
-            room_name,
-            sender=client,
-        )
-        manager.disconnect(client, room_name)
+    await manager.connect(client, room_name)
+    initial_data = await client.receive()
+
+    if (initial_data["type"] == "connect") and (initial_data["data"]["room_code"]):
+        # If there is a room code, they have attempted to joined a room
+        if not manager.room_exists(initial_data["data"]["room_code"]):
+            await client.send(
+                {
+                    "type": "error",
+                    "data": {
+                        "message": "Room doesn't exist.",
+                    },
+                    "status_code": KappaCloseCodes.InvalidError,
+                }
+            )
+            return manager.disconnect(client, room_name)
 
     try:
         while True:
