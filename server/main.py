@@ -10,7 +10,7 @@ from uuid import UUID, uuid4
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 
-from server.errors import InvalidCodeError
+from server.errors import InvalidCodeError, KappaCloseCodes
 
 app = FastAPI()
 
@@ -114,7 +114,7 @@ class ConnectionManager:
             if created:
                 self._rooms[room_name] = {"owner_id": client.id, "clients": set()}
             else:
-                raise InvalidCodeError(f"There is no active room with code: {room_name}", room_name)
+                raise InvalidCodeError(f"There is no active room with code: {room_name}", KappaCloseCodes.InvalidError)
         self._rooms[room_name]["clients"].add(client)
 
     def disconnect(self, client: Client, room_name: str) -> None:
@@ -175,7 +175,7 @@ async def room(websocket: WebSocket, room_name: str, created: bool) -> None:
                 "data": {
                     "message": e.message,
                 },
-                "status": 404,
+                "status": e.code,
             },
             room_name,
             sender=client,
