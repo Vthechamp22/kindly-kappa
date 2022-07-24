@@ -33,7 +33,7 @@ class Client:
         await self._websocket.accept()
 
     async def send(self, data: dict) -> None:
-        """Send JSON data over the WebSocket connection.
+        """Sends JSON data over the WebSocket connection.
 
         Args:
             data: The data to be sent to the client, it should always contain a
@@ -42,7 +42,7 @@ class Client:
         await self._websocket.send_json(data)
 
     async def receive(self) -> dict:
-        """Receive JSON data over the WebSocket connection.
+        """Receives JSON data over the WebSocket connection.
 
         Returns:
             The data received from the client, it should always contain a "type"
@@ -50,8 +50,25 @@ class Client:
         """
         return await self._websocket.receive_json()
 
-    def __eq__(self, client: Client) -> bool:
-        return self.id == client.id
+    def __eq__(self, other: object) -> bool:
+        """Compares the Client to another object.
+
+        If the object is not an instance of Client, NotImplemented is returned.
+
+        Args:
+            other: The object to compare the Client to.
+
+        Returns:
+            True if the id of the client is equal to the other client's id,
+            False otherwise.
+        """
+        if not isinstance(other, Client):
+            return NotImplemented
+        return self.id == other.id
+
+    def __hash__(self) -> int:
+        """Returns the hash value of the Client."""
+        return hash(self.id)
 
 
 @dataclass
