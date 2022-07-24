@@ -149,7 +149,7 @@ class ConnectionManager:
             room_code: The code associated with a particular room.
 
         Returns:
-            True fi the room exists. False otherwise.
+            True if the room exists. False otherwise.
         """
         if room_code in self._rooms:
             return True
