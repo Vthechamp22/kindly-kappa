@@ -10,6 +10,8 @@ from uuid import UUID, uuid4
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 
+from server.errors import InvalidCodeError
+
 app = FastAPI()
 
 
@@ -96,7 +98,7 @@ class ConnectionManager:
         """
         self._rooms: ActiveRooms = {}
 
-    async def connect(self, client: Client, room_name: str) -> None:
+    async def connect(self, client: Client, room_name: str, created: bool) -> None:
         """Accepts the connection and adds it to a room.
 
         If the room doesn't exist, create it.
@@ -104,11 +106,15 @@ class ConnectionManager:
         Args:
             client: The Client to which the connection belongs.
             room: The room to which the client will be connected.
+            created: To create a new room or join an existing room.
         """
         await client.accept()
 
         if room_name not in self._rooms:
-            self._rooms[room_name] = {"owner_id": client.id, "clients": set()}
+            if created:
+                self._rooms[room_name] = {"owner_id": client.id, "clients": set()}
+            else:
+                raise InvalidCodeError(f"There is no active room with code: {room_name}", room_name)
         self._rooms[room_name]["clients"].add(client)
 
     def disconnect(self, client: Client, room_name: str) -> None:
@@ -120,7 +126,11 @@ class ConnectionManager:
             client: The Client to which the connection belongs.
             room: The room from which the client will be disconnected.
         """
-        self._rooms[room_name]["clients"].remove(client)
+        try:
+            self._rooms[room_name]["clients"].remove(client)
+        except KeyError:
+            # The client isn't in the room
+            return
 
         if len(self._rooms[room_name]["clients"]) == 0:
             del self._rooms[room_name]
@@ -134,17 +144,21 @@ class ConnectionManager:
             room: The room to which the data will be sent.
             sender (optional): The client who sent the message.
         """
-        for connection in self._rooms[room_name]["clients"]:
-            if connection == sender:
-                continue
-            await connection.send(data)
+        try:
+            for connection in self._rooms[room_name]["clients"]:
+                if connection == sender:
+                    continue
+                await connection.send(data)
+        except KeyError:
+            # Room code might not be in self._rooms
+            await sender.send(data)
 
 
 manager = ConnectionManager()
 
 
 @app.websocket("/room/{room_name}")
-async def room(websocket: WebSocket, room_name: str) -> None:
+async def room(websocket: WebSocket, room_name: str, created: bool) -> None:
     """This is the endpoint for the WebSocket connection.
 
     It creates a client and handles connection and disconnection with the
@@ -152,7 +166,21 @@ async def room(websocket: WebSocket, room_name: str) -> None:
     active clients.
     """
     client = Client(websocket)
-    await manager.connect(client, room_name)
+    try:
+        await manager.connect(client, room_name, created)
+    except InvalidCodeError as e:
+        await manager.broadcast(
+            {
+                "type": "error",
+                "data": {
+                    "message": e.message,
+                },
+                "status": 404,
+            },
+            room_name,
+            sender=client,
+        )
+        manager.disconnect(client, room_name)
 
     try:
         while True:

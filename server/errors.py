@@ -5,3 +5,4 @@ class InvalidCodeError(Exception):
         super().__init__(message)
 
         self.code = code
+        self.message = message
