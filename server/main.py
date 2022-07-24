@@ -51,12 +51,24 @@ class Client:
         return await self._websocket.receive_json()
 
     def __eq__(self, other: object) -> bool:
+        """Compares the Client to another object.
+
+        If the object is not an instance of Client, NotImplemented is returned.
+
+        Args:
+            other: The object to compare the Client to.
+
+        Returns:
+            True of the ID of the client is equal to the other client's ID,
+            False otherwise.
+        """
         if not isinstance(other, Client):
             return NotImplemented
         return self.id == other.id
 
     def __hash__(self) -> int:
-        return self.id.int
+        """Returns the hash value of the Client."""
+        return hash(self.id)
 
 
 @dataclass
