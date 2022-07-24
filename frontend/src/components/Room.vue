@@ -26,7 +26,7 @@ function leaveRoom() {
 <template>
   <div id="room">
     <div id="sidebar">
-      <h2 class="text-6xl text-white m-3">Collaborators</h2>
+      <h2 class="text-6xl m-3">Collaborators</h2>
       <ul>
         <li>You</li>
       </ul>
@@ -53,44 +53,29 @@ function leaveRoom() {
 
 #sidebar,
 #content {
-  border: solid white;
+  border: 3px solid hsl(var(--bc));
 }
 
 #sidebar {
-  border-width: 4px 2px 4px 4px;
-}
-#content {
-  border-width: 4px 4px 4px 2px;
-}
-
-#sidebar h1 {
-  text-align: center;
+  display: flex;
+  flex-direction: column;
 }
 
 ul {
   text-align: center;
+  align-self: center;
   font-size: 2em;
 }
 
 li {
   margin: 30px;
-}
-
-#sidebar,
-#content {
-  border: solid white;
-  display: flex;
-  flex-direction: column;
-}
-
-li {
   text-align: left;
-  color: white;
   font-size: 24px;
   margin-left: 48px;
   list-style: disc;
 }
 
+/* Flip the exit symbol */
 .fa-arrow-right-from-bracket {
   -webkit-transform: scale(-1, 1);
   -moz-transform: scale(-1, 1);

@@ -5,6 +5,7 @@ import Home from "./components/Home.vue";
 
 const joined = ref(false);
 </script>
+
 <template>
   <Room
     v-if="joined"
@@ -15,13 +16,11 @@ const joined = ref(false);
     "
   ></Room>
   <Home
+    v-else
     @join="
       () => {
         joined = true;
       }
     "
-    v-else
   ></Home>
 </template>
-
-<style scoped></style>

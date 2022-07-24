@@ -7,7 +7,8 @@ body,
 #app {
   font-family: "Gill Sans", "Gill Sans MT", "Calibri", "Trebuchet MS",
     sans-serif;
-  background-color: #282c34;
+  background-color: hsl(var(--b1));
+  color: hsl(var(--bc));
   margin: 0px;
   padding: 0px;
   width: 100%;

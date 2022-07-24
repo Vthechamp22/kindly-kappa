@@ -6,12 +6,19 @@ const emit = defineEmits(["join"]);
 // When the user clicks anyw0here outside of the modal, close it
 const show_modal = ref(false);
 const difficulty = ref(0);
+const theme = ref("onedarkpro");
 
 window.onclick = function (event) {
   if (event.target == document.getElementById("myModal")) {
     show_modal.value = false;
   }
 };
+
+watch(theme, (newTheme) => {
+  document
+    .querySelector("body")
+    .setAttribute("data-theme", newTheme.toLowerCase());
+});
 
 watch(difficulty, (newDiff) => {
   console.log(newDiff);
@@ -20,6 +27,18 @@ watch(difficulty, (newDiff) => {
 
 <template>
   <div id="main">
+    <form id="theme-form" class="m-3">
+      <select class="select select-primary w-full max-w-xs" v-model="theme">
+        <option selected value="onedarkpro">One Dark Pro</option>
+        <option>Night</option>
+        <option>Dark</option>
+        <option>Emerald</option>
+        <option>Forest</option>
+        <option>Dracula</option>
+        <option>Lemonade</option>
+        <option>Winter</option>
+      </select>
+    </form>
     <div id="login">
       <div
         class="tooltip"
@@ -53,6 +72,7 @@ watch(difficulty, (newDiff) => {
       </div>
     </div>
 
+    <!-- Modal box -->
     <input type="checkbox" id="create-room-modal" class="modal-toggle" />
     <label for="create-room-modal" class="modal cursor-pointer">
       <label class="modal-box relative" for="">
@@ -89,12 +109,11 @@ watch(difficulty, (newDiff) => {
 <style scoped>
 #main {
   height: 100%;
+  border: 3px solid hsl(var(--bc));
 }
 
 #login {
   box-sizing: border-box;
-  border: 4px solid white;
-
   display: grid;
   grid-template-columns: auto 512px auto;
   height: 100%;
@@ -102,8 +121,12 @@ watch(difficulty, (newDiff) => {
   align-items: center;
 }
 
+form#theme-form {
+  display: flex;
+  justify-content: flex-end;
+}
+
 img {
-  display: block;
   max-width: 50%;
   max-height: 50%;
   width: auto;
@@ -112,7 +135,8 @@ img {
 
 h2 {
   font-size: 64px;
-  color: white;
+  color: hsl(var(--bc));
   margin: 12px;
+  margin-bottom: 8rem;
 }
 </style>
