@@ -33,7 +33,7 @@ class Client:
         await self._websocket.accept()
 
     async def send(self, data: dict) -> None:
-        """Send JSON data over the WebSocket connection.
+        """Sends JSON data over the WebSocket connection.
 
         Args:
             data: The data to be sent to the client, it should always contain a
@@ -42,7 +42,7 @@ class Client:
         await self._websocket.send_json(data)
 
     async def receive(self) -> dict:
-        """Receive JSON data over the WebSocket connection.
+        """Receives JSON data over the WebSocket connection.
 
         Returns:
             The data received from the client, it should always contain a "type"
