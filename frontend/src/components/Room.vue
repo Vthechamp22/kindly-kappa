@@ -78,7 +78,6 @@ li {
 
 #sidebar,
 #content {
-  border: solid white;
   display: flex;
   flex-direction: column;
 }
