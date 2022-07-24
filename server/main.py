@@ -52,7 +52,7 @@ class Client:
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Client):
-            raise NotImplementedError
+            return NotImplemented
         return self.id == other.id
 
     def __hash__(self) -> int:
