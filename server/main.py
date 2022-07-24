@@ -50,8 +50,10 @@ class Client:
         """
         return await self._websocket.receive_json()
 
-    def __eq__(self, client: Client) -> bool:
-        return self.id == client.id
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Client):
+            return NotImplemented
+        return self.id == other.id
 
 
 @dataclass
