@@ -220,7 +220,7 @@ class Modifiers:
 
         line_subset = random.sample(number_boolean_pairs, min(self.difficulty, len(number_boolean_pairs)))
         for num, key in line_subset:
-            self.modified_contents[num] = self.modified_contents[num].replace(key, str(bool(bool(key)-1)))
+            self.modified_contents[num] = self.modified_contents[num].replace(key, str(bool(bool(key) - 1)))
             self.modified_count += 1
 
         return self
@@ -270,7 +270,8 @@ class Modifiers:
     def add_or_remove_brackets(self) -> Self:
         """A code modifier that causes a SyntaxError.
 
-        This will randomly add or remove brackets with prioritisation of more nested expressions.
+        This will randomly add or remove brackets
+        with prioritisation of more nested expressions.
 
         Returns:
             The modifier instance.
@@ -278,23 +279,23 @@ class Modifiers:
         line_count_brackets = []
         for num, line in enumerate(self.file_contents):
             if any(bracket in line for bracket in "()[]"):
-                line_count_brackets.append((
-                    num,
-                    line.count("(") + line.count(")") + line.count("[") + line.count("]"),
-                    [(index, bracket) for index, bracket in enumerate(line) if bracket in "()[]"]
-                ))
+                line_count_brackets.append(
+                    (
+                        num,
+                        line.count("(") + line.count(")") + line.count("[") + line.count("]"),
+                        [(index, bracket) for index, bracket in enumerate(line) if bracket in "()[]"],
+                    )
+                )
 
         for _ in range(min(self.difficulty, len(line_count_brackets))):
             chosen = random.choices(
-                population=line_count_brackets,
-                weights=[count[1] for count in line_count_brackets],
-                k=1
+                population=line_count_brackets, weights=[count[1] for count in line_count_brackets], k=1
             )[0]
             line_count_brackets.remove(chosen)
-            
+
             bracket = random.choice(chosen[2])
             contents = list(self.modified_contents[chosen[0]])
-            contents[bracket[0]] = random.choice(["", bracket[1]*2])
+            contents[bracket[0]] = random.choice(["", bracket[1] * 2])
             self.modified_contents[chosen[0]] = "".join(contents)
             self.modified_count += 1
 
