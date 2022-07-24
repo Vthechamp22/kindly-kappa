@@ -3,8 +3,10 @@
 @tailwind utilities;
 
 html,
-body, #app {
-  font-family: "Gill Sans", "Gill Sans MT", "Calibri", "Trebuchet MS", sans-serif;
+body,
+#app {
+  font-family: "Gill Sans", "Gill Sans MT", "Calibri", "Trebuchet MS",
+    sans-serif;
   background-color: #282a36;
   margin: 0px;
   padding: 0px;
