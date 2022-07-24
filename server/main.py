@@ -55,6 +55,9 @@ class Client:
             return NotImplemented
         return self.id == other.id
 
+    def __hash__(self) -> int:
+        return self.id.int
+
 
 @dataclass
 class RoomData:
