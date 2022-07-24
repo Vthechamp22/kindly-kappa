@@ -52,8 +52,15 @@ function leaveRoom() {
 }
 
 #sidebar,
-#container {
-  border: 1px #f8f8f2 solid;
+#content {
+  border: solid white;
+}
+
+#sidebar {
+  border-width: 4px 2px 4px 4px;
+}
+#content {
+  border-width: 4px 4px 4px 2px;
 }
 
 #sidebar h1 {
