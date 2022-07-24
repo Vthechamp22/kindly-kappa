@@ -199,10 +199,8 @@ async def room(websocket: WebSocket) -> None:
     client = Client(websocket)
     await client.accept()
     initial_data = ConnectionData(**await client.receive())
-    print(initial_data)
 
     room_code = initial_data.data.room_code
-
     if initial_data.type == "connect":
         match initial_data.data.connection_type:
             case "create":
