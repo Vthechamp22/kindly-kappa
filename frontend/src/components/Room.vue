@@ -1,19 +1,19 @@
 <script setup lang="ts">
 import * as monaco from "monaco-editor";
 import { onMounted } from "vue";
-import { dracula } from "../assets/js/theme";
+import { onedark } from "../assets/js/theme";
 
 const emit = defineEmits(["join"]);
 
 onMounted(() => {
-  monaco.editor.defineTheme("Dracula", dracula);
-  monaco.editor.setTheme("Dracula");
+  monaco.editor.defineTheme("OneDarkPro", onedark);
+  monaco.editor.setTheme("OneDarkPro");
 
   monaco.editor.create(document.getElementById("content"), {
     value: "",
     language: "python",
     insertSpaces: true,
-    theme: "Dracula",
+    theme: "OneDarkPro",
   });
 });
 
