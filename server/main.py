@@ -125,7 +125,7 @@ class ConnectionManager:
         else:
             raise RoomNotFoundError(f"The room with code '{room_code}' was not found.", KappaCloseCodes.RoomNotFound)
 
-    async def disconnect(self, client: Client, room_code: str) -> None:
+    def disconnect(self, client: Client, room_code: str) -> None:
         """Removes the connection from the active connections.
 
         If, after the disconnection, the room is empty, delete it.
@@ -138,8 +138,6 @@ class ConnectionManager:
 
         if len(self._rooms[room_code]["clients"]) == 0:
             del self._rooms[room_code]
-
-        await client.close()
 
     async def broadcast(self, data: dict, room_code: str, sender: Client | None = None) -> None:
         """Broadcasts data to all active connections.
@@ -198,7 +196,10 @@ async def room(websocket: WebSocket) -> None:
     """
     client = Client(websocket)
     await client.accept()
-    initial_data = ConnectionData(**await client.receive())
+    try:
+        initial_data = ConnectionData(**await client.receive())
+    except WebSocketDisconnect:
+        return
 
     room_code = initial_data.data.room_code
     if initial_data.type == "connect":
@@ -229,4 +230,4 @@ async def room(websocket: WebSocket) -> None:
             data = await client.receive()
             await manager.broadcast(data, room_code, sender=client)
     except WebSocketDisconnect:
-        await manager.disconnect(client, room_code)
+        manager.disconnect(client, room_code)
