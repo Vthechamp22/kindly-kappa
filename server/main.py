@@ -52,6 +52,10 @@ class Client:
         """
         return await self._websocket.receive_json()
 
+    async def close(self) -> None:
+        """Closes the WebSocket connection."""
+        return await self._websocket.close()
+
     def __eq__(self, other: object) -> bool:
         """Compares the Client to another object.
 
@@ -121,7 +125,7 @@ class ConnectionManager:
         else:
             raise RoomNotFoundError(f"The room with code '{room_code}' was not found.", KappaCloseCodes.RoomNotFound)
 
-    def disconnect(self, client: Client, room_code: str) -> None:
+    async def disconnect(self, client: Client, room_code: str) -> None:
         """Removes the connection from the active connections.
 
         If, after the disconnection, the room is empty, delete it.
@@ -134,6 +138,8 @@ class ConnectionManager:
 
         if len(self._rooms[room_code]["clients"]) == 0:
             del self._rooms[room_code]
+
+        await client.close()
 
     async def broadcast(self, data: dict, room_code: str, sender: Client | None = None) -> None:
         """Broadcasts data to all active connections.
@@ -215,7 +221,8 @@ async def room(websocket: WebSocket) -> None:
                             "status_code": KappaCloseCodes.RoomNotFound,
                         }
                     )
-                    return client._websocket.close()
+                    await client.close()
+                    return
             case _:
                 raise NotImplementedError
 
@@ -224,4 +231,4 @@ async def room(websocket: WebSocket) -> None:
             data = await client.receive()
             await manager.broadcast(data, room_code, sender=client)
     except WebSocketDisconnect:
-        manager.disconnect(client, room_code)
+        await manager.disconnect(client, room_code)
