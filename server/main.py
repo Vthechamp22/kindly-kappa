@@ -188,7 +188,7 @@ class ConnectionData(BaseModel):
     data: ConnectionEventData
 
 
-@app.websocket("/room/{room_name}")
+@app.websocket("/room/")
 async def room(websocket: WebSocket) -> None:
     """This is the endpoint for the WebSocket connection.
 
