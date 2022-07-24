@@ -202,10 +202,6 @@ async def room(websocket: WebSocket, room_name: str) -> None:
             return manager.disconnect(client, room_name)
 
     try:
-        if not initial_data.data.room_code:
-            # Joined but no room code supplied
-            raise WebSocketDisconnect
-
         while True:
             data = await client.receive()
             await manager.broadcast(data, room_name, sender=client)
