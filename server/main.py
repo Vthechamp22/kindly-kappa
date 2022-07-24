@@ -9,6 +9,7 @@ from typing import TypedDict
 from uuid import UUID, uuid4
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from pydantic import BaseModel
 
 from server.errors import KappaCloseCodes
 
@@ -110,7 +111,7 @@ class ConnectionManager:
         """
         await client.accept()
 
-        if room_name not in self._rooms:
+        if not self.room_exists(room_name):
             self._rooms[room_name] = {"owner_id": client.id, "clients": set()}
         self._rooms[room_name]["clients"].add(client)
 
@@ -159,6 +160,21 @@ class ConnectionManager:
 manager = ConnectionManager()
 
 
+class ConnectionEventData(BaseModel):
+    """A model representing the connection event data."""
+
+    message: str
+    difficulty: int
+    room_code: str
+
+
+class ConnectionData(BaseModel):
+    """A model representing the initial connection."""
+
+    type: str
+    data: ConnectionEventData
+
+
 @app.websocket("/room/{room_name}")
 async def room(websocket: WebSocket, room_name: str) -> None:
     """This is the endpoint for the WebSocket connection.
@@ -169,11 +185,11 @@ async def room(websocket: WebSocket, room_name: str) -> None:
     """
     client = Client(websocket)
     await manager.connect(client, room_name)
-    initial_data = await client.receive()
+    initial_data = ConnectionData(**await client.receive())
 
-    if (initial_data["type"] == "connect") and (initial_data["data"]["room_code"]):
+    if (initial_data.type == "connect") and (initial_data.data.room_code):
         # If there is a room code, they have attempted to joined a room
-        if not manager.room_exists(initial_data["data"]["room_code"]):
+        if not manager.room_exists(initial_data.data.room_code):
             await client.send(
                 {
                     "type": "error",
@@ -186,6 +202,10 @@ async def room(websocket: WebSocket, room_name: str) -> None:
             return manager.disconnect(client, room_name)
 
     try:
+        if not initial_data.data.room_code:
+            # Joined but no room code supplied
+            raise WebSocketDisconnect
+
         while True:
             data = await client.receive()
             await manager.broadcast(data, room_name, sender=client)
