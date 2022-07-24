@@ -1,4 +1,4 @@
-const dracula = {
+export const dracula = {
   base: "vs-dark",
   inherit: true,
   rules: [
