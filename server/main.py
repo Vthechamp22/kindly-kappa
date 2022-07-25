@@ -8,10 +8,11 @@ from dataclasses import dataclass
 from typing import Literal, TypedDict
 from uuid import UUID, uuid4
 
-from errors import KappaCloseCodes, RoomNotFoundError
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from modifiers import Modifiers
 from pydantic import BaseModel
+
+from .errors import KappaCloseCodes, RoomNotFoundError
 
 app = FastAPI()
 
@@ -84,6 +85,7 @@ class RoomData:
 
     owner_id: UUID
     clients: set[Client]
+    code: str
 
 
 class ActiveRooms(TypedDict):
@@ -111,7 +113,7 @@ class ConnectionManager:
             room_code: The room to which the client will be connected.
         """
         if not self.room_exists(room_code):
-            self._rooms[room_code] = {"owner_id": client.id, "clients": set()}
+            self._rooms[room_code] = {"owner_id": client.id, "clients": set(), "code": ""}
         self._rooms[room_code]["clients"].add(client)
 
     def join_room(self, client: Client, room_code: str) -> None:
@@ -185,6 +187,23 @@ class ConnectionManager:
         modifier = Modifiers(current_code, current_difficulty)
 
         return modifier.output
+
+    def _update_code_cache(self, room_code: str, code: list[dict[str, int | str]]) -> None:
+        """Updates the code cache for a particular room.
+
+        Args:
+            room_code: The code associated with a particular room.
+            code: A list of changes to make to the code cache.
+        """
+        if self.room_exists(room_code):
+            current_code = self._rooms[room_code]["code"]
+            for replacement_data in code:
+                from_index = replacement_data["from"]
+                to_index = replacement_data["to"]
+                new_value = replacement_data["value"]
+
+                updated_code = current_code[:from_index] + new_value + current_code[to_index:]
+                self._rooms[room_code]["code"] = updated_code
 
 
 manager = ConnectionManager()
