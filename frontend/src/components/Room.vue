@@ -3,7 +3,7 @@ import * as monaco from "monaco-editor";
 import { onMounted } from "vue";
 import { onedark } from "../assets/js/theme";
 
-const emit = defineEmits(["join"]);
+const emit = defineEmits(["leave"]);
 
 onMounted(() => {
   monaco.editor.defineTheme("OneDarkPro", onedark);
@@ -19,7 +19,7 @@ onMounted(() => {
 
 function leaveRoom() {
   monaco.editor.getModels().forEach((model) => model.dispose());
-  emit("join", "leave");
+  emit("leave");
 }
 </script>
 
@@ -51,14 +51,14 @@ function leaveRoom() {
   text-align: left;
 }
 
-#sidebar,
-#content {
-  border: 3px solid hsl(var(--bc));
-}
-
 #sidebar {
   display: flex;
   flex-direction: column;
+}
+
+#sidebar,
+#content {
+  border: 3px solid hsl(var(--bc));
 }
 
 ul {

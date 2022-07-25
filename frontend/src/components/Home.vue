@@ -3,16 +3,11 @@ import { ref, watch } from "vue";
 
 const emit = defineEmits(["join"]);
 
-// When the user clicks anyw0here outside of the modal, close it
-const show_modal = ref(false);
+const code = ref("");
 const difficulty = ref(0);
 const theme = ref("onedarkpro");
 
-window.onclick = function (event) {
-  if (event.target == document.getElementById("myModal")) {
-    show_modal.value = false;
-  }
-};
+const roomCodeError = ref("");
 
 watch(theme, (newTheme) => {
   document
@@ -23,51 +18,53 @@ watch(theme, (newTheme) => {
 watch(difficulty, (newDiff) => {
   console.log(newDiff);
 });
+
+function joinRoom() {
+  if (
+    !code.value ||
+    code.value.length != 4 ||
+    !/^[a-zA-Z]+$/.test(code.value)
+  ) {
+    roomCodeError.value = "Please enter a valid code!";
+    setTimeout(() => {
+      roomCodeError.value = "";
+    }, 3000);
+    return;
+  }
+  emit("join", code);
+}
 </script>
 
 <template>
   <div id="main">
-    <form id="theme-form" class="m-3">
-      <select class="select select-primary w-full max-w-xs" v-model="theme">
-        <option selected value="onedarkpro">One Dark Pro</option>
-        <option>Night</option>
-        <option>Dark</option>
-        <option>Emerald</option>
-        <option>Forest</option>
-        <option>Dracula</option>
-        <option>Lemonade</option>
-        <option>Winter</option>
-      </select>
-    </form>
     <div id="login">
-      <div
-        class="tooltip"
-        data-tip="japan PNG Designed By tsuki from https://pngtree.com/freepng/cute-kappa-in-japanese-mythology-cartoon-style_6544405.html?sol=downref&id=bef"
-      >
+      <form id="theme-form" class="m-3">
+        <select class="select select-primary w-full max-w-xs" v-model="theme">
+          <option selected value="onedarkpro">One Dark Pro</option>
+          <option>Night</option>
+          <option>Dark</option>
+          <option>Emerald</option>
+          <option>Forest</option>
+          <option>Dracula</option>
+          <option>Lemonade</option>
+          <option>Winter</option>
+        </select>
+      </form>
+      <div class="tooltip" data-tip="japan PNG Designed By tsuki from https://pngtree.com/freepng/cute-kappa-in-japanese-mythology-cartoon-style_6544405.html?sol=downref&id=bef">
         <img class="mx-auto" src="kappa-left.png" alt="kappa1" />
       </div>
-      <div class="text-center">
+      <div class="text-center h-full flex justify-center flex-col">
         <h2>Kindly Kappas</h2>
         <form>
-          <input
-            type="text"
-            placeholder="Room code"
-            class="input input-bordered w-full max-w-xs"
-          />
-          <button class="btn btn-primary" @click.prevent="emit('join')">
-            Join
-          </button>
-          <label
-            for="create-room-modal"
-            class="btn modal-button flex w-1/4 mx-auto my-2"
-            >Create Room</label
-          >
+          <input type="text" placeholder="Room code" class="input input-bordered border-primary w-full" v-model="code"/>
+          <label class="label">
+            <span class="label-text-alt text-error font-bold">{{ roomCodeError }}</span>
+          </label>
+          <button class="btn btn-primary" @click.prevent="joinRoom">Join</button>
+          <label for="create-room-modal" class="btn modal-button flex w-1/4 mx-auto my-2">Create Room</label>
         </form>
       </div>
-      <div
-        class="tooltip"
-        data-tip="cute PNG Designed By Reiko from https://pngtree.com/freepng/japanese-kappa-monster-cartoon_6544406.html?sol=downref&id=bef"
-      >
+      <div class="tooltip" data-tip="cute PNG Designed By Reiko from https://pngtree.com/freepng/japanese-kappa-monster-cartoon_6544406.html?sol=downref&id=bef">
         <img class="mx-auto" src="kappa-right.png" alt="kappa2" />
       </div>
     </div>
@@ -76,23 +73,13 @@ watch(difficulty, (newDiff) => {
     <input type="checkbox" id="create-room-modal" class="modal-toggle" />
     <label for="create-room-modal" class="modal cursor-pointer">
       <label class="modal-box relative" for="">
-        <label
-          for="create-room-modal"
-          class="btn btn-sm btn-circle absolute right-2 top-2"
-        >
+        <label for="create-room-modal" class="btn btn-sm btn-circle absolute right-2 top-2">
           <fa-icon icon="fa-solid fa-xmark" />
         </label>
         <h3 class="text-lg font-bold my-4">
           Choose Difficulty: {{ difficulty }}
         </h3>
-        <input
-          type="range"
-          min="0"
-          max="5"
-          class="range w-full"
-          step="1"
-          v-model="difficulty"
-        />
+        <input type="range" min="0" max="5" class="range w-full" step="1" v-model="difficulty"/>
         <div class="w-full flex justify-between text-xs px-2">
           <span>|</span>
           <span>|</span>
@@ -106,6 +93,7 @@ watch(difficulty, (newDiff) => {
     </label>
   </div>
 </template>
+
 <style scoped>
 #main {
   height: 100%;
@@ -113,17 +101,18 @@ watch(difficulty, (newDiff) => {
 }
 
 #login {
-  box-sizing: border-box;
   display: grid;
-  grid-template-columns: auto 512px auto;
+  grid-template-columns: repeat(3, 1fr);
   height: 100%;
   justify-items: center;
   align-items: center;
 }
 
 form#theme-form {
-  display: flex;
-  justify-content: flex-end;
+  width: 10em;
+  position: absolute;
+  top: 0;
+  right: 0;
 }
 
 img {
