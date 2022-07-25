@@ -149,6 +149,8 @@ class ConnectionManager:
             room_code: The room to which the data will be sent.
             sender (optional): The client who sent the message.
         """
+        self._update_code_cache(room_code, data["data"]["code"])
+
         for connection in self._rooms[room_code]["clients"]:
             if connection == sender:
                 continue
@@ -166,6 +168,17 @@ class ConnectionManager:
         if room_code in self._rooms:
             return True
         return False
+
+    def _update_code_cache(self, room_code: str, code: list[dict[str, int]]) -> None:
+        if self.room_exists(room_code):
+            current_code = self._rooms[room_code]["code"]
+            for replacement_data in code:
+                from_index = replacement_data["from"]
+                to_index = replacement_data["to"]
+                new_value = replacement_data["value"]
+
+                updated_code = current_code[:from_index] + new_value + current_code[to_index:]
+                self._rooms[room_code]["code"] = updated_code
 
 
 manager = ConnectionManager()
