@@ -1183,15 +1183,18 @@ export const onedark = {
     },
     {
       foreground: "#e06c75",
-      token: "source.json meta.structure.dictionary.json > string.quoted.json > punctuation.string",
+      token:
+        "source.json meta.structure.dictionary.json > string.quoted.json > punctuation.string",
     },
     {
       foreground: "#98c379",
-      token: "source.json meta.structure.dictionary.json > value.json > string.quoted.json",
+      token:
+        "source.json meta.structure.dictionary.json > value.json > string.quoted.json",
     },
     {
       foreground: "#98c379",
-      token: "source.json meta.structure.array.json > value.json > string.quoted.json",
+      token:
+        "source.json meta.structure.array.json > value.json > string.quoted.json",
     },
     {
       foreground: "#98c379",
@@ -1205,7 +1208,8 @@ export const onedark = {
     },
     {
       foreground: "#56b6c2",
-      token: "source.json meta.structure.dictionary.json > constant.language.json",
+      token:
+        "source.json meta.structure.dictionary.json > constant.language.json",
     },
     {
       foreground: "#56b6c2",
@@ -1221,11 +1225,13 @@ export const onedark = {
     },
     {
       foreground: "#c678dd",
-      token: "text.html.laravel-blade source.php.embedded.line.html entity.name.tag.laravel-blade",
+      token:
+        "text.html.laravel-blade source.php.embedded.line.html entity.name.tag.laravel-blade",
     },
     {
       foreground: "#c678dd",
-      token: "text.html.laravel-blade source.php.embedded.line.html support.constant.laravel-blade",
+      token:
+        "text.html.laravel-blade source.php.embedded.line.html support.constant.laravel-blade",
     },
     {
       foreground: "#e5c07b",
@@ -1357,19 +1363,23 @@ export const onedark = {
     },
     {
       foreground: "#abb2bf",
-      token: "punctuation.definition.section.switch-block.end.bracket.curly.php",
+      token:
+        "punctuation.definition.section.switch-block.end.bracket.curly.php",
     },
     {
       foreground: "#abb2bf",
-      token: "punctuation.definition.section.switch-block.start.bracket.curly.php",
+      token:
+        "punctuation.definition.section.switch-block.start.bracket.curly.php",
     },
     {
       foreground: "#abb2bf",
-      token: "punctuation.definition.section.switch-block.begin.bracket.curly.php",
+      token:
+        "punctuation.definition.section.switch-block.begin.bracket.curly.php",
     },
     {
       foreground: "#abb2bf",
-      token: "punctuation.definition.section.switch-block.end.bracket.curly.php",
+      token:
+        "punctuation.definition.section.switch-block.end.bracket.curly.php",
     },
     {
       foreground: "#d19a66",

@@ -9,7 +9,7 @@ const theme = ref("onedarkpro");
 
 const roomCodeError = ref("");
 
-const loading = ref(false)
+const loading = ref(false);
 
 watch(theme, (newTheme) => {
   document
@@ -33,10 +33,10 @@ function joinRoom() {
     }, 3000);
     return;
   }
-  loading.value = true
+  loading.value = true;
   setTimeout(() => {
     emit("join", code);
-  }, 3000)
+  }, 3000);
 }
 </script>
 
@@ -55,24 +55,41 @@ function joinRoom() {
           <option>Winter</option>
         </select>
       </form>
-      <div class="tooltip" data-tip="japan PNG Designed By tsuki from https://pngtree.com/freepng/cute-kappa-in-japanese-mythology-cartoon-style_6544405.html?sol=downref&id=bef">
+      <div
+        class="tooltip"
+        data-tip="japan PNG Designed By tsuki from https://pngtree.com/freepng/cute-kappa-in-japanese-mythology-cartoon-style_6544405.html?sol=downref&id=bef"
+      >
         <img class="mx-auto" src="imgs/kappa-left.png" alt="kappa1" />
       </div>
       <div class="text-center h-full flex justify-center flex-col">
         <h2>Kindly Kappas</h2>
         <form>
-          <input type="text" placeholder="Room code" class="input input-bordered border-primary w-full" v-model="code"/>
+          <input
+            type="text"
+            placeholder="Room code"
+            class="input input-bordered border-primary w-full"
+            v-model="code"
+          />
           <label class="label">
-            <span class="label-text-alt text-error font-bold">{{ roomCodeError }}</span>
+            <span class="label-text-alt text-error font-bold">{{
+              roomCodeError
+            }}</span>
           </label>
           <button class="btn btn-primary" @click.prevent="joinRoom">
             <i v-if="loading" class="gg-spinner"></i>
             <span v-else>Join Room</span>
           </button>
-          <label for="create-room-modal" class="btn modal-button flex w-1/4 mx-auto my-2">Create Room</label>
+          <label
+            for="create-room-modal"
+            class="btn modal-button flex w-1/4 mx-auto my-2"
+            >Create Room</label
+          >
         </form>
       </div>
-      <div class="tooltip" data-tip="cute PNG Designed By Reiko from https://pngtree.com/freepng/japanese-kappa-monster-cartoon_6544406.html?sol=downref&id=bef">
+      <div
+        class="tooltip"
+        data-tip="cute PNG Designed By Reiko from https://pngtree.com/freepng/japanese-kappa-monster-cartoon_6544406.html?sol=downref&id=bef"
+      >
         <img class="mx-auto" src="imgs/kappa-right.png" alt="kappa2" />
       </div>
     </div>
@@ -81,13 +98,23 @@ function joinRoom() {
     <input type="checkbox" id="create-room-modal" class="modal-toggle" />
     <label for="create-room-modal" class="modal cursor-pointer">
       <label class="modal-box relative" for="">
-        <label for="create-room-modal" class="btn btn-sm btn-circle absolute right-2 top-2">
+        <label
+          for="create-room-modal"
+          class="btn btn-sm btn-circle absolute right-2 top-2"
+        >
           <fa-icon icon="fa-solid fa-xmark" />
         </label>
         <h3 class="text-lg font-bold my-4">
           Choose Difficulty: {{ difficulty }}
         </h3>
-        <input type="range" min="0" max="5" class="range w-full" step="1" v-model="difficulty"/>
+        <input
+          type="range"
+          min="0"
+          max="5"
+          class="range w-full"
+          step="1"
+          v-model="difficulty"
+        />
         <div class="w-full flex justify-between text-xs px-2">
           <span>|</span>
           <span>|</span>
