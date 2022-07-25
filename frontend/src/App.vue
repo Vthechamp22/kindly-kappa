@@ -3,25 +3,26 @@ import { ref } from "vue";
 import Room from "./components/Room.vue";
 import Home from "./components/Home.vue";
 
-const joined = ref(false);
-</script>
-<template>
-  <Room
-    v-if="joined"
-    @join="
-      () => {
-        joined = false;
-      }
-    "
-  ></Room>
-  <Home
-    @join="
-      () => {
-        joined = true;
-      }
-    "
-    v-else
-  ></Home>
-</template>
+const roomStatus = ref({
+  code: "",
+  username: "",
+  joined: false,
+});
 
-<style scoped></style>
+function leaveRoom() {
+  roomStatus.value = { ...roomStatus.value, joined: false };
+}
+
+function joinRoom({ code, username }) {
+  roomStatus.value = {
+    code,
+    username,
+    joined: true,
+  };
+}
+</script>
+
+<template>
+  <Room v-if="roomStatus.joined" @leave="leaveRoom" :data="roomStatus"></Room>
+  <Home v-else @join="joinRoom"></Home>
+</template>

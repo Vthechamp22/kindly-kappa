@@ -18,7 +18,7 @@ onMounted(() => {
 
     window.setEditor(e);
 
-    e.getModel()?.onDidChangeContent(window.handleMonacoKeyPress)
+    e.getModel()?.onDidChangeContent(window.handleContentChange)
 });
 
 function leaveRoom() {
