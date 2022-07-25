@@ -10,8 +10,8 @@ const theme = ref("onedarkpro");
 
 const errors = ref({
   code: "",
-  username: ""
-})
+  username: "",
+});
 
 const loading = ref(false);
 
@@ -26,17 +26,20 @@ watch(difficulty, (newDiff) => {
 });
 
 function joinRoom() {
-  if (!code.value || code.value.length != 4 || !/^[a-zA-Z]+$/.test(code.value)) {
+  if (
+    !code.value ||
+    code.value.length != 4 ||
+    !/^[a-zA-Z]+$/.test(code.value)
+  ) {
     errors.value.code = "Please enter a valid code!";
   } else {
-    errors.value.code = ""
+    errors.value.code = "";
   }
 
   if (!username.value) {
     console.log("changing");
     errors.value.username = "Please enter a username!";
-  }
-  else {
+  } else {
     errors.value.username = "";
   }
 
@@ -47,7 +50,7 @@ function joinRoom() {
   loading.value = true;
   setTimeout(() => {
     emit("join", { code: code.value, username: username.value });
-  }, 2000  );
+  }, 2000);
 }
 </script>
 
@@ -124,7 +127,7 @@ function joinRoom() {
           for="create-room-modal"
           class="btn btn-sm btn-circle absolute right-2 top-2"
         >
-          <i class="gg-close-o" style="--ggs: 1.2;"></i>
+          <i class="gg-close-o" style="--ggs: 1.2"></i>
         </label>
         <h3 class="text-lg font-bold my-4">
           Choose Difficulty: {{ difficulty }}

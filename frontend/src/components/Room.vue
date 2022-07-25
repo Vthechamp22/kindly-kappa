@@ -5,8 +5,8 @@ import { onedark } from "../assets/js/theme";
 
 const emit = defineEmits(["leave"]);
 const props = defineProps({
-  data: Object
-})
+  data: Object,
+});
 
 onMounted(() => {
   monaco.editor.defineTheme("OneDarkPro", onedark);

@@ -10,7 +10,7 @@ const roomStatus = ref({
 });
 
 function leaveRoom() {
-  roomStatus.value = {...roomStatus.value, joined: false};
+  roomStatus.value = { ...roomStatus.value, joined: false };
 }
 
 function joinRoom({ code, username }) {
@@ -24,5 +24,5 @@ function joinRoom({ code, username }) {
 
 <template>
   <Room v-if="roomStatus.joined" @leave="leaveRoom" :data="roomStatus"></Room>
-  <Home v-else @join="joinRoom" ></Home>
+  <Home v-else @join="joinRoom"></Home>
 </template>
