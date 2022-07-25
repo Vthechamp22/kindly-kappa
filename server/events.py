@@ -17,6 +17,7 @@ class EventType(Enum):
     SYNC = "sync"
     MOVE = "move"
     REPLACE = "replace"
+    ERROR = "error"
 
 
 class EventData(BaseModel):
@@ -84,6 +85,16 @@ class ReplaceData(EventData):
     """
 
     code: list[Replacement]
+
+
+class ErrorData(EventData):
+    """The data of an error event.
+
+    Fields:
+        message: The error message.
+    """
+
+    message: str
 
 
 class Event(BaseModel):
