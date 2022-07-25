@@ -80,7 +80,7 @@ class Modifiers:
         line_subset = random.sample(line_numbers, min(self.difficulty, len(line_numbers)))
         for num in line_subset:
             self.modified_contents[num] = self.modified_contents[num].replace(FOUR_SPACES, TWO_SPACES)
-            self.modified_count += 1
+        self.modified_count += 1
 
         return self
 
@@ -101,7 +101,7 @@ class Modifiers:
         line_subset = random.sample(line_numbers, min(self.difficulty, len(line_numbers)))
         for num in line_subset:
             self.modified_contents[num] = self.modified_contents[num].replace(":", "")
-            self.modified_count += 1
+        self.modified_count += 1
 
         return self
 
@@ -123,7 +123,7 @@ class Modifiers:
         line_subset = random.sample(number_keyword_pairs, min(self.difficulty, len(number_keyword_pairs)))
         for num, key in line_subset:
             self.modified_contents[num] = self.modified_contents[num].replace(key, random.choice(STATEMENTS))
-            self.modified_count += 1
+        self.modified_count += 1
 
         return self
 
@@ -143,7 +143,7 @@ class Modifiers:
         line_subset = random.sample(line_numbers, min(self.difficulty, len(line_numbers)))
         for num in line_subset:
             self.modified_contents[num] = f"# {self.modified_contents[num]}"
-            self.modified_count += 1
+        self.modified_count += 1
 
         return self
 
@@ -184,7 +184,7 @@ class Modifiers:
                     self.modified_contents[num] = self.modified_contents[num].replace(
                         func_name, random.choice(STATEMENTS)
                     )
-                    self.modified_count += 1
+        self.modified_count += 1
 
         return self
 
@@ -220,8 +220,10 @@ class Modifiers:
 
         line_subset = random.sample(number_boolean_pairs, min(self.difficulty, len(number_boolean_pairs)))
         for num, key in line_subset:
-            self.modified_contents[num] = self.modified_contents[num].replace(key, str(bool(bool(key) - 1)))
-            self.modified_count += 1
+            self.modified_contents[num] = self.modified_contents[num].replace(
+                key, str(bool(["True", "False"].index(key)))
+            )
+        self.modified_count += 1
 
         return self
 
@@ -241,7 +243,7 @@ class Modifiers:
         line_subset = random.sample(line_numbers, min(self.difficulty, len(line_numbers)))
         for num in line_subset:
             self.modified_contents[num] = self.modified_contents[num].replace("==", "=")
-            self.modified_count += 1
+        self.modified_count += 1
 
         return self
 
@@ -263,7 +265,7 @@ class Modifiers:
             self.modified_contents[num] = self.modified_contents[num].replace(
                 key, random.choice([type_kw for type_kw in TYPES if type_kw != key])
             )
-            self.modified_count += 1
+        self.modified_count += 1
 
         return self
 
@@ -297,6 +299,6 @@ class Modifiers:
             contents = list(self.modified_contents[chosen[0]])
             contents[bracket[0]] = random.choice(["", bracket[1] * 2])
             self.modified_contents[chosen[0]] = "".join(contents)
-            self.modified_count += 1
+        self.modified_count += 1
 
         return self
