@@ -170,7 +170,7 @@ class ConnectionManager:
             return True
         return False
 
-    def _update_code_cache(self, room_code: str, code: list[dict[str, int]]) -> None:
+    def _update_code_cache(self, room_code: str, code: list[dict[str, int | str]]) -> None:
         """Updates the code cache for a particular room.
 
         Args:
