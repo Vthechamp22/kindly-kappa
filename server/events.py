@@ -39,8 +39,8 @@ class ConnectionData(EventData):
     """
 
     connection_type: Literal["create", "join"]
-    difficulty: int | None
     room_code: str
+    difficulty: int | None
     username: str
 
 
@@ -50,8 +50,6 @@ class DisconnectData(EventData):
     Fields:
         room_code: The code of the room from which the user wants to disconnect.
     """
-
-    room_code: str
 
 
 class SyncData(EventData):
