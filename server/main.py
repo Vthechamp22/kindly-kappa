@@ -8,9 +8,10 @@ from dataclasses import dataclass
 from typing import Literal, TypedDict
 from uuid import UUID, uuid4
 
-from errors import KappaCloseCodes, RoomNotFoundError
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
+
+from .errors import KappaCloseCodes, RoomNotFoundError
 
 app = FastAPI()
 
