@@ -140,7 +140,7 @@ class ConnectionManager:
         if len(self._rooms[room_code]["clients"]) == 0:
             del self._rooms[room_code]
 
-    async def broadcast(self, data: dict, room_code: str, sender: Client | None = None) -> None:
+    async def broadcast(self, data: dict, room_code: str, sender: Client | None = None, modify: bool = False) -> None:
         """Broadcasts data to all active connections.
 
         Args:
@@ -148,7 +148,11 @@ class ConnectionManager:
                 "type" key to indicate the event type.
             room_code: The room to which the data will be sent.
             sender (optional): The client who sent the message.
+            modify: To send the bugged code.
         """
+        if modify:
+            data = self._modify_code(room_code)
+
         for connection in self._rooms[room_code]["clients"]:
             if connection == sender:
                 continue
@@ -166,6 +170,21 @@ class ConnectionManager:
         if room_code in self._rooms:
             return True
         return False
+
+    def _modify_code(self, room_code: str) -> list[tuple[int, str]] | list:
+        """Generates bugs based on the current code cache.
+
+        Args:
+            room_code: The code associated with a particular room.
+
+        Returns:
+            A list, or a list of modified changes including the line number.
+        """
+        current_code = self._rooms[room_code]["code"]
+        current_difficulty = self._rooms[room_code]["difficulty"]
+        modifier = Modifiers(current_code, current_difficulty)
+
+        return modifier.output
 
 
 manager = ConnectionManager()
