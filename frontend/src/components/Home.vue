@@ -36,8 +36,8 @@ function joinRoom() {
   }
   loading.value = true;
   setTimeout(() => {
-    emit("join", code);
-  }, 3000);
+    emit("join", { code: code.value, username: username.value });
+  }, 2000  );
 }
 </script>
 
@@ -64,7 +64,7 @@ function joinRoom() {
       </div>
       <div class="text-center h-full flex justify-center flex-col">
         <h2>Kindly Kappas</h2>
-        <form>
+        <form @submit.prevent="joinRoom">
           <input
             type="text"
             placeholder="Room code"
@@ -82,7 +82,7 @@ function joinRoom() {
             class="input input-bordered border-primary w-full"
             v-model="username"
           />
-          <button class="btn btn-primary mt-4" @click.prevent="joinRoom">
+          <button type="submit" class="btn btn-primary mt-4">
             <i v-if="loading" class="gg-spinner"></i>
             <span v-else>Join Room</span>
           </button>

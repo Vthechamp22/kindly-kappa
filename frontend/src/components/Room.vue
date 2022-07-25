@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import * as monaco from "monaco-editor";
-import { onMounted } from "vue";
+import { onMounted, toRefs } from "vue";
 import { onedark } from "../assets/js/theme";
 
 const emit = defineEmits(["leave"]);
+const props = defineProps({
+  data: Object
+})
 
 onMounted(() => {
   monaco.editor.defineTheme("OneDarkPro", onedark);
@@ -18,7 +21,6 @@ onMounted(() => {
 });
 
 function leaveRoom() {
-  monaco.editor.getModels().forEach((model) => model.dispose());
   emit("leave");
 }
 </script>
@@ -28,7 +30,7 @@ function leaveRoom() {
     <div id="sidebar">
       <h2 class="text-6xl m-3">Collaborators</h2>
       <ul>
-        <li>You</li>
+        <li>You ({{ data.username }})</li>
       </ul>
       <button class="btn btn-primary mt-auto" @click="leaveRoom()">
         <i class="gg-log-out mr-4"></i>
