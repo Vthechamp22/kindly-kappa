@@ -83,6 +83,7 @@ class RoomData:
 
     owner_id: UUID
     clients: set[Client]
+    code: str
 
 
 class ActiveRooms(TypedDict):
@@ -110,7 +111,7 @@ class ConnectionManager:
             room_code: The room to which the client will be connected.
         """
         if not self.room_exists(room_code):
-            self._rooms[room_code] = {"owner_id": client.id, "clients": set()}
+            self._rooms[room_code] = {"owner_id": client.id, "clients": set(), "code": ""}
         self._rooms[room_code]["clients"].add(client)
 
     def join_room(self, client: Client, room_code: str) -> None:
