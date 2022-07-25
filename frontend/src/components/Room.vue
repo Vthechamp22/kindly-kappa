@@ -31,7 +31,7 @@ function leaveRoom() {
         <li>You</li>
       </ul>
       <button class="btn btn-primary mt-auto" @click="leaveRoom()">
-        <fa-icon icon="fa-solid fa-arrow-right-from-bracket" />
+        <i class="gg-log-out mr-4"></i>
         Leave Room
       </button>
     </div>
@@ -73,15 +73,5 @@ li {
   font-size: 24px;
   margin-left: 48px;
   list-style: disc;
-}
-
-/* Flip the exit symbol */
-.fa-arrow-right-from-bracket {
-  -webkit-transform: scale(-1, 1);
-  -moz-transform: scale(-1, 1);
-  -ms-transform: scale(-1, 1);
-  -o-transform: scale(-1, 1);
-  transform: scale(-1, 1);
-  margin-right: 1em;
 }
 </style>

@@ -9,6 +9,8 @@ const theme = ref("onedarkpro");
 
 const roomCodeError = ref("");
 
+const loading = ref(false)
+
 watch(theme, (newTheme) => {
   document
     .querySelector("body")
@@ -31,7 +33,10 @@ function joinRoom() {
     }, 3000);
     return;
   }
-  emit("join", code);
+  loading.value = true
+  setTimeout(() => {
+    emit("join", code);
+  }, 3000)
 }
 </script>
 
@@ -51,7 +56,7 @@ function joinRoom() {
         </select>
       </form>
       <div class="tooltip" data-tip="japan PNG Designed By tsuki from https://pngtree.com/freepng/cute-kappa-in-japanese-mythology-cartoon-style_6544405.html?sol=downref&id=bef">
-        <img class="mx-auto" src="kappa-left.png" alt="kappa1" />
+        <img class="mx-auto" src="imgs/kappa-left.png" alt="kappa1" />
       </div>
       <div class="text-center h-full flex justify-center flex-col">
         <h2>Kindly Kappas</h2>
@@ -60,12 +65,15 @@ function joinRoom() {
           <label class="label">
             <span class="label-text-alt text-error font-bold">{{ roomCodeError }}</span>
           </label>
-          <button class="btn btn-primary" @click.prevent="joinRoom">Join</button>
+          <button class="btn btn-primary" @click.prevent="joinRoom">
+            <i v-if="loading" class="gg-spinner"></i>
+            <span v-else>Join Room</span>
+          </button>
           <label for="create-room-modal" class="btn modal-button flex w-1/4 mx-auto my-2">Create Room</label>
         </form>
       </div>
       <div class="tooltip" data-tip="cute PNG Designed By Reiko from https://pngtree.com/freepng/japanese-kappa-monster-cartoon_6544406.html?sol=downref&id=bef">
-        <img class="mx-auto" src="kappa-right.png" alt="kappa2" />
+        <img class="mx-auto" src="imgs/kappa-right.png" alt="kappa2" />
       </div>
     </div>
 
