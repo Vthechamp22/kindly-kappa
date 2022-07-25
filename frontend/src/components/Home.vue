@@ -4,6 +4,7 @@ import { ref, watch } from "vue";
 const emit = defineEmits(["join"]);
 
 const code = ref("");
+const username = ref("");
 const difficulty = ref(0);
 const theme = ref("onedarkpro");
 
@@ -75,7 +76,13 @@ function joinRoom() {
               roomCodeError
             }}</span>
           </label>
-          <button class="btn btn-primary" @click.prevent="joinRoom">
+          <input
+            type="text"
+            placeholder="Username"
+            class="input input-bordered border-primary w-full"
+            v-model="username"
+          />
+          <button class="btn btn-primary mt-4" @click.prevent="joinRoom">
             <i v-if="loading" class="gg-spinner"></i>
             <span v-else>Join Room</span>
           </button>
