@@ -5,7 +5,7 @@ const emit = defineEmits(["join"]);
 
 const code = ref("");
 const username = ref("");
-const difficulty = ref(0);
+const difficulty = ref(1);
 const theme = ref("onedarkpro");
 
 const roomCodeError = ref("");
@@ -109,14 +109,14 @@ function joinRoom() {
           for="create-room-modal"
           class="btn btn-sm btn-circle absolute right-2 top-2"
         >
-          <fa-icon icon="fa-solid fa-xmark" />
+          <i class="gg-close-o" style="--ggs: 1.2;"></i>
         </label>
         <h3 class="text-lg font-bold my-4">
           Choose Difficulty: {{ difficulty }}
         </h3>
         <input
           type="range"
-          min="0"
+          min="1"
           max="5"
           class="range w-full"
           step="1"
