@@ -170,6 +170,12 @@ class ConnectionManager:
         return False
 
     def _update_code_cache(self, room_code: str, code: list[dict[str, int]]) -> None:
+        """Updates the code cache for a particular room.
+
+        Args:
+            room_code: The code associated with a particular room.
+            code: A list of changes to make to the code cache.
+        """
         if self.room_exists(room_code):
             current_code = self._rooms[room_code]["code"]
             for replacement_data in code:
