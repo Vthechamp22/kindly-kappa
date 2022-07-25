@@ -10,6 +10,7 @@ from uuid import UUID, uuid4
 
 from errors import KappaCloseCodes, RoomNotFoundError
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from modifiers import Modifiers
 from pydantic import BaseModel
 
 app = FastAPI()
