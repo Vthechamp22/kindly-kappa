@@ -125,7 +125,7 @@ class ConnectionManager:
         if self.room_exists(room_code):
             self._rooms[room_code]["clients"].add(client)
         else:
-            raise RoomNotFoundError(f"The room with code '{room_code}' was not found.", StatusCode.ROOM_NOT_FOUND)
+            raise RoomNotFoundError(f"The room with code '{room_code}' was not found.")
 
     def disconnect(self, client: Client, room_code: str) -> None:
         """Removes the connection from the active connections.
