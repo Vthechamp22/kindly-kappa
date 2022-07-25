@@ -11,7 +11,7 @@ from uuid import UUID, uuid4
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
 
-from .errors import KappaCloseCodes, RoomNotFoundError
+from .codes import RoomNotFoundError, StatusCode
 
 app = FastAPI()
 
@@ -125,7 +125,7 @@ class ConnectionManager:
         if self.room_exists(room_code):
             self._rooms[room_code]["clients"].add(client)
         else:
-            raise RoomNotFoundError(f"The room with code '{room_code}' was not found.", KappaCloseCodes.RoomNotFound)
+            raise RoomNotFoundError(f"The room with code '{room_code}' was not found.", StatusCode.ROOM_NOT_FOUND)
 
     def disconnect(self, client: Client, room_code: str) -> None:
         """Removes the connection from the active connections.
@@ -238,7 +238,7 @@ async def room(websocket: WebSocket) -> None:
                             "data": {
                                 "message": e.message,
                             },
-                            "status_code": KappaCloseCodes.RoomNotFound,
+                            "status_code": StatusCode.ROOM_NOT_FOUND,
                         }
                     )
                     await client.close()
