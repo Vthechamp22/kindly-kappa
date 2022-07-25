@@ -8,7 +8,10 @@ const username = ref("");
 const difficulty = ref(1);
 const theme = ref("onedarkpro");
 
-const roomCodeError = ref("");
+const errors = ref({
+  code: "",
+  username: ""
+})
 
 const loading = ref(false);
 
@@ -23,17 +26,24 @@ watch(difficulty, (newDiff) => {
 });
 
 function joinRoom() {
-  if (
-    !code.value ||
-    code.value.length != 4 ||
-    !/^[a-zA-Z]+$/.test(code.value)
-  ) {
-    roomCodeError.value = "Please enter a valid code!";
-    setTimeout(() => {
-      roomCodeError.value = "";
-    }, 3000);
+  if (!code.value || code.value.length != 4 || !/^[a-zA-Z]+$/.test(code.value)) {
+    errors.value.code = "Please enter a valid code!";
+  } else {
+    errors.value.code = ""
+  }
+
+  if (!username.value) {
+    console.log("changing");
+    errors.value.username = "Please enter a username!";
+  }
+  else {
+    errors.value.username = "";
+  }
+
+  if (errors.value.code || errors.value.username) {
     return;
   }
+
   loading.value = true;
   setTimeout(() => {
     emit("join", { code: code.value, username: username.value });
@@ -73,7 +83,7 @@ function joinRoom() {
           />
           <label class="label">
             <span class="label-text-alt text-error font-bold">{{
-              roomCodeError
+              errors.code
             }}</span>
           </label>
           <input
@@ -82,6 +92,11 @@ function joinRoom() {
             class="input input-bordered border-primary w-full"
             v-model="username"
           />
+          <label class="label">
+            <span class="label-text-alt text-error font-bold">{{
+              errors.username
+            }}</span>
+          </label>
           <button type="submit" class="btn btn-primary mt-4">
             <i v-if="loading" class="gg-spinner"></i>
             <span v-else>Join Room</span>
