@@ -48,8 +48,10 @@ class DisconnectData(EventData):
     """The data of a disconnection event.
 
     Fields:
-        room_code: The code of the room from which the user wants to disconnect.
+        username: The username of the user disconnecting.
     """
+
+    username: str
 
 
 class SyncData(EventData):
