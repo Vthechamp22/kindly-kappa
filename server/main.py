@@ -148,7 +148,7 @@ class ConnectionManager:
                 "type" key to indicate the event type.
             room_code: The room to which the data will be sent.
             sender (optional): The client who sent the message.
-            modify: To send the bugged code.
+            modify: Option to send the bugged code.
         """
         if modify:
             data = self._modify_code(room_code)
