@@ -12,7 +12,7 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 
 from .codes import StatusCode
 from .errors import RoomNotFoundError
-from .events import ConnectData, DisconnectData, Event, EventType, ReplaceData
+from .events import ConnectData, DisconnectData, EventRequest, EventResponse, EventType, ReplaceData
 
 app = FastAPI()
 
@@ -36,7 +36,7 @@ class Client:
         """Accepts the WebSocket connection."""
         await self._websocket.accept()
 
-    async def send(self, data: Event) -> None:
+    async def send(self, data: EventResponse) -> None:
         """Sends JSON data over the WebSocket connection.
 
         Args:
@@ -44,13 +44,13 @@ class Client:
         """
         await self._websocket.send_json(data.dict())
 
-    async def receive(self) -> Event:
+    async def receive(self) -> EventRequest:
         """Receives JSON data over the WebSocket connection.
 
         Returns:
             The data received from the client.
         """
-        return Event(**await self._websocket.receive_json())
+        return EventRequest(**await self._websocket.receive_json())
 
     async def close(self) -> None:
         """Closes the WebSocket connection."""
@@ -187,7 +187,7 @@ class ConnectionManager:
                 updated_code = current_code[:from_index] + new_value + current_code[to_index:]
                 self._rooms[room_code]["code"] = updated_code
 
-    async def broadcast(self, data: Event, room_code: str, sender: Client | None = None) -> None:
+    async def broadcast(self, data: EventResponse, room_code: str, sender: Client | None = None) -> None:
         """Broadcasts data to all active connections.
 
         Args:
@@ -245,7 +245,7 @@ async def room(websocket: WebSocket) -> None:
             await manager.broadcast(event, room_code)
     except WebSocketDisconnect:
         await manager.broadcast(
-            Event(
+            EventResponse(
                 type=EventType.DISCONNECT,
                 data=DisconnectData(username=initial_data.username),
                 status_code=StatusCode.SUCCESS,

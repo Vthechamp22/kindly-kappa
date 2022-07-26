@@ -1,5 +1,5 @@
 from .codes import StatusCode
-from .events import ErrorData, Event, EventType
+from .events import ErrorData, EventResponse, EventType
 
 
 class RoomNotFoundError(Exception):
@@ -8,4 +8,6 @@ class RoomNotFoundError(Exception):
     def __init__(self, message: str) -> None:
         super().__init__(message)
 
-        self.data = Event(type=EventType.ERROR, data=ErrorData(message=message), status_code=StatusCode.ROOM_NOT_FOUND)
+        self.data = EventResponse(
+            type=EventType.ERROR, data=ErrorData(message=message), status_code=StatusCode.ROOM_NOT_FOUND
+        )

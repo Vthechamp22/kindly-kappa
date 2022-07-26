@@ -109,17 +109,20 @@ class ErrorData(EventData):
     message: str
 
 
-class Event(BaseModel):
-    """A WebSocket event.
+class EventRequest(BaseModel):
+    """A WebSocket request event.
+
+    This represent a request made from the client to the server.
 
     Fields:
         type: The type of the event.
         data: The data of the event.
+        status_code (optional): The status code of the event. Only required when
+            sending an event from the server to the client.
     """
 
     type: EventType
     data: EventData
-    status_code: StatusCode
 
     @validator("data", pre=True)
     def valid_data(cls, value: EventData | Mapping, values):
@@ -139,3 +142,18 @@ class Event(BaseModel):
             case EventType.ERROR:
                 value = ErrorData(**value)
         return value
+
+
+class EventResponse(EventRequest):
+    """A WebSocket event.
+
+    This represent a response sent from the server to the client.
+
+    Fields:
+        type: The type of the event.
+        data: The data of the event.
+        status_code (optional): The status code of the event. Only required when
+            sending an event from the server to the client.
+    """
+
+    status_code: StatusCode
