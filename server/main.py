@@ -5,7 +5,7 @@ This server handles user connection, disconnection and events.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TypedDict
+from typing import Literal, TypedDict
 from uuid import UUID, uuid4
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
@@ -104,6 +104,22 @@ class ConnectionManager:
         It stores the active connections and is able to broadcast data.
         """
         self._rooms: ActiveRooms = {}
+
+    def connect(self, client: Client, room_code: str, connection_type: Literal["create", "join"]) -> None:
+        """Connects the client to a room.
+
+        It creates or joins a room based on the connection_type.
+
+        Args:
+            client: The client to connect.
+            room_code: The code of the room.
+            connection_type: The type of the connection.
+        """
+        match connection_type:
+            case "create":
+                manager.create_room(client, room_code)
+            case "join":
+                manager.join_room(client, room_code)
 
     def disconnect(self, client: Client, room_code: str) -> None:
         """Removes the connection from the active connections.
@@ -214,20 +230,16 @@ async def room(websocket: WebSocket) -> None:
     initial_data: ConnectData = initial_event.data
     room_code = initial_data.room_code
 
-    match initial_data.connection_type:
-        case "create":
-            manager.create_room(client, room_code)
-        case "join":
-            try:
-                manager.join_room(client, room_code)
-            except RoomNotFoundError as e:
-                await client.send(
-                    Event(type=EventType.ERROR, data=ErrorData(message=e.message), status_code=StatusCode.SUCCESS)
-                )
-                await client.close()
-                return
+    try:
+        manager.connect(client, room_code, initial_data.connection_type)
+    except RoomNotFoundError as e:
+        await client.send(
+            Event(type=EventType.ERROR, data=ErrorData(message=e.message), status_code=StatusCode.ROOM_NOT_FOUND)
+        )
+        await client.close()
+        return
 
-    manager.broadcast(initial_event, room_code)
+    await manager.broadcast(initial_event, room_code)
 
     try:
         while True:
