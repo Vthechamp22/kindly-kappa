@@ -12,7 +12,7 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 
 from .codes import StatusCode
 from .errors import RoomNotFoundError
-from .events import ConnectData, DisconnectData, ErrorData, Event, EventType, ReplaceData
+from .events import ConnectData, DisconnectData, Event, EventType, ReplaceData
 
 app = FastAPI()
 
@@ -229,9 +229,7 @@ async def room(websocket: WebSocket) -> None:
     try:
         ConnectionManager.connect(client, room_code, initial_data.connection_type)
     except RoomNotFoundError as e:
-        await client.send(
-            Event(type=EventType.ERROR, data=ErrorData(message=e.message), status_code=StatusCode.ROOM_NOT_FOUND)
-        )
+        await client.send(e.data)
         await client.close()
         return
 
