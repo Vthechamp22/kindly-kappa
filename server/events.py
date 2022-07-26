@@ -112,7 +112,7 @@ class Event(BaseModel):
     status_code: StatusCode
 
     @validator("data", pre=True)
-    def valid_data(self, value, values):
+    def valid_data(cls, value, values):
         """Validates the data based on the event type."""
         match values["type"]:
             case EventType.CONNECT:
