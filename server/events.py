@@ -45,9 +45,16 @@ class ConnectData(EventData):
     """
 
     connection_type: Literal["create", "join"]
-    difficulty: int | None
+    difficulty: int = None
     room_code: str
     username: str
+
+    @validator("difficulty", pre=True, always=True)
+    def valid_difficulty(cls, value, values):
+        """Validates the difficulty based on the connection type."""
+        if values["connection_type"] == "create" and value is None:
+            raise ValueError("the difficulty must be specified when creating a room")
+        return value
 
 
 class DisconnectData(EventData):
