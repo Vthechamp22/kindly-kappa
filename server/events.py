@@ -3,7 +3,7 @@ from __future__ import annotations
 from enum import Enum
 from typing import Literal, TypedDict
 
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 
 Position = tuple[int, int]
 Replacement = TypedDict("Replacement", {"from": int, "to": int, "value": str})
@@ -107,3 +107,19 @@ class Event(BaseModel):
 
     type: EventType
     data: EventData
+
+    @validator("data", pre=True)
+    def valid_data(self, value, values):
+        """Validates the data based on the event type."""
+        match values["type"]:
+            case EventType.CONNECT:
+                value = ConnectData(**value)
+            case EventType.DISCONNECT:
+                value = DisconnectData(**value)
+            case EventType.SYNC:
+                value = SyncData(**value)
+            case EventType.REPLACE:
+                value = ReplaceData(**value)
+            case EventType.ERROR:
+                value = ErrorData(**value)
+        return value
