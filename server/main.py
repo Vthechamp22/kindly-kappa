@@ -105,29 +105,6 @@ class ConnectionManager:
         """
         self._rooms: ActiveRooms = {}
 
-    def create_room(self, client: Client, room_code: str) -> None:
-        """Create the room for the client.
-
-        Args:
-            client: The Client to which the connection belongs.
-            room_code: The room to which the client will be connected.
-        """
-        if not self.room_exists(room_code):
-            self._rooms[room_code] = {"owner_id": client.id, "clients": set(), "code": ""}
-        self._rooms[room_code]["clients"].add(client)
-
-    def join_room(self, client: Client, room_code: str) -> None:
-        """Adds a client to an active room.
-
-        Args:
-            client: The Client to which the connection belongs.
-            room_code: The room from which the client will be disconnected.
-        """
-        if self.room_exists(room_code):
-            self._rooms[room_code]["clients"].add(client)
-        else:
-            raise RoomNotFoundError(f"The room with code '{room_code}' was not found.")
-
     def disconnect(self, client: Client, room_code: str) -> None:
         """Removes the connection from the active connections.
 
@@ -142,23 +119,30 @@ class ConnectionManager:
         if len(self._rooms[room_code]["clients"]) == 0:
             del self._rooms[room_code]
 
-    async def broadcast(self, data: dict, room_code: str, sender: Client | None = None) -> None:
-        """Broadcasts data to all active connections.
+    def create_room(self, client: Client, room_code: str) -> None:
+        """Create the room for the client.
 
         Args:
-            data: The data to be sent to the clients, it should always contain a
-                "type" key to indicate the event type.
-            room_code: The room to which the data will be sent.
-            sender (optional): The client who sent the message.
+            client: The Client to which the connection belongs.
+            room_code: The room to which the client will be connected.
         """
-        self._update_code_cache(room_code, data["data"]["code"])
+        if not self._room_exists(room_code):
+            self._rooms[room_code] = {"owner_id": client.id, "clients": set(), "code": ""}
+        self._rooms[room_code]["clients"].add(client)
 
-        for connection in self._rooms[room_code]["clients"]:
-            if connection == sender:
-                continue
-            await connection.send(data)
+    def join_room(self, client: Client, room_code: str) -> None:
+        """Adds a client to an active room.
 
-    def room_exists(self, room_code: str) -> bool:
+        Args:
+            client: The Client to which the connection belongs.
+            room_code: The room from which the client will be disconnected.
+        """
+        if self._room_exists(room_code):
+            self._rooms[room_code]["clients"].add(client)
+        else:
+            raise RoomNotFoundError(f"The room with code '{room_code}' was not found.")
+
+    def _room_exists(self, room_code: str) -> bool:
         """Checks if a room exists.
 
         Args:
@@ -178,7 +162,7 @@ class ConnectionManager:
             room_code: The code associated with a particular room.
             code: A list of changes to make to the code cache.
         """
-        if self.room_exists(room_code):
+        if self._room_exists(room_code):
             current_code = self._rooms[room_code]["code"]
             for replacement_data in code:
                 from_index = replacement_data["from"]
@@ -187,6 +171,22 @@ class ConnectionManager:
 
                 updated_code = current_code[:from_index] + new_value + current_code[to_index:]
                 self._rooms[room_code]["code"] = updated_code
+
+    async def broadcast(self, data: dict, room_code: str, sender: Client | None = None) -> None:
+        """Broadcasts data to all active connections.
+
+        Args:
+            data: The data to be sent to the clients, it should always contain a
+                "type" key to indicate the event type.
+            room_code: The room to which the data will be sent.
+            sender (optional): The client who sent the message.
+        """
+        self._update_code_cache(room_code, data["data"]["code"])
+
+        for connection in self._rooms[room_code]["clients"]:
+            if connection == sender:
+                continue
+            await connection.send(data)
 
 
 manager = ConnectionManager()
