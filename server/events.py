@@ -45,7 +45,7 @@ class ConnectData(EventData):
     """
 
     connection_type: Literal["create", "join"]
-    difficulty: int = None
+    difficulty: int | None = None
     room_code: str
     username: str
 
