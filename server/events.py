@@ -5,6 +5,8 @@ from typing import Literal, TypedDict
 
 from pydantic import BaseModel, validator
 
+from .codes import StatusCode
+
 Position = tuple[int, int]
 Replacement = TypedDict("Replacement", {"from": int, "to": int, "value": str})
 
@@ -107,6 +109,7 @@ class Event(BaseModel):
 
     type: EventType
     data: EventData
+    status_code: StatusCode
 
     @validator("data", pre=True)
     def valid_data(self, value, values):
