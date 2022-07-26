@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Literal, TypedDict
+from typing import Literal, Mapping, TypedDict
 
 from pydantic import BaseModel, validator
 
@@ -115,8 +115,11 @@ class Event(BaseModel):
     status_code: StatusCode
 
     @validator("data", pre=True)
-    def valid_data(cls, value, values):
+    def valid_data(cls, value: EventData | Mapping, values):
         """Validates the data based on the event type."""
+        if isinstance(value, EventData):
+            value = value.dict()
+
         match values["type"]:
             case EventType.CONNECT:
                 value = ConnectData(**value)
