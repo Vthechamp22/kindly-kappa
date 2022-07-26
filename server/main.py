@@ -251,5 +251,6 @@ async def room(websocket: WebSocket) -> None:
                 status_code=StatusCode.SUCCESS,
             ),
             room_code,
+            sender=client,
         )
         manager.disconnect(client, room_code)
