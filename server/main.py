@@ -212,7 +212,6 @@ async def room(websocket: WebSocket) -> None:
         return
 
     initial_data: ConnectData = initial_event.data
-    print(initial_event, initial_data)
     room_code = initial_data.room_code
 
     match initial_data.connection_type:
