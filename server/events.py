@@ -11,8 +11,11 @@ Position = tuple[int, int]
 Replacement = TypedDict("Replacement", {"from": int, "to": int, "value": str})
 
 
-class EventType(Enum):
-    """The type of a WebSocket event."""
+class EventType(str, Enum):
+    """The type of a WebSocket event.
+
+    It is declared as a subclass of str to help serialization.
+    """
 
     CONNECT = "connect"
     DISCONNECT = "disconnect"
