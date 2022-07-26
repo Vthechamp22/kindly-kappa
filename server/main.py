@@ -5,14 +5,14 @@ This server handles user connection, disconnection and events.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Literal, TypedDict
+from typing import TypedDict
 from uuid import UUID, uuid4
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
-from pydantic import BaseModel
 
 from .codes import StatusCode
 from .errors import RoomNotFoundError
+from .events import ConnectData, DisconnectData, ErrorData, Event, EventType
 
 app = FastAPI()
 
@@ -192,22 +192,6 @@ class ConnectionManager:
 manager = ConnectionManager()
 
 
-class ConnectionEventData(BaseModel):
-    """A model representing the connection event data."""
-
-    message: str
-    difficulty: int
-    room_code: str
-    connection_type: Literal["create", "join"]
-
-
-class ConnectionData(BaseModel):
-    """A model representing the initial connection."""
-
-    type: str
-    data: ConnectionEventData
-
-
 @app.websocket("/room")
 async def room(websocket: WebSocket) -> None:
     """This is the endpoint for the WebSocket connection.
@@ -218,38 +202,44 @@ async def room(websocket: WebSocket) -> None:
     """
     client = Client(websocket)
     await client.accept()
+
     try:
-        initial_data = ConnectionData(**await client.receive())
+        initial_event = Event(**await client.receive())
     except WebSocketDisconnect:
         return
 
-    room_code = initial_data.data.room_code
-    if initial_data.type == "connect":
-        match initial_data.data.connection_type:
-            case "create":
-                manager.create_room(client, room_code)
-            case "join":
-                try:
-                    manager.join_room(client, room_code)
-                except RoomNotFoundError as e:
-                    # Send off to frontend to handle
-                    await client.send(
-                        {
-                            "type": "error",
-                            "data": {
-                                "message": e.message,
-                            },
-                            "status_code": StatusCode.ROOM_NOT_FOUND,
-                        }
-                    )
-                    await client.close()
-                    return
-            case _:
-                raise NotImplementedError
+    if initial_event.type != EventType.CONNECT:
+        return
+
+    initial_data: ConnectData = initial_event.data
+    print(initial_event, initial_data)
+    room_code = initial_data.room_code
+
+    match initial_data.connection_type:
+        case "create":
+            manager.create_room(client, room_code)
+        case "join":
+            try:
+                manager.join_room(client, room_code)
+            except RoomNotFoundError as e:
+                await client.send(
+                    Event(type=EventType.ERROR, data=ErrorData(message=e.message), status_code=StatusCode.SUCCESS)
+                )
+                await client.close()
+                return
+
+    manager.broadcast(initial_event, room_code)
 
     try:
         while True:
             data = await client.receive()
-            await manager.broadcast(data, room_code, sender=client)
+            await manager.broadcast(data, room_code)
     except WebSocketDisconnect:
+        await manager.broadcast(
+            Event(
+                type=EventType.DISCONNECT,
+                data=DisconnectData(username=initial_data.username),
+                status_code=StatusCode.SUCCESS,
+            )
+        )
         manager.disconnect(client, room_code)
