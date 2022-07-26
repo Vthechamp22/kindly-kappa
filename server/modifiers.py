@@ -3,8 +3,9 @@ import random
 import re
 from operator import methodcaller
 
-from deepdiff import DeepDiff
 from typing_extensions import Self
+
+from .events import ReplaceData
 
 FOUR_SPACES = "    "
 TWO_SPACES = "  "
@@ -36,33 +37,50 @@ class Modifiers:
         self.modified_count = 0
 
     @property
-    def output(self) -> list[tuple[int, str]] | list:
+    def output(self) -> list[ReplaceData]:
         """Returns the modified code, if any modifications have been done.
 
         Returns:
             Only the modified lines of code, including the line number.
         """
         method_names = [
-            func for func in dir(Modifiers) if callable(getattr(Modifiers, func)) and not func.startswith("__")
+            func
+            for func in dir(Modifiers)
+            if callable(getattr(Modifiers, func)) and not (func.startswith("__") or func.startswith("_"))
         ]
         methods = map(methodcaller, random.sample(method_names, self.difficulty))
 
         for method in list(methods):
+            print(method)
             method(self)
 
-        diff = DeepDiff(self.file_contents, self.modified_contents)
-        line_diffs = []
+        return self._get_replacements()
 
-        try:
-            for line_num, values in diff["values_changed"].items():
-                (num,) = list(filter(lambda x: x.isdigit(), re.split(r"(\d*)", line_num)))
-                new_value = values["new_value"]
-                line_diffs.append((int(num), new_value))
-        except KeyError:
-            # No values were changed
-            pass
+    def _get_replacements(self) -> ReplaceData:
+        line_count = [(i, len(line)) for i, line in enumerate(self.file_contents)]
+        modified_lines = [
+            i for i, (test, mod) in enumerate(zip(self.file_contents, self.modified_contents)) if test != mod
+        ]
 
-        return line_diffs
+        replacements = []
+        for line_num in modified_lines:
+            previous_lines = line_count[:line_num]
+
+            replace_from = sum([chars for _, chars in previous_lines])
+            replace_to = replace_from + line_count[line_num][1]
+
+            modified_length = len(self.modified_contents[line_num])
+            replace_to_modified = modified_length + replace_from
+            replaced_value = "".join(self.modified_contents)[replace_from:replace_to_modified]
+
+            replacement_data = {
+                "from": replace_from,
+                "to": replace_to,
+                "value": replaced_value,
+            }
+            replacements.append(replacement_data)
+
+        return ReplaceData(code=replacements)
 
     def remove_indentation(self) -> Self:
         """A code modifier that causes an IndentationError.
@@ -291,7 +309,9 @@ class Modifiers:
 
         for _ in range(min(self.difficulty, len(line_count_brackets))):
             chosen = random.choices(
-                population=line_count_brackets, weights=[count[1] for count in line_count_brackets], k=1
+                population=line_count_brackets,
+                weights=[count[1] for count in line_count_brackets],
+                k=1,
             )[0]
             line_count_brackets.remove(chosen)
 
