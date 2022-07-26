@@ -231,8 +231,8 @@ async def room(websocket: WebSocket) -> None:
 
     try:
         while True:
-            data = await client.receive()
-            await manager.broadcast(data, room_code)
+            event = Event(**await client.receive())
+            await manager.broadcast(event, room_code)
     except WebSocketDisconnect:
         await manager.broadcast(
             Event(
