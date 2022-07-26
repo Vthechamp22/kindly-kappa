@@ -8,9 +8,11 @@ from dataclasses import dataclass
 from typing import Literal, TypedDict
 from uuid import UUID, uuid4
 
-from errors import KappaCloseCodes, RoomNotFoundError
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
+
+from .codes import StatusCode
+from .errors import RoomNotFoundError
 
 app = FastAPI()
 
@@ -83,6 +85,7 @@ class RoomData:
 
     owner_id: UUID
     clients: set[Client]
+    code: str
 
 
 class ActiveRooms(TypedDict):
@@ -110,7 +113,7 @@ class ConnectionManager:
             room_code: The room to which the client will be connected.
         """
         if not self.room_exists(room_code):
-            self._rooms[room_code] = {"owner_id": client.id, "clients": set()}
+            self._rooms[room_code] = {"owner_id": client.id, "clients": set(), "code": ""}
         self._rooms[room_code]["clients"].add(client)
 
     def join_room(self, client: Client, room_code: str) -> None:
@@ -123,7 +126,7 @@ class ConnectionManager:
         if self.room_exists(room_code):
             self._rooms[room_code]["clients"].add(client)
         else:
-            raise RoomNotFoundError(f"The room with code '{room_code}' was not found.", KappaCloseCodes.RoomNotFound)
+            raise RoomNotFoundError(f"The room with code '{room_code}' was not found.")
 
     def disconnect(self, client: Client, room_code: str) -> None:
         """Removes the connection from the active connections.
@@ -148,6 +151,8 @@ class ConnectionManager:
             room_code: The room to which the data will be sent.
             sender (optional): The client who sent the message.
         """
+        self._update_code_cache(room_code, data["data"]["code"])
+
         for connection in self._rooms[room_code]["clients"]:
             if connection == sender:
                 continue
@@ -165,6 +170,23 @@ class ConnectionManager:
         if room_code in self._rooms:
             return True
         return False
+
+    def _update_code_cache(self, room_code: str, code: list[dict[str, int | str]]) -> None:
+        """Updates the code cache for a particular room.
+
+        Args:
+            room_code: The code associated with a particular room.
+            code: A list of changes to make to the code cache.
+        """
+        if self.room_exists(room_code):
+            current_code = self._rooms[room_code]["code"]
+            for replacement_data in code:
+                from_index = replacement_data["from"]
+                to_index = replacement_data["to"]
+                new_value = replacement_data["value"]
+
+                updated_code = current_code[:from_index] + new_value + current_code[to_index:]
+                self._rooms[room_code]["code"] = updated_code
 
 
 manager = ConnectionManager()
@@ -217,7 +239,7 @@ async def room(websocket: WebSocket) -> None:
                             "data": {
                                 "message": e.message,
                             },
-                            "status_code": KappaCloseCodes.RoomNotFound,
+                            "status_code": StatusCode.ROOM_NOT_FOUND,
                         }
                     )
                     await client.close()
