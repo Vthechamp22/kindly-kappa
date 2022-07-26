@@ -105,7 +105,8 @@ class ConnectionManager:
         """
         self._rooms: ActiveRooms = {}
 
-    def connect(self, client: Client, room_code: str, connection_type: Literal["create", "join"]) -> None:
+    @staticmethod
+    def connect(client: Client, room_code: str, connection_type: Literal["create", "join"]) -> None:
         """Connects the client to a room.
 
         It creates or joins a room based on the connection_type.
@@ -231,7 +232,7 @@ async def room(websocket: WebSocket) -> None:
     room_code = initial_data.room_code
 
     try:
-        manager.connect(client, room_code, initial_data.connection_type)
+        ConnectionManager.connect(client, room_code, initial_data.connection_type)
     except RoomNotFoundError as e:
         await client.send(
             Event(type=EventType.ERROR, data=ErrorData(message=e.message), status_code=StatusCode.ROOM_NOT_FOUND)
