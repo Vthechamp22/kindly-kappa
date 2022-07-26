@@ -27,7 +27,7 @@ class EventData(BaseModel):
     """
 
 
-class ConnectionData(EventData):
+class ConnectData(EventData):
     """The data of a connection event.
 
     Fields:
