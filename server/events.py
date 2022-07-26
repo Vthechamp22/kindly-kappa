@@ -113,10 +113,6 @@ class EventRequest(BaseModel):
     """A WebSocket request event.
 
     This represent a request made from the client to the server.
-
-    Fields:
-        type: The type of the event.
-        data: The data of the event.
     """
 
     type: EventType
@@ -145,10 +141,7 @@ class EventRequest(BaseModel):
 class EventResponse(EventRequest):
     """A WebSocket event.
 
-    This represent a response sent from the server to the client.
-
-    Fields:
-        status_code: The status code of the event.
+    This represents a response sent from the server to the client.
     """
 
     status_code: StatusCode
