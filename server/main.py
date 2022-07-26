@@ -36,23 +36,21 @@ class Client:
         """Accepts the WebSocket connection."""
         await self._websocket.accept()
 
-    async def send(self, data: dict) -> None:
+    async def send(self, data: Event) -> None:
         """Sends JSON data over the WebSocket connection.
 
         Args:
-            data: The data to be sent to the client, it should always contain a
-                "type" key to indicate the event type.
+            data: The data to be sent to the client.
         """
-        await self._websocket.send_json(data)
+        await self._websocket.send_json(data.dict())
 
-    async def receive(self) -> dict:
+    async def receive(self) -> Event:
         """Receives JSON data over the WebSocket connection.
 
         Returns:
-            The data received from the client, it should always contain a "type"
-            key to indicate the event type.
+            The data received from the client.
         """
-        return await self._websocket.receive_json()
+        return Event(**await self._websocket.receive_json())
 
     async def close(self) -> None:
         """Closes the WebSocket connection."""
@@ -64,7 +62,7 @@ class Client:
         If the object is not an instance of Client, NotImplemented is returned.
 
         Args:
-            other: The object to compare the Client to.
+            other: The object to compare the client to.
 
         Returns:
             True if the id of the client is equal to the other client's id,
@@ -128,7 +126,7 @@ class ConnectionManager:
         If, after the disconnection, the room is empty, delete it.
 
         Args:
-            client: The Client to which the connection belongs.
+            client: The client to disconnect.
             room_code: The room from which the client will be disconnected.
         """
         self._rooms[room_code]["clients"].remove(client)
@@ -140,7 +138,7 @@ class ConnectionManager:
         """Create the room for the client.
 
         Args:
-            client: The Client to which the connection belongs.
+            client: The client that will join to the new room.
             room_code: The room to which the client will be connected.
         """
         if not self._room_exists(room_code):
@@ -151,8 +149,8 @@ class ConnectionManager:
         """Adds a client to an active room.
 
         Args:
-            client: The Client to which the connection belongs.
-            room_code: The room from which the client will be disconnected.
+            client: The client that will join the given room.
+            room_code: The room to which the client will be connected.
         """
         if self._room_exists(room_code):
             self._rooms[room_code]["clients"].add(client)
@@ -189,12 +187,11 @@ class ConnectionManager:
                 updated_code = current_code[:from_index] + new_value + current_code[to_index:]
                 self._rooms[room_code]["code"] = updated_code
 
-    async def broadcast(self, data: dict, room_code: str, sender: Client | None = None) -> None:
+    async def broadcast(self, data: Event, room_code: str, sender: Client | None = None) -> None:
         """Broadcasts data to all active connections.
 
         Args:
-            data: The data to be sent to the clients, it should always contain a
-                "type" key to indicate the event type.
+            data: The data to be sent to the clients.
             room_code: The room to which the data will be sent.
             sender (optional): The client who sent the message.
         """
@@ -219,7 +216,7 @@ async def room(websocket: WebSocket) -> None:
     await client.accept()
 
     try:
-        initial_event = Event(**await client.receive())
+        initial_event = await client.receive()
     except WebSocketDisconnect:
         return
 
@@ -242,18 +239,19 @@ async def room(websocket: WebSocket) -> None:
 
     try:
         while True:
-            event = Event(**await client.receive())
+            event = await client.receive()
 
             if event.type == EventType.REPLACE:
                 manager.update_code_cache(room_code, event.data)
 
-            await manager.broadcast(event.dict(), room_code)
+            await manager.broadcast(event, room_code)
     except WebSocketDisconnect:
         await manager.broadcast(
             Event(
                 type=EventType.DISCONNECT,
                 data=DisconnectData(username=initial_data.username),
                 status_code=StatusCode.SUCCESS,
-            )
+            ),
+            room_code,
         )
         manager.disconnect(client, room_code)
