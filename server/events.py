@@ -117,8 +117,6 @@ class EventRequest(BaseModel):
     Fields:
         type: The type of the event.
         data: The data of the event.
-        status_code (optional): The status code of the event. Only required when
-            sending an event from the server to the client.
     """
 
     type: EventType
@@ -150,10 +148,7 @@ class EventResponse(EventRequest):
     This represent a response sent from the server to the client.
 
     Fields:
-        type: The type of the event.
-        data: The data of the event.
-        status_code (optional): The status code of the event. Only required when
-            sending an event from the server to the client.
+        status_code: The status code of the event.
     """
 
     status_code: StatusCode
