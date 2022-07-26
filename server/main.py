@@ -11,7 +11,8 @@ from uuid import UUID, uuid4
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
 
-from .errors import RoomNotFoundError, StatusCode
+from .codes import StatusCode
+from .errors import RoomNotFoundError
 
 app = FastAPI()
 
