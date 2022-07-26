@@ -12,7 +12,7 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 
 from .codes import StatusCode
 from .errors import RoomNotFoundError
-from .events import ConnectData, DisconnectData, ErrorData, Event, EventType
+from .events import ConnectData, DisconnectData, ErrorData, Event, EventType, ReplaceData
 
 app = FastAPI()
 
@@ -172,7 +172,7 @@ class ConnectionManager:
             return True
         return False
 
-    def _update_code_cache(self, room_code: str, code: list[dict[str, int | str]]) -> None:
+    def update_code_cache(self, room_code: str, replace_data: ReplaceData) -> None:
         """Updates the code cache for a particular room.
 
         Args:
@@ -181,10 +181,10 @@ class ConnectionManager:
         """
         if self._room_exists(room_code):
             current_code = self._rooms[room_code]["code"]
-            for replacement_data in code:
-                from_index = replacement_data["from"]
-                to_index = replacement_data["to"]
-                new_value = replacement_data["value"]
+            for replacement in replace_data.code:
+                from_index = replacement["from"]
+                to_index = replacement["to"]
+                new_value = replacement["value"]
 
                 updated_code = current_code[:from_index] + new_value + current_code[to_index:]
                 self._rooms[room_code]["code"] = updated_code
@@ -198,8 +198,6 @@ class ConnectionManager:
             room_code: The room to which the data will be sent.
             sender (optional): The client who sent the message.
         """
-        self._update_code_cache(room_code, data["data"]["code"])
-
         for connection in self._rooms[room_code]["clients"]:
             if connection == sender:
                 continue
@@ -245,7 +243,11 @@ async def room(websocket: WebSocket) -> None:
     try:
         while True:
             event = Event(**await client.receive())
-            await manager.broadcast(event, room_code)
+
+            if event.type == EventType.REPLACE:
+                manager.update_code_cache(room_code, event.data)
+
+            await manager.broadcast(event.dict(), room_code)
     except WebSocketDisconnect:
         await manager.broadcast(
             Event(
