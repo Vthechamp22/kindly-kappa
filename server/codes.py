@@ -13,3 +13,5 @@ class StatusCode(IntEnum):
     DATA_NOT_FOUND = 4003
 
     VALIDATION_ERROR = 4004
+
+    ROOM_ALREADY_EXISTS = 4005
