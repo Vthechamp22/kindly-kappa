@@ -1,3 +1,4 @@
+import difflib
 import keyword
 import random
 import re
@@ -51,36 +52,28 @@ class Modifiers:
         methods = map(methodcaller, random.sample(method_names, self.difficulty))
 
         for method in list(methods):
-            print(method)
             method(self)
 
-        return self._get_replacements()
+        line_diffs = []
 
-    def _get_replacements(self) -> ReplaceData:
-        line_count = [(i, len(line)) for i, line in enumerate(self.file_contents)]
-        modified_lines = [
-            i for i, (test, mod) in enumerate(zip(self.file_contents, self.modified_contents)) if test != mod
-        ]
+        initial_position = None
+        current_position = 0
+        value = ""
+        for input_line, output_line in zip(self.file_contents, self.modified_contents):
+            for i, diff in enumerate(difflib.ndiff(input_line, output_line)):
+                if diff[0] == " ":
+                    if initial_position is not None:
+                        line_diffs.append({"from": initial_position, "to": current_position, "value": value})
+                        initial_position = None
+                        value = ""
+                if diff[0] == "-":
+                    initial_position = current_position
+                if diff[0] == "+":
+                    initial_position = current_position
+                    value += diff[-1]
+                current_position += 1
 
-        replacements = []
-        for line_num in modified_lines:
-            previous_lines = line_count[:line_num]
-
-            replace_from = sum([chars for _, chars in previous_lines])
-            replace_to = replace_from + line_count[line_num][1]
-
-            modified_length = len(self.modified_contents[line_num])
-            replace_to_modified = modified_length + replace_from
-            replaced_value = "".join(self.modified_contents)[replace_from:replace_to_modified]
-
-            replacement_data = {
-                "from": replace_from,
-                "to": replace_to,
-                "value": replaced_value,
-            }
-            replacements.append(replacement_data)
-
-        return ReplaceData(code=replacements)
+        return ReplaceData(code=line_diffs)
 
     def remove_indentation(self) -> Self:
         """A code modifier that causes an IndentationError.
@@ -322,3 +315,14 @@ class Modifiers:
         self.modified_count += 1
 
         return self
+
+
+if __name__ == "__main__":
+    file_contents = [
+        "def greet(name: str) -> str:\n",
+        "    return f'Hello {name}!'\n",
+        "print(greet('Kappa'))\n",
+    ]
+
+    modifiers = Modifiers(file_contents)
+    print(modifiers.output)
