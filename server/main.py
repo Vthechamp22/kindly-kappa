@@ -54,7 +54,7 @@ class Client:
         """
         try:
             return EventRequest(**await self._websocket.receive_json())
-        except TypeError:
+        except (TypeError, JSONDecodeError):
             await self.send(
                 EventResponse(
                     type=EventType.ERROR,
@@ -63,7 +63,7 @@ class Client:
                 ),
             )
             return
-        except (KeyError, ValidationError, JSONDecodeError):
+        except (KeyError, ValidationError):
             await self.send(
                 EventResponse(
                     type=EventType.ERROR,
