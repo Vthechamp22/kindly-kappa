@@ -121,7 +121,7 @@ function connect(username, roomCode, difficulty, hackyObject) {
         break;
 
       default:
-        alert(`Invalid event type '${message.type}'`)
+        alert(`Invalid event type '${message.type}'`);
     }
   };
 
