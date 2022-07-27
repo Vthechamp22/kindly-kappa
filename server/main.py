@@ -10,9 +10,9 @@ from uuid import UUID, uuid4
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 
-from .codes import StatusCode
-from .errors import RoomNotFoundError
-from .events import ConnectData, DisconnectData, EventRequest, EventResponse, EventType, ReplaceData
+from server.codes import StatusCode
+from server.errors import RoomNotFoundError
+from server.events import ConnectData, DisconnectData, EventRequest, EventResponse, EventType, ReplaceData
 
 app = FastAPI()
 
