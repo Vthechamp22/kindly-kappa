@@ -119,6 +119,9 @@ function connect(username, roomCode, difficulty, hackyObject) {
           hackyObject.reportMissingRoom();
         }
         break;
+
+      default:
+        alert(`Invalid event type '${message.type}'`)
     }
   };
 
