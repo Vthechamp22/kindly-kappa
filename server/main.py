@@ -67,7 +67,7 @@ class Client:
             await self.send(
                 EventResponse(
                     type=EventType.ERROR,
-                    data=ErrorData(message="Data not found"),
+                    data=ErrorData(message="Data not found."),
                     status_code=StatusCode.DATA_NOT_FOUND,
                 ),
             )
