@@ -12,7 +12,7 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from pydantic.error_wrappers import ValidationError
 
 from .codes import StatusCode
-from .errors import RoomNotFoundError
+from .errors import RoomAlreadyExistsError, RoomNotFoundError
 from .events import ConnectData, DisconnectData, ErrorData, EventRequest, EventResponse, EventType, ReplaceData
 
 app = FastAPI()
@@ -45,11 +45,11 @@ class Client:
         """
         await self._websocket.send_json(data.dict())
 
-    async def receive(self) -> EventRequest:
+    async def receive(self) -> EventRequest | None:
         """Receives JSON data over the WebSocket connection.
 
         Returns:
-            The data received from the client.
+            The data received from the client or None if an error occured.
         """
         try:
             return EventRequest(**await self._websocket.receive_json())
@@ -126,7 +126,7 @@ class ConnectionManager:
         self._rooms: ActiveRooms = {}
 
     @staticmethod
-    def connect(client: Client, room_code: str, connection_type: Literal["create", "join"]) -> None:
+    async def connect(client: Client, room_code: str, connection_type: Literal["create", "join"]) -> None:
         """Connects the client to a room.
 
         It creates or joins a room based on the connection_type.
@@ -164,8 +164,9 @@ class ConnectionManager:
             room_code: The room to which the client will be connected.
         """
         if not self._room_exists(room_code):
-            self._rooms[room_code] = {"owner_id": client.id, "clients": set(), "code": ""}
-        self._rooms[room_code]["clients"].add(client)
+            self._rooms[room_code] = {"owner_id": client.id, "clients": {client}, "code": ""}
+        else:
+            raise RoomAlreadyExistsError(f"The room with code '{room_code}' already exists.")
 
     def join_room(self, client: Client, room_code: str) -> None:
         """Adds a client to an active room.
@@ -248,8 +249,8 @@ async def room(websocket: WebSocket) -> None:
     room_code = initial_data.room_code
 
     try:
-        ConnectionManager.connect(client, room_code, initial_data.connection_type)
-    except RoomNotFoundError as e:
+        await ConnectionManager.connect(client, room_code, initial_data.connection_type)
+    except (RoomNotFoundError, RoomAlreadyExistsError) as e:
         await client.send(e.data)
         await client.close()
         return
@@ -259,6 +260,8 @@ async def room(websocket: WebSocket) -> None:
     try:
         while True:
             event = await client.receive()
+            if event is None:
+                return
 
             if event.type == EventType.REPLACE:
                 manager.update_code_cache(room_code, event.data)
