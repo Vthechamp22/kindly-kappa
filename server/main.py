@@ -217,7 +217,7 @@ async def room(websocket: WebSocket) -> None:
 
     try:
         initial_event = await client.receive()
-    except WebSocketDisconnect:
+    except (WebSocketDisconnect, TypeError):
         return
 
     if initial_event.type != EventType.CONNECT:
