@@ -33,6 +33,9 @@ class Client:
         """
         self._websocket = websocket
         self.id = uuid4()
+        self.default_replacement = EventRequest(
+            type=EventType.REPLACE, data=ReplaceData(code=[{"from": 0, "to": 0, "value": ""}])
+        )
 
     async def accept(self) -> None:
         """Accepts the WebSocket connection."""
@@ -62,7 +65,7 @@ class Client:
                     status_code=StatusCode.INVALID_REQUEST_DATA,
                 ),
             )
-            return
+            return self.default_replacement
         except (KeyError, ValidationError):
             await self.send(
                 EventResponse(
@@ -71,8 +74,8 @@ class Client:
                     status_code=StatusCode.DATA_NOT_FOUND,
                 ),
             )
-            return
-        except WebSocketDisconnect:
+            return self.default_replacement
+        except (WebSocketDisconnect, RuntimeError):
             return
 
     async def close(self) -> None:
@@ -262,7 +265,7 @@ async def room(websocket: WebSocket) -> None:
         while True:
             event = await client.receive()
             if event is None:
-                return
+                return manager.disconnect(client, room_code)
 
             if event.type == EventType.REPLACE:
                 manager.update_code_cache(room_code, event.data)
