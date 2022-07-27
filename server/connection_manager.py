@@ -1,5 +1,4 @@
-from dataclasses import dataclass
-from typing import Literal, TypedDict
+from typing import Literal, TypeAlias, TypedDict
 from uuid import UUID
 
 from server.client import Client
@@ -7,8 +6,7 @@ from server.errors import RoomNotFoundError
 from server.events import EventResponse, ReplaceData
 
 
-@dataclass
-class RoomData:
+class RoomData(TypedDict):
     """A dataclass for data about a specific room."""
 
     owner_id: UUID
@@ -16,11 +14,7 @@ class RoomData:
     code: str
 
 
-class ActiveRooms(TypedDict):
-    """A data structure for active rooms."""
-
-    name: str
-    data: RoomData
+ActiveRooms: TypeAlias = dict[str, RoomData]
 
 
 class ConnectionManager:
