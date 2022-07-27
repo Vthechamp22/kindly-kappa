@@ -22,10 +22,6 @@ watch(theme, (newTheme) => {
     .setAttribute("data-theme", newTheme.toLowerCase());
 });
 
-watch(difficulty, (newDiff) => {
-  console.log(newDiff);
-});
-
 const hackyObject = {
   switchToRoom: function () {
     emit("join", { code: code.value, username: username.value });
