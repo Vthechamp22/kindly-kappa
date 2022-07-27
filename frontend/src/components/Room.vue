@@ -9,16 +9,16 @@ onMounted(() => {
   monaco.editor.defineTheme("OneDarkPro", onedark);
   monaco.editor.setTheme("OneDarkPro");
 
-  var e = monaco.editor.create(document.getElementById("content"), {
+  var editor = monaco.editor.create(document.getElementById("content"), {
     value: "",
     language: "python",
     insertSpaces: true,
     theme: "OneDarkPro",
   });
 
-  window.setEditor(e);
+  window.setEditor(editor);
 
-  e.getModel()?.onDidChangeContent(window.handleContentChange);
+  editor.getModel()?.onDidChangeContent(window.handleContentChange);
 });
 
 function leaveRoom() {
