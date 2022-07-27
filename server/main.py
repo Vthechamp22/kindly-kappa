@@ -158,34 +158,6 @@ class ConnectionManager:
         else:
             raise RoomNotFoundError(f"The room with code '{room_code}' was not found.")
 
-    def _room_exists(self, room_code: str) -> bool:
-        """Checks if a room exists.
-
-        Args:
-            room_code: The code associated with a particular room.
-
-        Returns:
-            True if the room exists. False otherwise.
-        """
-        if room_code in self._rooms:
-            return True
-        return False
-
-    def _modify_code(self, room_code: str) -> list[tuple[int, str]] | list:
-        """Generates bugs based on the current code cache.
-
-        Args:
-            room_code: The code associated with a particular room.
-
-        Returns:
-            A list, or a list of modified changes including the line number.
-        """
-        current_code = self._rooms[room_code]["code"]
-        current_difficulty = self._rooms[room_code]["difficulty"]
-        modifier = Modifiers(current_code, current_difficulty)
-
-        return modifier.output
-
     def update_code_cache(self, room_code: str, replace_data: ReplaceData) -> None:
         """Updates the code cache for a particular room.
 
@@ -215,6 +187,34 @@ class ConnectionManager:
             if connection == sender:
                 continue
             await connection.send(data)
+
+    def _room_exists(self, room_code: str) -> bool:
+        """Checks if a room exists.
+
+        Args:
+            room_code: The code associated with a particular room.
+
+        Returns:
+            True if the room exists. False otherwise.
+        """
+        if room_code in self._rooms:
+            return True
+        return False
+
+    def _modify_code(self, room_code: str) -> list[tuple[int, str]] | list:
+        """Generates bugs based on the current code cache.
+
+        Args:
+            room_code: The code associated with a particular room.
+
+        Returns:
+            A list, or a list of modified changes including the line number.
+        """
+        current_code = self._rooms[room_code]["code"]
+        current_difficulty = self._rooms[room_code]["difficulty"]
+        modifier = Modifiers(current_code, current_difficulty)
+
+        return modifier.output
 
 
 manager = ConnectionManager()
