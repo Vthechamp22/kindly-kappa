@@ -5,6 +5,7 @@ This server handles user connection, disconnection and events.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from json.decoder import JSONDecodeError
 from typing import Literal, TypedDict
 from uuid import UUID, uuid4
 
@@ -62,7 +63,7 @@ class Client:
                 ),
             )
             return
-        except (KeyError, ValidationError):
+        except (KeyError, ValidationError, JSONDecodeError):
             await self.send(
                 EventResponse(
                     type=EventType.ERROR,
