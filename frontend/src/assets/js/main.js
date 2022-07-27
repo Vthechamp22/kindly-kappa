@@ -20,7 +20,7 @@ function setEditor(e) {
 
   var list = document.getElementById("collabul");
   collaborators.forEach((c) => {
-    let elem = document.createElement("li");
+    const elem = document.createElement("li");
     elem.id = `collaborator-${c.data.username}`;
     elem.appendChild(document.createTextNode(c.data.username));
     list.appendChild(elem);
@@ -38,7 +38,7 @@ function positionToIndex(line, col) {
 }
 
 function connect(username, roomCode, difficulty, hackyObject) {
-  let websocket = new WebSocket("ws://localhost:8000/room");
+  const websocket = new WebSocket("ws://localhost:8000/room");
 
   websocket.onopen = function (ev) {
     connected = true;
@@ -134,7 +134,7 @@ function connect(username, roomCode, difficulty, hackyObject) {
 }
 
 window.handleContentChange = function (ev) {
-  let changes = [];
+  const changes = [];
 
   for (let i = 0; i < ev.changes.length; i++) {
     const element = ev.changes[i];
