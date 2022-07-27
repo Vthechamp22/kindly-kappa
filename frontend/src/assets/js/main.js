@@ -12,7 +12,6 @@ function generateRoomCode(length = 4) {
 let collaborators = [];
 let code = "";
 let connected = false;
-let websocket;
 
 let editor;
 function setEditor(e) {
@@ -39,9 +38,7 @@ function positionToIndex(line, col) {
 }
 
 function connect(username, roomCode, difficulty, hackyObject) {
-  if (!websocket) {
-    websocket = new WebSocket("ws://localhost:8000/room");
-  }
+  let websocket = new WebSocket("ws://localhost:8000/room");
 
   websocket.onopen = function (ev) {
     connected = true;

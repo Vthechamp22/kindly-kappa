@@ -71,12 +71,9 @@ function joinRoom() {
 function createRoom() {
   if (!username.value) {
     errors.value.username = "Please enter a username!";
+    return;
   } else {
     errors.value.username = "";
-  }
-
-  if (errors.value.username) {
-    return;
   }
 
   if (!connecting) {
