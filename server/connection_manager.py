@@ -54,7 +54,7 @@ class ConnectionManager:
         """
         self._rooms[room_code]["clients"].remove(client)
 
-        if len(self._rooms[room_code]["clients"]) == 0:
+        if not self._rooms[room_code]["clients"]:
             del self._rooms[room_code]
 
     def create_room(self, client: Client, room_code: str) -> None:
