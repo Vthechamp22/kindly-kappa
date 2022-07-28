@@ -64,7 +64,7 @@ function joinRoom() {
 
   if (!connecting) {
     connecting = true;
-    connect(username, code.value, undefined, hackyObject);
+    connect(username.value, code.value, undefined, hackyObject);
   }
 }
 
@@ -78,7 +78,7 @@ function createRoom() {
 
   if (!connecting) {
     connecting = true;
-    connect(username, undefined, difficulty, hackyObject);
+    connect(username.value, undefined, difficulty, hackyObject);
   }
 }
 </script>

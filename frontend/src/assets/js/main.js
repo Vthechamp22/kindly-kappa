@@ -9,9 +9,10 @@ function generateRoomCode(length = 4) {
   return roomCode;
 }
 
-let collaborators = [];
+let collaborators = [{username:"you"}];
 let code = "";
 let connected = false;
+let websocket;
 
 let editor;
 function setEditor(e) {
@@ -21,8 +22,8 @@ function setEditor(e) {
   var list = document.getElementById("collabul");
   collaborators.forEach((c) => {
     let elem = document.createElement("li");
-    elem.id = `collaborator-${c.data.username}`;
-    elem.appendChild(document.createTextNode(c.data.username));
+    elem.id = `collaborator-${c.username}`;
+    elem.appendChild(document.createTextNode(c.username));
     list.appendChild(elem);
   });
 }
@@ -38,7 +39,7 @@ function positionToIndex(line, col) {
 }
 
 function connect(username, roomCode, difficulty, hackyObject) {
-  let websocket = new WebSocket("ws://localhost:8000/room");
+  websocket = new WebSocket("ws://localhost:8000/room");
 
   websocket.onopen = function (ev) {
     connected = true;
@@ -72,7 +73,9 @@ function connect(username, roomCode, difficulty, hackyObject) {
   };
 
   websocket.onmessage = function (ev) {
+    console.log(ev.data)
     const message = JSON.parse(ev.data);
+    console.log(`Message (${typeof(message)}): ${message}`)
 
     switch (message.type) {
       case "connect":
@@ -98,7 +101,6 @@ function connect(username, roomCode, difficulty, hackyObject) {
       case "sync":
         collaborators = message.data.collaborators;
         code = message.data.code;
-        editor.setValue(code);
 
         hackyObject.switchToRoom();
         break;
