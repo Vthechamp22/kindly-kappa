@@ -9,7 +9,7 @@ function generateRoomCode(length = 4) {
   return roomCode;
 }
 
-let collaborators = [{username:"you"}];
+let collaborators = [];
 let code = "";
 let connected = false;
 let websocket;
@@ -73,9 +73,7 @@ function connect(username, roomCode, difficulty, hackyObject) {
   };
 
   websocket.onmessage = function (ev) {
-    console.log(ev.data)
     const message = JSON.parse(ev.data);
-    console.log(`Message (${typeof(message)}): ${message}`)
 
     switch (message.type) {
       case "connect":
