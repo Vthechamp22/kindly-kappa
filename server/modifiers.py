@@ -310,7 +310,6 @@ class Modifiers:
         replacements = []
 
         current_position = 0
-        value = ""
         deletes = 0
         for input_line, output_line in zip(self.file_contents, self.modified_contents):
             for diff in difflib.ndiff(input_line, output_line):
@@ -322,9 +321,8 @@ class Modifiers:
                     deletes += 1
 
                 if diff[0] == "+":
-                    value = diff[-1]
                     replacements.append(
-                        {"from": current_position - deletes, "to": current_position - deletes, "value": value}
+                        {"from": current_position - deletes, "to": current_position - deletes, "value": diff[-1]}
                     )
 
                 current_position += 1
