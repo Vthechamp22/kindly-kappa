@@ -77,24 +77,26 @@ function connect(username, roomCode, difficulty, hackyObject) {
     const list = document.getElementById("collabul");
 
     switch (message.type) {
-      case "connect": {
-        collaborators.push(message.data);
-        const elem = document.createElement("li");
-        elem.id = `collaborator-${message.data.username}`;
-        elem.appendChild(document.createTextNode(message.data.username));
-        list.appendChild(elem);
-      }
+      case "connect":
+        {
+          collaborators.push(message.data);
+          const elem = document.createElement("li");
+          elem.id = `collaborator-${message.data.username}`;
+          elem.appendChild(document.createTextNode(message.data.username));
+          list.appendChild(elem);
+        }
         break;
 
-      case "disconnect": {
-        collaborators = collaborators.filter((collaborator) => {
-          return collaborator.id !== message.data.id;
-        });
-        const elem = document.getElementById(
-          `collaborator-${message.data.username}`
-        );
-        list.removeChild(elem);
-      }
+      case "disconnect":
+        {
+          collaborators = collaborators.filter((collaborator) => {
+            return collaborator.id !== message.data.id;
+          });
+          const elem = document.getElementById(
+            `collaborator-${message.data.username}`
+          );
+          list.removeChild(elem);
+        }
         break;
 
       case "sync":
