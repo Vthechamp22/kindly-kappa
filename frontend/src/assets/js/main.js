@@ -12,13 +12,14 @@ function generateRoomCode(length = 4) {
 let collaborators = [];
 let code = "";
 let connected = false;
+let websocket;
 
 let editor;
 function setEditor(e) {
   editor = e.getModel();
   editor.setValue(code);
 
-  var list = document.getElementById("collabul");
+  const list = document.getElementById("collabul");
   collaborators.forEach((c) => {
     const elem = document.createElement("li");
     elem.id = `collaborator-${c.data.username}`;
