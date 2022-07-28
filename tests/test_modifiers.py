@@ -124,7 +124,6 @@ class TestModifiers:
     def test_modified_output(self, create_instance: Modifiers, difficulty: int):
         create_instance.difficulty = difficulty
         value = create_instance.output
-        print(value)
 
         assert create_instance.difficulty == difficulty
         assert isinstance(value, ReplaceData)
