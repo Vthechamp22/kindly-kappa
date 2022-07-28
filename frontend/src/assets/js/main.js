@@ -41,7 +41,7 @@ function positionToIndex(line, col) {
 function connect(username, roomCode, difficulty, hackyObject) {
   const websocket = new WebSocket("ws://localhost:8000/room");
 
-  websocket.onopen = function (ev) {
+  websocket.onopen = function (_) {
     connected = true;
 
     if (roomCode) {
@@ -126,12 +126,12 @@ function connect(username, roomCode, difficulty, hackyObject) {
     }
   };
 
-  websocket.onclose = function (ev) {
+  websocket.onclose = function (_) {
     connected = false;
     hackyObject.reportWSClose();
   };
 
-  websocket.onerror = function (ev) {
+  websocket.onerror = function (_) {
     connected = false;
     hackyObject.reportConnectionError();
   };
