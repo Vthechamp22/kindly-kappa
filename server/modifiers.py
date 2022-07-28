@@ -330,28 +330,3 @@ class Modifiers:
                 current_position += 1
 
         return ReplaceData(code=replacements)
-
-
-if __name__ == "__main__":
-    file_contents = [
-        "def greet(name: str) -> str:\n",
-        "    return f'Hello {name}!'\n",
-        "print(greet('Kappa'))\n",
-    ]
-
-    modifiers = Modifiers(file_contents)
-
-    # Use this for testing
-    # Run the file as `python -m server.modifiers`
-    # Remove the entire main guard before merging into main
-
-    original = "".join(file_contents.copy())
-    for replacement in modifiers.output.code:
-        print(replacement)
-        from_idx = replacement["from"]
-        to_idx = replacement["to"]
-        value = replacement["value"]
-
-        original = original[:from_idx] + value + original[to_idx:]
-
-    print(original)
