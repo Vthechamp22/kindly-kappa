@@ -74,26 +74,27 @@ function connect(username, roomCode, difficulty, hackyObject) {
 
   websocket.onmessage = function (ev) {
     const message = JSON.parse(ev.data);
+    const list = document.getElementById("collabul");
 
     switch (message.type) {
-      case "connect":
+      case "connect": {
         collaborators.push(message.data);
-        var list = document.getElementById("collabul");
-        var elem = document.createElement("li");
+        const elem = document.createElement("li");
         elem.id = `collaborator-${message.data.username}`;
         elem.appendChild(document.createTextNode(message.data.username));
         list.appendChild(elem);
+      }
         break;
 
-      case "disconnect":
+      case "disconnect": {
         collaborators = collaborators.filter((collaborator) => {
           return collaborator.id !== message.data.id;
         });
-        var list = document.getElementById("collabul");
-        var elem = document.getElementById(
+        const elem = document.getElementById(
           `collaborator-${message.data.username}`
         );
         list.removeChild(elem);
+      }
         break;
 
       case "sync":
