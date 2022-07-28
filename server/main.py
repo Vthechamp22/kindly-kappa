@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from json.decoder import JSONDecodeError
-from typing import Literal, TypedDict
+from typing import TypedDict, cast
 from uuid import UUID, uuid4
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
@@ -283,10 +283,16 @@ async def room(websocket: WebSocket) -> None:
             if event is None:
                 return manager.disconnect(client, room_code)
 
+            buggy = False
+            sender = client
+            event_data = cast(ReplaceData, event.data)
             if event.type == EventType.REPLACE:
-                manager.update_code_cache(room_code, event.data)
+                manager.update_code_cache(room_code, event_data)
+            elif event.type == EventType.SEND_BUGS:
+                buggy = True
+                sender = None
 
-            await manager.broadcast(event, room_code)
+            await manager.broadcast(event_data, room_code, sender=sender, buggy=buggy)
     except WebSocketDisconnect:
         await client.send(
             EventResponse(
