@@ -39,7 +39,7 @@ function positionToIndex(line, col) {
 }
 
 function connect(username, roomCode, difficulty, hackyObject) {
-  const websocket = new WebSocket("ws://localhost:8000/room");
+  websocket = new WebSocket("ws://localhost:8000/room");
 
   websocket.onopen = function (_) {
     connected = true;
