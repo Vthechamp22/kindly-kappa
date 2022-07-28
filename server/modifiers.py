@@ -56,40 +56,6 @@ class Modifiers:
 
         return self._get_replacements()
 
-    def _get_replacements(self) -> ReplaceData:
-        """A modifier that modifies the modified contents.
-
-        This method is to convert all of the code modifications
-        into a format that can be sent as an EventResponse to
-        the client.
-
-        Returns:
-            The converted replacement data.
-        """
-        replacements = []
-
-        current_position = 0
-        value = ""
-        deletes = 0
-        for input_line, output_line in zip(self.file_contents, self.modified_contents):
-            for diff in difflib.ndiff(input_line, output_line):
-                if diff[0] == "-":
-                    # Removed values should always have the value set to ""
-                    replacements.append(
-                        {"from": current_position - deletes, "to": (current_position + 1) - deletes, "value": ""}
-                    )
-                    deletes += 1
-
-                if diff[0] == "+":
-                    value = diff[-1]
-                    replacements.append(
-                        {"from": current_position - deletes, "to": current_position - deletes, "value": value}
-                    )
-
-                current_position += 1
-
-        return ReplaceData(code=replacements)
-
     def remove_indentation(self) -> Self:
         """A code modifier that causes an IndentationError.
 
@@ -330,6 +296,40 @@ class Modifiers:
         self.modified_count += 1
 
         return self
+
+    def _get_replacements(self) -> ReplaceData:
+        """A modifier that modifies the modified contents.
+
+        This method is to convert all of the code modifications
+        into a format that can be sent as an EventResponse to
+        the client.
+
+        Returns:
+            The converted replacement data.
+        """
+        replacements = []
+
+        current_position = 0
+        value = ""
+        deletes = 0
+        for input_line, output_line in zip(self.file_contents, self.modified_contents):
+            for diff in difflib.ndiff(input_line, output_line):
+                if diff[0] == "-":
+                    # Removed values should always have the value set to ""
+                    replacements.append(
+                        {"from": current_position - deletes, "to": (current_position + 1) - deletes, "value": ""}
+                    )
+                    deletes += 1
+
+                if diff[0] == "+":
+                    value = diff[-1]
+                    replacements.append(
+                        {"from": current_position - deletes, "to": current_position - deletes, "value": value}
+                    )
+
+                current_position += 1
+
+        return ReplaceData(code=replacements)
 
 
 if __name__ == "__main__":
