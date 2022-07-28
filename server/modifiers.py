@@ -38,7 +38,7 @@ class Modifiers:
         self.modified_count = 0
 
     @property
-    def output(self) -> list[ReplaceData]:
+    def output(self) -> ReplaceData:
         """Returns the modified code, if any modifications have been done.
 
         Returns:
@@ -54,26 +54,41 @@ class Modifiers:
         for method in list(methods):
             method(self)
 
-        line_diffs = []
+        return self._get_replacements()
 
-        initial_position = None
+    def _get_replacements(self) -> ReplaceData:
+        """A modifier that modifies the modified contents.
+
+        This method is to convert all of the code modifications
+        into a format that can be sent as an EventResponse to
+        the client.
+
+        Returns:
+            The converted replacement data.
+        """
+        replacements = []
+
         current_position = 0
         value = ""
+        deletes = 0
         for input_line, output_line in zip(self.file_contents, self.modified_contents):
-            for i, diff in enumerate(difflib.ndiff(input_line, output_line)):
-                if diff[0] == " ":
-                    if initial_position is not None:
-                        line_diffs.append({"from": initial_position, "to": current_position, "value": value})
-                        initial_position = None
-                        value = ""
+            for diff in difflib.ndiff(input_line, output_line):
                 if diff[0] == "-":
-                    initial_position = current_position
+                    # Removed values should always have the value set to ""
+                    replacements.append(
+                        {"from": current_position - deletes, "to": (current_position + 1) - deletes, "value": ""}
+                    )
+                    deletes += 1
+
                 if diff[0] == "+":
-                    initial_position = current_position
-                    value += diff[-1]
+                    value = diff[-1]
+                    replacements.append(
+                        {"from": current_position - deletes, "to": current_position - deletes, "value": value}
+                    )
+
                 current_position += 1
 
-        return ReplaceData(code=line_diffs)
+        return ReplaceData(code=replacements)
 
     def remove_indentation(self) -> Self:
         """A code modifier that causes an IndentationError.
@@ -325,4 +340,18 @@ if __name__ == "__main__":
     ]
 
     modifiers = Modifiers(file_contents)
-    print(modifiers.output)
+
+    # Use this for testing
+    # Run the file as `python -m server.modifiers`
+    # Remove the entire main guard before merging into main
+
+    original = "".join(file_contents.copy())
+    for replacement in modifiers.output.code:
+        print(replacement)
+        from_idx = replacement["from"]
+        to_idx = replacement["to"]
+        value = replacement["value"]
+
+        original = original[:from_idx] + value + original[to_idx:]
+
+    print(original)
