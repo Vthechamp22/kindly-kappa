@@ -14,7 +14,16 @@ from pydantic.error_wrappers import ValidationError
 
 from .codes import StatusCode
 from .errors import RoomAlreadyExistsError, RoomNotFoundError
-from .events import ConnectData, DisconnectData, ErrorData, EventRequest, EventResponse, EventType, ReplaceData
+from .events import (
+    ConnectData,
+    DisconnectData,
+    ErrorData,
+    EventRequest,
+    EventResponse,
+    EventType,
+    ReplaceData,
+    SyncData,
+)
 from .modifiers import Modifiers
 
 app = FastAPI()
@@ -54,7 +63,8 @@ class Client:
         """Receives JSON data over the WebSocket connection.
 
         Returns:
-            The data received from the client or None if an error occured.
+            The data received from the client or if an error occured,
+            then either a default EventRequest object or None.
         """
         try:
             return EventRequest(**await self._websocket.receive_json())
@@ -131,21 +141,20 @@ class ConnectionManager:
         self._rooms: ActiveRooms = {}
 
     @staticmethod
-    def connect(client: Client, room_code: str, connection_type: Literal["create", "join"]) -> None:
+    def connect(client: Client, data: ConnectData) -> None:
         """Connects the client to a room.
 
         It creates or joins a room based on the connection_type.
 
         Args:
             client: The client to connect.
-            room_code: The code of the room.
-            connection_type: The type of the connection.
+            data: The data of a connection event.
         """
-        match connection_type:
+        match data.connection_type:
             case "create":
-                manager.create_room(client, room_code)
+                manager.create_room(client, data.room_code, data.difficulty)
             case "join":
-                manager.join_room(client, room_code)
+                manager.join_room(client, data.room_code)
 
     def disconnect(self, client: Client, room_code: str) -> None:
         """Removes the connection from the active connections.
@@ -161,15 +170,16 @@ class ConnectionManager:
         if len(self._rooms[room_code]["clients"]) == 0:
             del self._rooms[room_code]
 
-    def create_room(self, client: Client, room_code: str) -> None:
+    def create_room(self, client: Client, room_code: str, difficulty: int) -> None:
         """Create the room for the client.
 
         Args:
             client: The client that will join to the new room.
             room_code: The room to which the client will be connected.
+            difficulty: The difficuty of the room.
         """
         if not self._room_exists(room_code):
-            self._rooms[room_code] = {"owner_id": client.id, "clients": {client}, "code": ""}
+            self._rooms[room_code] = {"owner_id": client.id, "clients": {client}, "code": "", "difficulty": difficulty}
         else:
             raise RoomAlreadyExistsError(f"The room with code '{room_code}' already exists.")
 
@@ -202,14 +212,21 @@ class ConnectionManager:
                 updated_code = current_code[:from_index] + new_value + current_code[to_index:]
                 self._rooms[room_code]["code"] = updated_code
 
-    async def broadcast(self, data: EventResponse, room_code: str, sender: Client | None = None) -> None:
+    async def broadcast(
+        self, data: SyncData | ReplaceData, room_code: str, sender: Client | None = None, buggy: bool = False
+    ) -> None:
         """Broadcasts data to all active connections.
 
         Args:
             data: The data to be sent to the clients.
             room_code: The room to which the data will be sent.
             sender (optional): The client who sent the message.
+            buggy (optional): To send back modified code.
         """
+        if buggy:
+            data = self._modify_code(room_code)
+            self.update_code_cache(room_code, data)
+
         for connection in self._rooms[room_code]["clients"]:
             if connection == sender:
                 continue
@@ -228,7 +245,7 @@ class ConnectionManager:
             return True
         return False
 
-    def _modify_code(self, room_code: str) -> list[tuple[int, str]] | list:
+    def _modify_code(self, room_code: str) -> ReplaceData:
         """Generates bugs based on the current code cache.
 
         Args:
@@ -269,7 +286,7 @@ async def room(websocket: WebSocket) -> None:
     room_code = initial_data.room_code
 
     try:
-        ConnectionManager.connect(client, room_code, initial_data.connection_type)
+        ConnectionManager.connect(client, initial_data)
     except (RoomNotFoundError, RoomAlreadyExistsError) as e:
         await client.send(e.data)
         await client.close()
