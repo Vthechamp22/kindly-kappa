@@ -31,8 +31,7 @@ function leaveRoom() {
   <div id="room">
     <div id="sidebar">
       <h2 class="text-6xl text-white m-3">Collaborators</h2>
-      <ul id="collabul">
-      </ul>
+      <ul id="collabul"></ul>
       <button class="btn btn-primary mt-auto" @click="leaveRoom()">
         <fa-icon icon="fa-solid fa-arrow-right-from-bracket" />
         Leave Room
