@@ -2,7 +2,7 @@ from typing import Literal, TypeAlias, TypedDict
 from uuid import UUID
 
 from server.client import Client
-from server.errors import RoomNotFoundError
+from server.errors import RoomAlreadyExistsError, RoomNotFoundError
 from server.events import EventResponse, ReplaceData
 
 
@@ -65,8 +65,9 @@ class ConnectionManager:
             room_code: The room to which the client will be connected.
         """
         if not self._room_exists(room_code):
-            self._rooms[room_code] = {"owner_id": client.id, "clients": set(), "code": ""}
-        self._rooms[room_code]["clients"].add(client)
+            self._rooms[room_code] = {"owner_id": client.id, "clients": {client}, "code": ""}
+        else:
+            raise RoomAlreadyExistsError(f"The room with code '{room_code}' already exists.")
 
     def join_room(self, client: Client, room_code: str) -> None:
         """Adds a client to an active room.
@@ -79,19 +80,6 @@ class ConnectionManager:
             self._rooms[room_code]["clients"].add(client)
         else:
             raise RoomNotFoundError(f"The room with code '{room_code}' was not found.")
-
-    def _room_exists(self, room_code: str) -> bool:
-        """Checks if a room exists.
-
-        Args:
-            room_code: The code associated with a particular room.
-
-        Returns:
-            True if the room exists. False otherwise.
-        """
-        if room_code in self._rooms:
-            return True
-        return False
 
     def update_code_cache(self, room_code: str, replace_data: ReplaceData) -> None:
         """Updates the code cache for a particular room.
@@ -122,3 +110,16 @@ class ConnectionManager:
             if connection == sender:
                 continue
             await connection.send(data)
+
+    def _room_exists(self, room_code: str) -> bool:
+        """Checks if a room exists.
+
+        Args:
+            room_code: The code associated with a particular room.
+
+        Returns:
+            True if the room exists. False otherwise.
+        """
+        if room_code in self._rooms:
+            return True
+        return False

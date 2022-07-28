@@ -1,8 +1,11 @@
+from json import JSONDecodeError
 from uuid import uuid4
 
-from fastapi import WebSocket
+from fastapi import WebSocket, WebSocketDisconnect
+from pydantic import ValidationError
 
-from server.events import EventRequest, EventResponse
+from server.codes import StatusCode
+from server.events import ErrorData, EventRequest, EventResponse, EventType, ReplaceData
 
 
 class Client:
@@ -19,6 +22,9 @@ class Client:
         """
         self._websocket = websocket
         self.id = uuid4()
+        self.default_replacement = EventRequest(
+            type=EventType.REPLACE, data=ReplaceData(code=[{"from": 0, "to": 0, "value": ""}])
+        )
 
     async def accept(self) -> None:
         """Accepts the WebSocket connection."""
@@ -32,13 +38,34 @@ class Client:
         """
         await self._websocket.send_json(data.dict())
 
-    async def receive(self) -> EventRequest:
+    async def receive(self) -> EventRequest | None:
         """Receives JSON data over the WebSocket connection.
 
         Returns:
-            The data received from the client.
+            The data received from the client or None if an error occured.
         """
-        return EventRequest(**await self._websocket.receive_json())
+        try:
+            return EventRequest(**await self._websocket.receive_json())
+        except (TypeError, JSONDecodeError):
+            await self.send(
+                EventResponse(
+                    type=EventType.ERROR,
+                    data=ErrorData(message="Invalid request data."),
+                    status_code=StatusCode.INVALID_REQUEST_DATA,
+                ),
+            )
+            return self.default_replacement
+        except (KeyError, ValidationError):
+            await self.send(
+                EventResponse(
+                    type=EventType.ERROR,
+                    data=ErrorData(message="Data not found."),
+                    status_code=StatusCode.DATA_NOT_FOUND,
+                ),
+            )
+            return self.default_replacement
+        except (WebSocketDisconnect, RuntimeError):
+            return
 
     async def close(self) -> None:
         """Closes the WebSocket connection."""
