@@ -26,6 +26,8 @@ class Client:
             type=EventType.REPLACE, data=ReplaceData(code=[{"from": 0, "to": 0, "value": ""}])
         )
 
+        self.username: str
+
     async def accept(self) -> None:
         """Accepts the WebSocket connection."""
         await self._websocket.accept()
