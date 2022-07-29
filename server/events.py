@@ -191,7 +191,7 @@ class EventHandler:
             case EventType.REPLACE:
                 replace_data = cast(ReplaceData, event_data)
                 data = EventResponse(type=EventType.REPLACE, data=replace_data, status_code=StatusCode.SUCCESS)
-                self.connection.update_code_cache(room_code, replace_data)
+                self.manager.update_code_cache(room_code, replace_data)
             case EventType.CONNECT:
                 connect_data = cast(ConnectData, event_data)
                 self.client.username = connect_data.username
@@ -200,10 +200,10 @@ class EventHandler:
                     case "create":
                         if connect_data.difficulty is None:
                             return buggy, self.client, data
-                        self.connection.create_room(self.client, connect_data.room_code, connect_data.difficulty)
+                        self.manager.create_room(self.client, connect_data.room_code, connect_data.difficulty)
                     case "join":
-                        self.connection.join_room(self.client, room_code)
-                        current_room = self.connection._rooms[room_code]
+                        self.manager.join_room(self.client, room_code)
+                        current_room = self.manager._rooms[room_code]
                         collaborators = [{"id": c.id.hex, "username": c.username} for c in current_room["clients"]]
                         await self(
                             EventRequest(
@@ -237,7 +237,7 @@ class EventHandler:
                         "username": self.client.username,
                     },
                 )
-                await self.connection.broadcast(
+                await self.manager.broadcast(
                     EventResponse(type=EventType.CONNECT, data=connect_data, status_code=StatusCode.SUCCESS),
                     room_code,
                     sender=self.client,
