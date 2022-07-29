@@ -134,6 +134,8 @@ function connect(username, roomCode, difficulty, hackyObject) {
 }
 
 window.handleContentChange = function (ev) {
+  if (editor.getValue() == code) return;
+  code = editor.getValue();
   let changes = [];
 
   for (let i = 0; i < ev.changes.length; i++) {
