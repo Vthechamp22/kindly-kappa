@@ -15,7 +15,8 @@ let connected = false;
 let websocket; // skipqc: JS-0119
 
 let editor; // skipqc: JS-0119
-function setEditor(e) { // skipqc: JS-0128
+function setEditor(e) {
+  // skipqc: JS-0128
   editor = e.getModel();
   editor.setValue(code);
 
@@ -38,7 +39,8 @@ function positionToIndex(line, col) {
   return index + col - 1;
 }
 
-function connect(username, roomCode, difficulty, hackyObject) { // skipqc: JS-0128
+function connect(username, roomCode, difficulty, hackyObject) {
+  // skipqc: JS-0128
   websocket = new WebSocket("ws://localhost:8000/room");
 
   websocket.onopen = function (_) {
