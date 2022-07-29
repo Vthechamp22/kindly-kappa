@@ -165,7 +165,7 @@ class EventHandler:
             connection: The connection to the room.
         """
         self.client = client
-        self.connection = connection
+        self.manager = connection
 
     def __call__(self, request: EventRequest, room_code: str) -> tuple[bool, Client | None, type[EventData]]:
         """Handle a request received.
@@ -187,7 +187,7 @@ class EventHandler:
 
         match request.type:
             case EventType.REPLACE:
-                self.connection.update_code_cache(room_code, data)
+                self.manager.update_code_cache(room_code, data)
             case EventType.SEND_BUGS:
                 # Only if receiving the event. If not, we can remove
                 buggy = True
