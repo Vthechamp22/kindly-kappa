@@ -225,8 +225,6 @@ class EventHandler:
                 # Send the sync event to the client to update code/collaborators
                 # Send an event to everyone else to update collaborators
                 sync_data = cast(SyncData, event_data)
-                assert self.client
-
                 await self.client.send(
                     EventResponse(type=EventType.SYNC, data=sync_data, status_code=StatusCode.SUCCESS)
                 )
