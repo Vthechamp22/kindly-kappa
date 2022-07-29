@@ -71,6 +71,9 @@ function joinRoom() {
   }
 }
 
+/**
+ * Function to create a room.
+*/
 function createRoom() {
   if (!username.value) {
     errors.value.username = "Please enter a username!";
