@@ -168,7 +168,7 @@ class EventHandler:
         self.client = client
         self.connection = connection
 
-    def __call__(self, request: EventRequest, room_code: str) -> tuple[bool, Client | None, type[EventData]]:
+    async def __call__(self, request: EventRequest, room_code: str) -> tuple[bool, Client | None, EventResponse]:
         """Handle a request received.
 
         Args:
@@ -196,6 +196,20 @@ class EventHandler:
             case EventType.CONNECT:
                 data = cast(ConnectData, request.data)
                 self.client.username = data.username
+                match data.connection_type:
+                    case "create":
+                        self.connection.create_room(self.client, room_code, data.difficulty)
+                    case "join":
+                        self.connection.join_room(self.client, room_code)
+                        current_room = self.connection._rooms[room_code]
+                        collaborators = [{"id": c.id.hex, "username": c.username} for c in current_room["clients"]]
+                        await self(
+                            EventRequest(
+                                type=EventType.SYNC,
+                                data=SyncData(code=current_room["code"], collaborators=collaborators),
+                            ),
+                            room_code,
+                        )
             case EventType.DISCONNECT:
                 data = cast(DisconnectData, request.data)
                 response = EventResponse(
@@ -205,6 +219,25 @@ class EventHandler:
                 )
                 WebSocketDisconnect.response = response
                 raise WebSocketDisconnect
+            case EventType.SYNC:
+                # Send the sync event to the client to update code/collaborators
+                # Send an event to everyone else to update collaborators
+                data = cast(SyncData, request.data)
+                await self.client.send(EventResponse(type=EventType.SYNC, data=data, status_code=StatusCode.SUCCESS))
+                connect_data = cast(
+                    ConnectData,
+                    {
+                        "connection_type": "join",
+                        "difficulty": None,
+                        "room_code": room_code,
+                        "username": self.client.username,
+                    },
+                )
+                await self.connection.broadcast(
+                    EventResponse(type=EventType.CONNECT, data=connect_data, status_code=StatusCode.SUCCESS),
+                    room_code,
+                    sender=self.client,
+                )
             case _:
                 # Anything that doesn't match the request.type
                 response = EventResponse(
