@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import * as monaco from "monaco-editor";
+import * as monaco from "monaco-editor"; // skipqc: JS-C1003
 import { onMounted } from "vue";
 import { onedark } from "../assets/js/theme";
 

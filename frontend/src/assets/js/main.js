@@ -12,10 +12,10 @@ function generateRoomCode(length = 4) {
 let collaborators = [];
 let code = "";
 let connected = false;
-let websocket;
+let websocket; // skipqc: JS-0119
 
-let editor;
-function setEditor(e) {
+let editor; // skipqc: JS-0119
+function setEditor(e) { // skipqc: JS-0128
   editor = e.getModel();
   editor.setValue(code);
 
@@ -38,7 +38,7 @@ function positionToIndex(line, col) {
   return index + col - 1;
 }
 
-function connect(username, roomCode, difficulty, hackyObject) {
+function connect(username, roomCode, difficulty, hackyObject) { // skipqc: JS-0128
   websocket = new WebSocket("ws://localhost:8000/room");
 
   websocket.onopen = function (_) {
@@ -84,7 +84,7 @@ function connect(username, roomCode, difficulty, hackyObject) {
           elem.id = `collaborator-${message.data.username}`;
           elem.appendChild(document.createTextNode(message.data.username));
           list.appendChild(elem);
-        }
+        } // skipqc: JS-0072
         break;
 
       case "disconnect":
@@ -96,7 +96,7 @@ function connect(username, roomCode, difficulty, hackyObject) {
             `collaborator-${message.data.username}`
           );
           list.removeChild(elem);
-        }
+        } // skipqc: JS-0072
         break;
 
       case "sync":
@@ -124,7 +124,7 @@ function connect(username, roomCode, difficulty, hackyObject) {
         break;
 
       default:
-        alert(`Invalid event type '${message.type}'`);
+        alert(`Invalid event type '${message.type}'`); // skipqc: JS-0052
     }
   };
 
