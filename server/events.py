@@ -165,12 +165,10 @@ class EventHandler:
             client: The client sending the requests.
             connection: The connection to the room.
         """
-        self.client: Client | None = client
+        self.client: Client = client
         self.connection = connection
 
-    async def __call__(
-        self, request: EventRequest, room_code: str
-    ) -> tuple[bool, Client | None, EventResponse | None]:
+    async def __call__(self, request: EventRequest, room_code: str) -> tuple[bool, Client, EventResponse | None]:
         """Handle a request received.
 
         Args:
@@ -194,20 +192,14 @@ class EventHandler:
                 replace_data = cast(ReplaceData, event_data)
                 data = EventResponse(type=EventType.REPLACE, data=replace_data, status_code=StatusCode.SUCCESS)
                 self.connection.update_code_cache(room_code, replace_data)
-            case EventType.SEND_BUGS:
-                # Only if receiving the event. If not, we can remove
-                buggy = True
-                self.client = None
             case EventType.CONNECT:
                 connect_data = cast(ConnectData, event_data)
-
-                # Ensure self.client is not None
-                assert self.client
                 self.client.username = connect_data.username
 
                 match connect_data.connection_type:
                     case "create":
-                        assert connect_data.difficulty
+                        if connect_data.difficulty is None:
+                            return buggy, self.client, data
                         self.connection.create_room(self.client, connect_data.room_code, connect_data.difficulty)
                     case "join":
                         self.connection.join_room(self.client, room_code)
