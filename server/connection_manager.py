@@ -3,7 +3,7 @@ from uuid import UUID
 
 from server.client import Client
 from server.errors import RoomAlreadyExistsError, RoomNotFoundError
-from server.events import ConnectData, EventData, ReplaceData
+from server.events import EventData, ReplaceData
 from server.modifiers import Modifiers
 
 
@@ -27,21 +27,6 @@ class ConnectionManager:
         It stores the active connections and is able to broadcast data.
         """
         self._rooms: ActiveRooms = {}
-
-    def connect(self, client: Client, data: ConnectData) -> None:
-        """Connects the client to a room.
-
-        It creates or joins a room based on the connection_type.
-
-        Args:
-            client: The client to connect.
-            data: The data of a connection event.
-        """
-        match data.connection_type:
-            case "create":
-                self.create_room(client, data.room_code, data.difficulty)
-            case "join":
-                self.join_room(client, data.room_code)
 
     def disconnect(self, client: Client, room_code: str) -> None:
         """Removes the connection from the active connections.
