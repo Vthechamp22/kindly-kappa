@@ -1,8 +1,8 @@
 /**
-* Function to generate a room code.
-* @param length The number of characters.
-* @returns A randomly generated, uppercase, code.
-*/
+ * Function to generate a room code.
+ * @param length The number of characters.
+ * @returns A randomly generated, uppercase, code.
+ */
 function generateRoomCode(length = 4) {
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   let roomCode = "";

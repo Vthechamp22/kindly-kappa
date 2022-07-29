@@ -10,15 +10,15 @@ const roomStatus = ref({
 });
 
 /**
-* Function to leave a room.
-*/
+ * Function to leave a room.
+ */
 function leaveRoom() {
   roomStatus.value = { ...roomStatus.value, joined: false };
 }
 
 /**
-* Function to join a room.
-*/
+ * Function to join a room.
+ */
 function joinRoom({ code, username }) {
   roomStatus.value = {
     code,

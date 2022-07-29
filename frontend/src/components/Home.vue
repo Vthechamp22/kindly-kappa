@@ -42,8 +42,8 @@ const hackyObject = {
 };
 
 /**
-* Function for a client to join a room.
-*/
+ * Function for a client to join a room.
+ */
 function joinRoom() {
   if (
     !code.value ||
