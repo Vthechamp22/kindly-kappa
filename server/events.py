@@ -188,6 +188,7 @@ class EventHandler:
 
         match request.type:
             case EventType.REPLACE:
+                data = EventResponse(type=EventType.REPLACE, data=data, status_code=StatusCode.SUCCESS)
                 self.connection.update_code_cache(room_code, data)
             case EventType.SEND_BUGS:
                 # Only if receiving the event. If not, we can remove

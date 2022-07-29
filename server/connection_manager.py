@@ -3,7 +3,7 @@ from uuid import UUID
 
 from server.client import Client
 from server.errors import RoomAlreadyExistsError, RoomNotFoundError
-from server.events import EventData, ReplaceData
+from server.events import EventResponse, ReplaceData
 from server.modifiers import Modifiers
 
 
@@ -85,7 +85,7 @@ class ConnectionManager:
                 self._rooms[room_code]["code"] = updated_code
 
     async def broadcast(
-        self, data: type[EventData], room_code: str, sender: Client | None = None, buggy: bool = False
+        self, data: EventResponse, room_code: str, sender: Client | None = None, buggy: bool = False
     ) -> None:
         """Broadcasts data to all active connections.
 
@@ -97,7 +97,7 @@ class ConnectionManager:
         """
         if buggy:
             data = self._modify_code(room_code)
-            self.update_code_cache(room_code, data)
+            self.update_code_cache(room_code, data.data)
 
         for connection in self._rooms[room_code]["clients"]:
             if connection == sender:
