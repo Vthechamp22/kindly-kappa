@@ -92,7 +92,7 @@ class ConnectionManager:
         Args:
             data: The data to be sent to the clients.
             room_code: The room to which the data will be sent.
-            sender (optional): The client who sent the message.
+            sender (optional): The client who sent the request.
             buggy (optional): To send back modified code.
         """
         if buggy:
