@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import * as monaco from "monaco-editor";
 import { onMounted } from "vue";
-import { onedark } from "../assets/js/theme";
+import { themes } from "../assets/js/theme";
 
 const emit = defineEmits(["join"]);
 
 onMounted(() => {
-  monaco.editor.defineTheme("OneDarkPro", onedark);
-  monaco.editor.setTheme("OneDarkPro");
+  for (let theme of themes) {
+    monaco.editor.defineTheme(theme.name, theme.theme);
+  }
+  monaco.editor.setTheme("One Dark Pro");
 
   var e = monaco.editor.create(document.getElementById("content"), {
     value: "",
@@ -33,7 +35,7 @@ function leaveRoom() {
       <h2 class="text-6xl text-white m-3">Collaborators</h2>
       <ul id="collabul"></ul>
       <button class="btn btn-primary mt-auto" @click="leaveRoom()">
-        <fa-icon icon="fa-solid fa-arrow-right-from-bracket" />
+        <i class="gg-log-out"></i>
         Leave Room
       </button>
     </div>

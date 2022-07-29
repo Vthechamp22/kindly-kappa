@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { connect } from "../assets/js/main"
 import { ref, watch } from "vue";
 
 const emit = defineEmits(["join"]);
@@ -102,7 +103,7 @@ function createRoom() {
         class="tooltip"
         data-tip="japan PNG Designed By tsuki from https://pngtree.com/freepng/cute-kappa-in-japanese-mythology-cartoon-style_6544405.html?sol=downref&id=bef"
       >
-        <img class="mx-auto" src="imgs/kappa-left.png" alt="kappa1" />
+        <img class="mx-auto" src="/imgs/kappa-left.png" alt="kappa1" />
       </div>
       <div class="text-center h-full flex justify-center flex-col">
         <h2>Kindly Kappas</h2>
@@ -144,7 +145,7 @@ function createRoom() {
         class="tooltip"
         data-tip="cute PNG Designed By Reiko from https://pngtree.com/freepng/japanese-kappa-monster-cartoon_6544406.html?sol=downref&id=bef"
       >
-        <img class="mx-auto" src="imgs/kappa-right.png" alt="kappa2" />
+        <img class="mx-auto" src="/imgs/kappa-right.png" alt="kappa2" />
       </div>
     </div>
 
