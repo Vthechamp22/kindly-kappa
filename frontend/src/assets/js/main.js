@@ -102,7 +102,6 @@ function connect(username, roomCode, difficulty, hackyObject) {
       case "sync":
         collaborators = message.data.collaborators;
         code = message.data.code;
-        editor.setValue(code);
 
         hackyObject.switchToRoom();
         break;
@@ -141,7 +140,9 @@ function connect(username, roomCode, difficulty, hackyObject) {
 }
 
 window.handleContentChange = function (ev) {
-  const changes = [];
+  if (editor.getValue() == code) return;
+  code = editor.getValue();
+  let changes = [];
 
   for (let i = 0; i < ev.changes.length; i++) {
     const element = ev.changes[i];
