@@ -14,6 +14,7 @@ if TYPE_CHECKING:
 
 
 Position = tuple[int, int]
+UserInfo = list[dict[str, str]]
 Replacement = TypedDict("Replacement", {"from": int, "to": int, "value": str})
 
 
@@ -83,7 +84,7 @@ class SyncData(EventData):
     """
 
     code: str
-    collaborators: list[str]
+    collaborators: UserInfo
 
 
 class MoveData(EventData):
