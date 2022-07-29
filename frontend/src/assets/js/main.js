@@ -1,3 +1,8 @@
+/**
+* Function to generate a room code.
+* @param length The number of characters.
+* @returns A randomly generated, uppercase, code.
+*/
 function generateRoomCode(length = 4) {
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   let roomCode = "";
@@ -30,6 +35,12 @@ function setEditor(e) {
   });
 }
 
+/**
+ * Transforms a line of code into its index.
+ * @param {line} The current line of code.
+ * @param {col} The column.
+ * @returns The index of the code string
+ */
 function positionToIndex(line, col) {
   let index = 0;
 
@@ -81,16 +92,18 @@ function connect(username, roomCode, difficulty, hackyObject) {
 
     switch (message.type) {
       case "connect":
+        // skipcq: JS-0072
         {
           collaborators.push(message.data);
           const elem = document.createElement("li");
           elem.id = `collaborator-${message.data.username}`;
           elem.appendChild(document.createTextNode(message.data.username));
           list.appendChild(elem);
-        } // skipcq: JS-0072
+        }
         break;
 
       case "disconnect":
+        // skipcq: JS-0072
         {
           collaborators = collaborators.filter((collaborator) => {
             return collaborator.id !== message.data.id;
@@ -99,7 +112,7 @@ function connect(username, roomCode, difficulty, hackyObject) {
             `collaborator-${message.data.username}`
           );
           list.removeChild(elem);
-        } // skipcq: JS-0072
+        }
         break;
 
       case "sync":
@@ -143,9 +156,9 @@ function connect(username, roomCode, difficulty, hackyObject) {
 }
 
 window.handleContentChange = function (ev) {
-  if (editor.getValue() == code) return;
+  if (editor.getValue() === code) return;
   code = editor.getValue();
-  let changes = [];
+  const changes = [];
 
   for (let i = 0; i < ev.changes.length; i++) {
     const element = ev.changes[i];

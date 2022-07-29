@@ -21,6 +21,9 @@ onMounted(() => {
   editor.getModel()?.onDidChangeContent(window.handleContentChange);
 });
 
+/**
+* Function for a client to leave a room.
+*/
 function leaveRoom() {
   monaco.editor.getModels().forEach((model) => model.dispose());
   emit("join", "leave");

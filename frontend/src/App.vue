@@ -9,10 +9,16 @@ const roomStatus = ref({
   joined: false,
 });
 
+/**
+* Function to leave a room.
+*/
 function leaveRoom() {
   roomStatus.value = { ...roomStatus.value, joined: false };
 }
 
+/**
+* Function to join a room.
+*/
 function joinRoom({ code, username }) {
   roomStatus.value = {
     code,
