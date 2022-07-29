@@ -165,10 +165,10 @@ class EventHandler:
             client: The client sending the requests.
             connection: The connection to the room.
         """
-        self.client: Client = client
-        self.connection = connection
+        self.client = client
+        self.manager = connection
 
-    async def __call__(self, request: EventRequest, room_code: str) -> tuple[bool, Client, EventResponse | None]:
+    async def __call__(self, request: EventRequest, room_code: str) -> tuple[bool, Client, type[EventData]]:
         """Handle a request received.
 
         Args:
