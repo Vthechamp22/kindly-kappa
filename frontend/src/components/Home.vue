@@ -53,7 +53,7 @@ function createRoom() {
     errors.value.username = "";
   }
 
-  if (errors.value.roomCode || errors.value.username) {
+  if (errors.value.username) {
     return;
   }
 
