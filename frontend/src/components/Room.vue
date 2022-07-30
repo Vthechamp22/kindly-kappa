@@ -30,7 +30,7 @@ onMounted(() => {
 function positionToIndex(line, col) {
   let index = 0;
   for (let i = 1; i < line; i++) {
-    index += code.split("\r\n")[i - 1].length + 2;
+    index += code.split("\n")[i - 1].length + 2;
   }
   return index + col - 1;
 }
