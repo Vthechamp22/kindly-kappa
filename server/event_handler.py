@@ -62,10 +62,8 @@ class EventHandler:
 
         Args:
             request: The data received from the client.
-
         Returns:
             True if the connection has been closed, False otherwise.
-
         Raises:
             WebSocketDisconnect: If the event type is a disconnect.
             NotImplementedError: In any other case.

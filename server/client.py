@@ -1,18 +1,11 @@
 from json import JSONDecodeError
 from uuid import uuid4
 
-from fastapi import WebSocket, WebSocketDisconnect
+from fastapi import WebSocket
 from pydantic import ValidationError
 
 from server.codes import StatusCode
-from server.events import (
-    DisconnectData,
-    ErrorData,
-    EventRequest,
-    EventResponse,
-    EventType,
-    ReplaceData,
-)
+from server.events import ErrorData, EventRequest, EventResponse, EventType, ReplaceData
 
 
 class Client:
@@ -23,7 +16,6 @@ class Client:
 
         A client is identified by an ID and contains the corresponding WebSocket
         that is used to send and receive messages.
-
         Args:
             websocket: A WebSocket instance.
         """
@@ -74,8 +66,6 @@ class Client:
                 ),
             )
             return self.default_replacement
-        except (WebSocketDisconnect, RuntimeError):
-            return EventRequest(type=EventType.DISCONNECT, data=DisconnectData(username=self.username))
 
     async def close(self) -> None:
         """Closes the WebSocket connection."""
@@ -85,10 +75,8 @@ class Client:
         """Compares the Client to another object.
 
         If the object is not an instance of Client, NotImplemented is returned.
-
         Args:
             other: The object to compare the client to.
-
         Returns:
             True if the id of the client is equal to the other client's id,
             False otherwise.
