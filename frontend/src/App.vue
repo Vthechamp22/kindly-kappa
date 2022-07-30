@@ -47,7 +47,7 @@ let joining = false;
 function joinRoom({ username, roomCode }) {
   if (joining) return;
   joining = true;
-  
+
   roomCode = roomCode.toUpperCase();
 
   websocket.send(
