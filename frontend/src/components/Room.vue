@@ -18,6 +18,7 @@ onMounted(() => {
   });
   editor.getModel().onDidChangeContent(contentHandler);
   editor.getModel().setValue(code);
+  editor.getModel().setEOL(1);
 });
 
 /**
