@@ -7,14 +7,12 @@ from server.codes import StatusCode
 from server.connection_manager import ConnectionManager
 from server.events import (
     ConnectData,
-    DisconnectData,
     ErrorData,
     EventRequest,
     EventResponse,
     EventType,
     MoveData,
     ReplaceData,
-    SendBugsData,
     SyncData,
 )
 from server.room import Room
@@ -92,7 +90,6 @@ class EventHandler:
                         )
                         await self.manager.broadcast(response, room_code, sender=self.client)
             case EventType.DISCONNECT:
-                _ = cast(DisconnectData, event_data)
                 self.manager.disconnect(self.client, room_code)
 
                 collaborators = [{"id": c.id.hex, "username": c.username} for c in self.room.clients]
@@ -124,7 +121,6 @@ class EventHandler:
                 response = EventResponse(type=EventType.REPLACE, data=replace_data, status_code=StatusCode.SUCCESS)
                 await self.manager.broadcast(response, room_code)
             case EventType.SEND_BUGS:
-                _ = cast(SendBugsData, event_data)
                 self.room.introduce_bugs()
 
                 collaborators = [{"id": c.id.hex, "username": c.username} for c in self.room.clients]
