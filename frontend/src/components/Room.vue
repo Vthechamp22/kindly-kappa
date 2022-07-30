@@ -58,7 +58,7 @@ props.state.websocket.onmessage = function (ev) {
 
   switch (message.type) {
     case "connect":
-      collaborators.push(message.data);
+      collaborators.value.push(message.data);
       break;
 
     case "disconnect":
