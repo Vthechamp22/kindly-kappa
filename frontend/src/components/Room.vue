@@ -62,8 +62,8 @@ props.state.websocket.onmessage = function (ev) {
       break;
 
     case "disconnect":
-      collaborators = collaborators.filter((c) => {
-        c.id !== message.data.id;
+      collaborators.value = collaborators.value.filter((c) => {
+        return c.id !== message.data.id;
       });
       break;
 
