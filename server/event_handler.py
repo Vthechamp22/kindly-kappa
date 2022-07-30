@@ -64,7 +64,7 @@ class EventHandler:
                         collaborators = [{"id": c.id.hex, "username": c.username} for c in self.room.clients]
 
                         # Send a sync event to the client to update the code and
-                        # the collaborators list
+                        # the collaborators' list
                         response = EventResponse(
                             type=EventType.SYNC,
                             data=SyncData(code=self.room.code, collaborators=collaborators),
