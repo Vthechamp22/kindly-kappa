@@ -25,8 +25,8 @@ onMounted(() => {
  */
 function positionToIndex(line, col) {
   let index = 0;
-  for (let i = 0; i < line.length; i++) {
-    index += editor.getLineLength(i) + 2;
+  for (let i = 1; i < line; i++) {
+    index += editor.getModel().getLineLength(i) + 2;
   }
   return index + col - 1;
 }
@@ -115,7 +115,7 @@ function leaveRoom() {
       <ul id="collabul"></ul>
       <button class="btn btn-primary mt-auto" @click="leaveRoom">
         <fa-icon icon="fa-solid fa-arrow-right-from-bracket" />
-        Leave Room
+        Leave Room {{ props.state.roomCode }}
       </button>
     </div>
 
