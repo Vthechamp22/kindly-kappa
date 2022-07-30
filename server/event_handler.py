@@ -55,6 +55,17 @@ class EventHandler:
 
                 match connect_data.connection_type:
                     case "create":
+                        if connect_data.difficulty is None:
+                            response = (
+                                EventResponse(
+                                    type=EventType.ERROR,
+                                    data=ErrorData(message="Data not found."),
+                                    status_code=StatusCode.DATA_NOT_FOUND,
+                                ),
+                            )
+                            await self.client.send(response)
+                            return
+
                         self.manager.create_room(self.client, connect_data.room_code, connect_data.difficulty)
                         self.room = self.manager._rooms[room_code]
                     case "join":
