@@ -131,7 +131,7 @@ function leaveRoom() {
 <template>
   <div id="room">
     <div id="sidebar">
-      <h2 class="text-6xl text-white m-3">Collaborators</h2>
+      <h2 class="text-6xl m-3">Collaborators</h2>
       <ul style="margin-left: 20px">
         <li v-for="collaborator in collaborators" :key="collaborator.id">
           {{ collaborator.username }}
