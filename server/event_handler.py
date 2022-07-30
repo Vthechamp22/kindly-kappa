@@ -147,9 +147,6 @@ class EventHandler:
                 await self.manager.broadcast(response, self.room_code, sender=self.client)
 
                 self.manager.disconnect(self.client, self.room_code)
-                await self.client.close()
-
-                return True
             case EventType.MOVE:
                 move_data = cast(MoveData, event_data)
                 self.room.cursors[self.client.id] = move_data.position
