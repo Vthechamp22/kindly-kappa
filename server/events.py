@@ -137,6 +137,8 @@ class EventRequest(BaseModel):
                 value = ReplaceData(**value)
             case EventType.ERROR:
                 value = ErrorData(**value)
+            case EventType.SEND_BUGS:
+                value = SendBugsData(**value)
         return value
 
 
