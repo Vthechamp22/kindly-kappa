@@ -62,7 +62,7 @@ function contentHandler(ev) {
 /**
  * Function to receive events from the server.
  */
- // skipcq: JS-0611
+// skipcq: JS-0611
 props.state.websocket.onmessage = function (ev) {
   const message = ev.data;
 
