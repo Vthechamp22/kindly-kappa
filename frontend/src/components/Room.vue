@@ -17,6 +17,7 @@ onMounted(() => {
     language: "python",
   });
   editor.getModel().onDidChangeContent(contentHandler);
+  editor.getModel().setValue(code);
 });
 
 /**
@@ -64,7 +65,7 @@ function contentHandler(ev) {
  */
 // skipcq: JS-0611
 props.state.websocket.onmessage = function (ev) {
-  const message = ev.data;
+  const message = JSON.parse(ev.data);
 
   switch (message.type) {
     case "connect":
@@ -84,6 +85,7 @@ props.state.websocket.onmessage = function (ev) {
           change.value +
           code.substring(change.to);
       });
+      editor.setValue(code);
   }
 };
 
