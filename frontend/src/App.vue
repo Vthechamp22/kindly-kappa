@@ -53,7 +53,7 @@ function joinRoom({ username, roomCode }) {
       type: "connect",
       data: {
         connection_type: "join",
-        room_code: roomCode,
+        room_code: roomCode.toUpperCase(),
         username,
       },
     })
@@ -116,7 +116,9 @@ websocket.onmessage = function (ev) {
  * Function to leave a room.
  */
 function leaveRoom() {
+  console.log(websocket)
   joined.value = false;
+  console.log(websocket)
   joining = false;
 }
 </script>
