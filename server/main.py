@@ -9,7 +9,8 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from server.client import Client
 from server.connection_manager import ConnectionManager
 from server.errors import RoomAlreadyExistsError, RoomNotFoundError
-from server.events import EventHandler, EventType
+from server.event_handler import EventHandler
+from server.events import ConnectData, EventType
 
 app = FastAPI()
 
@@ -27,13 +28,15 @@ async def room(websocket: WebSocket) -> None:
     """
     client = Client(websocket)
     await client.accept()
+
     handler = EventHandler(client, manager)
 
     initial_event = await client.receive()
     if initial_event.type != EventType.CONNECT:
         return
 
-    room_code = initial_event.data.room_code
+    initial_data: ConnectData = initial_event.data
+    room_code = initial_data.room_code
 
     try:
         await handler(initial_event, room_code)
@@ -45,11 +48,7 @@ async def room(websocket: WebSocket) -> None:
     try:
         while True:
             event = await client.receive()
-            buggy, sender, event_data = await handler(event, room_code)
-
-            await manager.broadcast(event_data, room_code, sender=sender, buggy=buggy)
-    except WebSocketDisconnect as err:
-        await manager.broadcast(err.response, room_code, sender=client)
-        manager.disconnect(client, room_code)
-    except NotImplementedError as err:
-        await client.send(err.response)
+            print(event)
+            await handler(event, room_code)
+    except WebSocketDisconnect:
+        pass
