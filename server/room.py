@@ -1,7 +1,7 @@
 from uuid import UUID
 
 from server.client import Client
-from server.events import ReplaceData
+from server.events import Position, ReplaceData
 from server.modifiers import Modifiers
 
 
@@ -13,7 +13,7 @@ class Room:
         self.clients = clients
         self.difficulty = difficulty
         self.code = ""
-        self.cursors: dict[UUID, tuple[int, int]] = {}
+        self.cursors: dict[UUID, Position] = {}
 
     def update_code(self, replace_data: ReplaceData) -> None:
         """Updates the code.
