@@ -7,6 +7,7 @@ from server.connection_manager import ConnectionManager
 from server.errors import RoomAlreadyExistsError, RoomNotFoundError
 from server.events import (
     ConnectData,
+    DisconnectData,
     ErrorData,
     EventRequest,
     EventResponse,
@@ -136,15 +137,11 @@ class EventHandler:
                         )
                         await self.manager.broadcast(response, self.room_code, sender=self.client)
             case EventType.DISCONNECT:
-                collaborators = [
-                    {"id": c.id.hex, "username": c.username} for c in self.room.clients if c.id != self.client.id
-                ]
-
-                # Broadcast to other clients a sync event to update the
+                # Broadcast to other clients a disconnect event to update the
                 # collaborators' list
                 response = EventResponse(
-                    type=EventType.SYNC,
-                    data=SyncData(code=self.room.code, collaborators=collaborators),
+                    type=EventType.DISCONNECT,
+                    data=DisconnectData(user=[{"id": self.client.id.hex, "username": self.client.username}]),
                     status_code=StatusCode.SUCCESS,
                 )
                 await self.manager.broadcast(response, self.room_code, sender=self.client)

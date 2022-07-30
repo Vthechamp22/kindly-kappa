@@ -61,7 +61,13 @@ class ConnectData(EventData):
 
 
 class DisconnectData(EventData):
-    """The data of a disconnection event."""
+    """The data of a disconnection event.
+
+    Fields:
+        user: A list of users that are disconnecting
+    """
+
+    user: UserInfo | None = None
 
 
 class SyncData(EventData):
@@ -70,6 +76,7 @@ class SyncData(EventData):
     Fields:
         code: The code that already exists in the room.
         collaborators: The list of users that already collaborate in the room.
+        time: The elapsed time since the creation of the room.
     """
 
     code: str

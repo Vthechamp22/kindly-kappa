@@ -13,6 +13,7 @@ const emit = defineEmits(["leaveRoom"]);
 let collaborators = ref(toRaw(props.sync?.collaborators));
 let code = props.sync?.code; // skipcq: JS-V005
 let editor: monaco.editor.IStandaloneCodeEditor;
+let joined = false;
 
 onMounted(() => {
   for (let theme of themes) {
@@ -30,6 +31,8 @@ onMounted(() => {
   editor.getModel()?.onDidChangeContent(contentHandler);
   editor.getModel()?.setValue(code);
   editor.getModel()?.setEOL(0);
+
+  joined = true;
 });
 
 /**
@@ -48,6 +51,7 @@ function positionToIndex(line, col) {
  */
 function contentHandler(ev) {
   if (code === editor.getModel()?.getValue()) return;
+  if (!joined) return;
 
   const changes = ev.changes.map((change) => {
     return {
@@ -78,7 +82,6 @@ function contentHandler(ev) {
 // skipcq: JS-0611
 props.state.websocket.onmessage = function (ev) {
   const message = JSON.parse(ev.data);
-  console.log(message.type);
 
   switch (message.type) {
     case "connect":
@@ -99,12 +102,13 @@ props.state.websocket.onmessage = function (ev) {
           code.substring(change.to);
       });
       editor.setValue(code);
+      break;
   }
 };
 
 if (!collaborators.value.length) {
   setInterval(() => {
-    props.state?.websocket.send(
+    props.state.websocket.send(
       JSON.stringify({
         type: "sync",
         data: {
@@ -119,7 +123,8 @@ if (!collaborators.value.length) {
  * Function for a client to leave a room.
  */
 function leaveRoom() {
-  props.state?.websocket.send(
+  joined = false;
+  props.state.websocket.send(
     JSON.stringify({
       type: "disconnect",
       data: {},
