@@ -7,7 +7,7 @@ const props = defineProps(["state", "sync"]);
 const emit = defineEmits(["leaveRoom"]);
 
 let collaborators = ref(toRaw(props.sync.collaborators));
-let code = props.sync.code;
+let code = props.sync.code; // skipcq: JS-V005
 let editor;
 
 onMounted(() => {
@@ -62,6 +62,7 @@ function contentHandler(ev) {
 /**
  * Function to receive events from the server.
  */
+ // skipcq: JS-0611
 props.state.websocket.onmessage = function (ev) {
   const message = ev.data;
 
@@ -72,7 +73,7 @@ props.state.websocket.onmessage = function (ev) {
 
     case "disconnect":
       collaborators = collaborators.filter((c) => {
-        c.id !== message.data.id;
+        return c.id !== message.data.id;
       });
       break;
 
