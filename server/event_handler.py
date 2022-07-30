@@ -94,6 +94,17 @@ class EventHandler:
 
                         self.manager.create_room(self.client, connect_data.room_code, connect_data.difficulty)
                         self.room = self.manager._rooms[self.room_code]
+
+                        collaborators = [{"id": c.id.hex, "username": c.username} for c in self.room.clients]
+
+                        # Send a sync event to the client to update the code and
+                        # the collaborators' list
+                        response = EventResponse(
+                            type=EventType.SYNC,
+                            data=SyncData(code=self.room.code, collaborators=collaborators),
+                            status_code=StatusCode.SUCCESS,
+                        )
+                        await self.client.send(response)
                     case "join":
                         self.manager.join_room(self.client, self.room_code)
                         self.room = self.manager._rooms[self.room_code]
