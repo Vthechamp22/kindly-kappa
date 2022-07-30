@@ -2,7 +2,7 @@
 import * as monaco from "monaco-editor"; // skipcq: JS-C1003
 import Timer from "./Timer.vue";
 import { onMounted, ref, toRaw } from "vue";
-import { onedark } from "../assets/js/theme";
+import { themes } from "../assets/js/theme";
 
 const props = defineProps({
   state: Object,
@@ -15,11 +15,20 @@ let code = props.sync?.code; // skipcq: JS-V005
 let editor: monaco.editor.IStandaloneCodeEditor;
 
 onMounted(() => {
-  monaco.editor.defineTheme("OneDarkPro", onedark);
-  monaco.editor.setTheme("OneDarkPro");
-  editor = monaco.editor.create(document.getElementById("container"), {
+  for (let theme of themes) {
+    monaco.editor.defineTheme(theme.name, theme.theme);
+  }
+  const theme = document
+    .querySelector('body')
+    .getAttribute('data-theme')
+
+  let e = monaco.editor.create(document.getElementById("content"), {
+    value: "",
     language: "python",
+    insertSpaces: true,
+    theme,
   });
+
   editor.getModel()?.onDidChangeContent(contentHandler);
   editor.getModel()?.setValue(code);
   editor.getModel()?.setEOL(0);
@@ -162,7 +171,7 @@ function leaveRoom() {
 
 #sidebar,
 #content {
-  border: solid white;
+  border: solid hsl(var(--bc));
 }
 
 #sidebar {
@@ -195,19 +204,10 @@ li {
 
 li {
   text-align: left;
-  color: white;
+  color: hsl(var(--bc));
   font-size: 24px;
   margin-left: 48px;
   list-style: disc;
-}
-
-.fa-arrow-right-from-bracket {
-  -webkit-transform: scale(-1, 1);
-  -moz-transform: scale(-1, 1);
-  -ms-transform: scale(-1, 1);
-  -o-transform: scale(-1, 1);
-  transform: scale(-1, 1);
-  margin-right: 1em;
 }
 
 #container {
