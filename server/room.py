@@ -9,6 +9,13 @@ class Room:
     """A room handled by the connection manager."""
 
     def __init__(self, owner_id: UUID, clients: set[Client], difficulty: int) -> None:
+        """Initializes the room.
+
+        Args:
+            owner_id: The id of the owner of the room.
+            clients: The connected clients.
+            difficulty: The difficulty of the room.
+        """
         self.owner_id = owner_id
         self.clients = clients
         self.difficulty = difficulty
@@ -32,9 +39,6 @@ class Room:
 
     def introduce_bugs(self) -> ReplaceData:
         """Introduces bugs based on the current code.
-
-        Args:
-            difficulty: The difficulty of the bugs.
 
         Returns:
             A list of changes to make to the code.
