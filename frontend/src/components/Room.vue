@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import * as monaco from "monaco-editor";
+import * as monaco from "monaco-editor"; // skipcq: JS-C1003
 import { onMounted, ref, toRaw } from "vue";
 import { onedark } from "../assets/js/theme";
 
@@ -7,7 +7,7 @@ const props = defineProps(["state", "sync"]);
 const emit = defineEmits(["leaveRoom"]);
 
 let collaborators = ref(toRaw(props.sync.collaborators));
-let code = props.sync.code;
+let code = props.sync.code; // skipcq: JS-V005
 let editor;
 
 onMounted(() => {
@@ -20,6 +20,9 @@ onMounted(() => {
   editor.getModel().setValue(code);
 });
 
+/**
+ * Function to conver the editor lines to index positions.
+ */
 function positionToIndex(line, col) {
   let index = 0;
   for (let i = 0; i < line.length; i++) {
@@ -28,6 +31,9 @@ function positionToIndex(line, col) {
   return index + col - 1;
 }
 
+/**
+ * Function to transform content into JSOn serializable content.
+ */
 function contentHandler(ev) {
   if (code === editor.getModel().getValue()) return;
 
@@ -54,6 +60,10 @@ function contentHandler(ev) {
   code = editor.getModel().getValue();
 }
 
+/**
+ * Function to receive events from the server.
+ */
+// skipcq: JS-0611
 props.state.websocket.onmessage = function (ev) {
   const message = JSON.parse(ev.data);
 
@@ -79,6 +89,9 @@ props.state.websocket.onmessage = function (ev) {
   }
 };
 
+/**
+ * Function for a client to leave a room.
+ */
 function leaveRoom() {
   props.state.websocket.send(
     JSON.stringify({

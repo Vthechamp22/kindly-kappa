@@ -1,19 +1,24 @@
-from enum import IntEnum
-
-
-class KappaCloseCodes(IntEnum):
-    """Custom error codes for closing websocket connections."""
-
-    InvalidError = 4000
-
-    RoomNotFound = 4001
+from server.codes import StatusCode
+from server.events import ErrorData, EventResponse, EventType
 
 
 class RoomNotFoundError(Exception):
     """Custom exception raised when joining a room with an invalid code."""
 
-    def __init__(self, message: str, code: KappaCloseCodes) -> None:
+    def __init__(self, message: str) -> None:
         super().__init__(message)
 
-        self.code = code.value
-        self.message = message
+        self.response = EventResponse(
+            type=EventType.ERROR, data=ErrorData(message=message), status_code=StatusCode.ROOM_NOT_FOUND
+        )
+
+
+class RoomAlreadyExistsError(Exception):
+    """Custom exception raised when creating a room that already exists."""
+
+    def __init__(self, message: str) -> None:
+        super().__init__(message)
+
+        self.response = EventResponse(
+            type=EventType.ERROR, data=ErrorData(message=message), status_code=StatusCode.ROOM_ALREADY_EXISTS
+        )

@@ -18,6 +18,9 @@ watch(theme, (newTheme) => {
     .setAttribute("data-theme", newTheme.toLowerCase());
 });
 
+/**
+ * Function to join a room.
+ */
 function joinRoom() {
   if (roomCode.value.length != 4 || !/^[a-zA-Z]+$/.test(roomCode.value)) {
     errors.value.roomCode = "Please enter a valid code!";
@@ -38,6 +41,9 @@ function joinRoom() {
   emit("joinRoom", { username: username.value, roomCode: roomCode.value });
 }
 
+/**
+ * Function to create a room.
+ */
 function createRoom() {
   if (!username.value) {
     errors.value.username = "Please enter a username!";
@@ -55,6 +61,9 @@ function createRoom() {
   });
 }
 
+/**
+ * Function to connect a client.
+ */
 function connect() {
   if (roomCode.value.length != 4 || !/^[a-zA-Z]+$/.test(roomCode.value)) {
     errors.value.roomCode = "Please enter a valid code!";
