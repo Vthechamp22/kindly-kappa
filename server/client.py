@@ -1,11 +1,18 @@
 from json import JSONDecodeError
 from uuid import uuid4
 
-from fastapi import WebSocket
+from fastapi import WebSocket, WebSocketDisconnect
 from pydantic import ValidationError
 
 from server.codes import StatusCode
-from server.events import ErrorData, EventRequest, EventResponse, EventType, ReplaceData
+from server.events import (
+    DisconnectData,
+    ErrorData,
+    EventRequest,
+    EventResponse,
+    EventType,
+    ReplaceData,
+)
 
 
 class Client:
@@ -67,6 +74,8 @@ class Client:
                 ),
             )
             return self.default_replacement
+        except (WebSocketDisconnect, RuntimeError):
+            return EventRequest(type=EventType.DISCONNECT, data=DisconnectData(username=self.username))
 
     async def close(self) -> None:
         """Closes the WebSocket connection."""

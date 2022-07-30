@@ -1,11 +1,21 @@
-from typing import TypeAlias
+from typing import TypeAlias, TypedDict
+from uuid import UUID
 
 from server.client import Client
 from server.errors import RoomAlreadyExistsError, RoomNotFoundError
-from server.events import EventResponse
-from server.room import Room
+from server.events import EventResponse, ReplaceData
+from server.modifiers import Modifiers
 
-ActiveRooms: TypeAlias = dict[str, Room]
+
+class RoomData(TypedDict):
+    """A dataclass for data about a specific room."""
+
+    owner_id: UUID
+    clients: set[Client]
+    code: str
+
+
+ActiveRooms: TypeAlias = dict[str, RoomData]
 
 
 class ConnectionManager:
@@ -27,9 +37,9 @@ class ConnectionManager:
             client: The client to disconnect.
             room_code: The room from which the client will be disconnected.
         """
-        self._rooms[room_code].clients.remove(client)
+        self._rooms[room_code]["clients"].remove(client)
 
-        if not self._rooms[room_code].clients:
+        if not self._rooms[room_code]["clients"]:
             del self._rooms[room_code]
 
     def create_room(self, client: Client, room_code: str, difficulty: int) -> None:
@@ -41,7 +51,7 @@ class ConnectionManager:
             difficulty: The difficuty of the room.
         """
         if not self._room_exists(room_code):
-            self._rooms[room_code] = Room(client.id, {client}, difficulty)
+            self._rooms[room_code] = {"owner_id": client.id, "clients": {client}, "code": "", "difficulty": difficulty}
         else:
             raise RoomAlreadyExistsError(f"The room with code '{room_code}' already exists.")
 
@@ -53,19 +63,43 @@ class ConnectionManager:
             room_code: The room to which the client will be connected.
         """
         if self._room_exists(room_code):
-            self._rooms[room_code].clients.add(client)
+            self._rooms[room_code]["clients"].add(client)
         else:
             raise RoomNotFoundError(f"The room with code '{room_code}' was not found.")
 
-    async def broadcast(self, data: EventResponse, room_code: str, sender: Client | None = None) -> None:
+    def update_code_cache(self, room_code: str, replace_data: ReplaceData) -> None:
+        """Updates the code cache for a particular room.
+
+        Args:
+            room_code: The code associated with a particular room.
+            code: A list of changes to make to the code cache.
+        """
+        if self._room_exists(room_code):
+            current_code = self._rooms[room_code]["code"]
+            for replacement in replace_data.code:
+                from_index = replacement["from"]
+                to_index = replacement["to"]
+                new_value = replacement["value"]
+
+                updated_code = current_code[:from_index] + new_value + current_code[to_index:]
+                self._rooms[room_code]["code"] = updated_code
+
+    async def broadcast(
+        self, data: EventResponse, room_code: str, sender: Client | None = None, buggy: bool = False
+    ) -> None:
         """Broadcasts data to all active connections.
 
         Args:
             data: The data to be sent to the clients.
             room_code: The room to which the data will be sent.
             sender (optional): The client who sent the request.
+            buggy (optional): To send back modified code.
         """
-        for connection in self._rooms[room_code].clients:
+        if buggy:
+            data = self._modify_code(room_code)
+            self.update_code_cache(room_code, data.data)
+
+        for connection in self._rooms[room_code]["clients"]:
             if connection == sender:
                 continue
             await connection.send(data)
@@ -79,4 +113,21 @@ class ConnectionManager:
         Returns:
             True if the room exists. False otherwise.
         """
-        return room_code in self._rooms
+        if room_code in self._rooms:
+            return True
+        return False
+
+    def _modify_code(self, room_code: str) -> ReplaceData:
+        """Generates bugs based on the current code cache.
+
+        Args:
+            room_code: The code associated with a particular room.
+
+        Returns:
+            A list, or a list of modified changes including the line number.
+        """
+        current_code = self._rooms[room_code]["code"]
+        current_difficulty = self._rooms[room_code]["difficulty"]
+        modifier = Modifiers(current_code, current_difficulty)
+
+        return modifier.output

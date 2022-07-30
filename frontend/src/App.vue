@@ -3,6 +3,11 @@ import { ref } from "vue";
 import Room from "./components/Room.vue";
 import Home from "./components/Home.vue";
 
+/**
+ * Function to generate a room code.
+ * @param length The number of characters.
+ * @returns A randomly generated, uppercase, code.
+ */
 function generateCode(length = 4) {
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   let code = "";
@@ -24,6 +29,7 @@ const state = ref({
   username: "",
   websocket,
 });
+
 const sync = ref({
   collaborators: [],
   code: "",
@@ -31,6 +37,9 @@ const sync = ref({
 });
 let joining = false;
 
+/**
+ * Function to join a room.
+ */
 function joinRoom({ username, roomCode }) {
   if (joining) return;
   joining = true;
@@ -53,6 +62,9 @@ function joinRoom({ username, roomCode }) {
   };
 }
 
+/**
+ * Function to create a room.
+ */
 function createRoom({ username, difficulty }) {
   if (joining) return;
   joining = true;
@@ -95,6 +107,9 @@ websocket.onmessage = function (ev) {
   }
 };
 
+/**
+ * Function to leave a room.
+ */
 function leaveRoom() {
   joined.value = false;
   joining = false;
