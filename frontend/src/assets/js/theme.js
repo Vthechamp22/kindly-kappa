@@ -1,23 +1,23 @@
-import { onedark } from './themes/onedark'
-import { dracula } from './themes/dracula'
-import { nightowl } from './themes/nightowl'
-import { ghlight } from './themes/github-light'
-import { emerald } from './themes/emerald'
-import { greenery } from './themes/greenery'
-import { winter } from './themes/winter'
+import { onedark } from "./themes/onedark";
+import { dracula } from "./themes/dracula";
+import { nightowl } from "./themes/nightowl";
+import { ghlight } from "./themes/github-light";
+import { emerald } from "./themes/emerald";
+import { greenery } from "./themes/greenery";
+import { winter } from "./themes/winter";
 
 export const themes = [
   {
     name: "onedarkpro",
-    theme: onedark
+    theme: onedark,
   },
   {
     name: "dracula",
-    theme: dracula
+    theme: dracula,
   },
   {
     name: "night",
-    theme: nightowl
+    theme: nightowl,
   },
   {
     name: "dark",
@@ -25,7 +25,7 @@ export const themes = [
   },
   {
     name: "emerald",
-    theme: emerald
+    theme: emerald,
   },
   {
     name: "forest",
@@ -33,6 +33,6 @@ export const themes = [
   },
   {
     name: "winter",
-    theme: winter
-  }
-]
+    theme: winter,
+  },
+];

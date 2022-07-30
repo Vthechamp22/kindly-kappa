@@ -18,9 +18,7 @@ onMounted(() => {
   for (let theme of themes) {
     monaco.editor.defineTheme(theme.name, theme.theme);
   }
-  const theme = document
-    .querySelector('body')
-    .getAttribute('data-theme')
+  const theme = document.querySelector("body").getAttribute("data-theme");
 
   let e = monaco.editor.create(document.getElementById("content"), {
     value: "",
