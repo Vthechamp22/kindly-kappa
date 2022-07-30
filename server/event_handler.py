@@ -82,12 +82,10 @@ class EventHandler:
                 match connect_data.connection_type:
                     case "create":
                         if connect_data.difficulty is None:
-                            response = (
-                                EventResponse(
-                                    type=EventType.ERROR,
-                                    data=ErrorData(message="Data not found."),
-                                    status_code=StatusCode.DATA_NOT_FOUND,
-                                ),
+                            response = EventResponse(
+                                type=EventType.ERROR,
+                                data=ErrorData(message="Data not found."),
+                                status_code=StatusCode.DATA_NOT_FOUND,
                             )
                             await self.client.send(response)
                             return False
