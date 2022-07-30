@@ -118,9 +118,7 @@ websocket.onmessage = function (ev) {
  * Function to leave a room.
  */
 function leaveRoom() {
-  console.log(websocket);
   joined.value = false;
-  console.log(websocket);
   joining = false;
 }
 </script>

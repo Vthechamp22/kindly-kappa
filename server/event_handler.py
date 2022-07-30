@@ -93,7 +93,7 @@ class EventHandler:
                         self.manager.create_room(self.client, connect_data.room_code, connect_data.difficulty)
                         self.room = self.manager._rooms[self.room_code]
 
-                        collaborators = [{"id": c.id.hex, "username": c.username} for c in self.room.clients]
+                        collaborators = [{"id": c.id.hex, "username": c.username} for c in self.room.clients if c.id != self.client.id]
 
                         deltaseconds = (datetime.now() - self.room.epoch).total_seconds()
                         minutes, remainder = divmod(deltaseconds, 60)
@@ -112,7 +112,7 @@ class EventHandler:
                         self.manager.join_room(self.client, self.room_code)
                         self.room = self.manager._rooms[self.room_code]
 
-                        collaborators = [{"id": c.id.hex, "username": c.username} for c in self.room.clients]
+                        collaborators = [{"id": c.id.hex, "username": c.username} for c in self.room.clients if c.id != self.client.id]
 
                         deltaseconds = (datetime.now() - self.room.epoch).total_seconds()
                         minutes, remainder = divmod(deltaseconds, 60)
