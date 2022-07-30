@@ -8,6 +8,7 @@ To test a dummy frontend, you can use `python -m websockets ws://localhost:8000/
 To evaluate the code [snekbox](https://github.com/python-discord/snekbox) is required.
 
 Make sure to have `docker` up and running and execute this command:
+
 ```
 sudo docker run --ipc=none --privileged -p 8060:8060 ghcr.io/python-discord/snekbox
 ```
