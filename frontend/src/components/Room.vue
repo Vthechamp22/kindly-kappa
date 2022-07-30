@@ -17,6 +17,7 @@ onMounted(() => {
     language: "python",
   });
   editor.getModel().onDidChangeContent(contentHandler);
+  editor.getModel().setValue(code);
 });
 
 function positionToIndex(line, col) {
@@ -54,7 +55,7 @@ function contentHandler(ev) {
 }
 
 props.state.websocket.onmessage = function (ev) {
-  const message = ev.data;
+  const message = JSON.parse(ev.data);
 
   switch (message.type) {
     case "connect":
