@@ -4,13 +4,11 @@ This server handles user connection, disconnection and events.
 """
 from __future__ import annotations
 
-from fastapi import FastAPI, WebSocket
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 
 from server.client import Client
 from server.connection_manager import ConnectionManager
-from server.errors import RoomAlreadyExistsError, RoomNotFoundError
 from server.event_handler import EventHandler
-from server.events import ConnectData, EventType
 
 app = FastAPI()
 
@@ -32,19 +30,13 @@ async def room(websocket: WebSocket) -> None:
     handler = EventHandler(client, manager)
 
     initial_event = await client.receive()
-    if initial_event.type != EventType.CONNECT:
-        return
-
-    initial_data: ConnectData = initial_event.data
-    room_code = initial_data.room_code
+    await handler.handle_initial_connection(initial_event)
 
     try:
-        await handler(initial_event, room_code)
-    except (RoomNotFoundError, RoomAlreadyExistsError) as err:
-        await client.send(err.response)
-        await client.close()
+        while True:
+            event = await client.receive()
+            closed = await handler(event)
+            if closed:
+                break
+    except WebSocketDisconnect:
         return
-
-    while True:
-        event = await client.receive()
-        await handler(event, room_code)
