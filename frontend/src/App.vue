@@ -4,101 +4,104 @@ import Room from "./components/Room.vue";
 import Home from "./components/Home.vue";
 
 function generateCode(length = 4) {
-    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    let code = "";
-    for (let i = 0; i < length; i++) {
-        code += alphabet.charAt(Math.floor(Math.random() * alphabet.length));
-    }
-    return code;
+  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  let code = "";
+  for (let i = 0; i < length; i++) {
+    code += alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+  }
+  return code;
 }
 
 const websocket = new WebSocket("ws://localhost:8000/room");
 websocket.onerror = function () {
-    alert(`Oh no! Something has gone very wrong
-This genuinely is a bug, not a feature :(`)
-}
+  alert(`Oh no! Something has gone very wrong
+This genuinely is a bug, not a feature :(`);
+};
 
 const joined = ref(false);
 const state = ref({
-    roomCode: "",
-    username: "",
-    websocket
+  roomCode: "",
+  username: "",
+  websocket,
 });
 const sync = ref({
-    collaborators: [],
-    code: "",
-    difficulty: 0
+  collaborators: [],
+  code: "",
+  difficulty: 0,
 });
 let joining = false;
 
-
 function joinRoom({ username, roomCode }) {
-    if (joining) return;
-    joining = true;
+  if (joining) return;
+  joining = true;
 
-    websocket.send(JSON.stringify({
-        "type": "connect",
-        "data": {
-            connection_type: "join",
-            room_code: roomCode,
-            username
-        }
-    }));
-
-    state.value = {
-        roomCode,
+  websocket.send(
+    JSON.stringify({
+      type: "connect",
+      data: {
+        connection_type: "join",
+        room_code: roomCode,
         username,
-        websocket
-    }
+      },
+    })
+  );
+
+  state.value = {
+    roomCode,
+    username,
+    websocket,
+  };
 }
 
 function createRoom({ username, difficulty }) {
-    if (joining) return;
-    joining = true;
+  if (joining) return;
+  joining = true;
 
-    const roomCode = generateCode();
+  const roomCode = generateCode();
 
-    websocket.send(JSON.stringify({
-        "type": "connect",
-        "data": {
-            connection_type: "create",
-            difficulty,
-            room_code: roomCode,
-            username
-        }
-    }));
-
-    state.value = {
-        roomCode,
+  websocket.send(
+    JSON.stringify({
+      type: "connect",
+      data: {
+        connection_type: "create",
+        difficulty,
+        room_code: roomCode,
         username,
-        websocket
-    }
+      },
+    })
+  );
+
+  state.value = {
+    roomCode,
+    username,
+    websocket,
+  };
 }
 
 websocket.onmessage = function (ev) {
-    const message = JSON.parse(ev.data);
+  const message = JSON.parse(ev.data);
 
-    if (message.type === "sync") {
-        sync.value = {
-            collaborators: message.data.collaborators,
-            code: message.data.code,
-            difficulty: message.data.difficulty
-        };
-        joined.value = true;
-    }
+  if (message.type === "sync") {
+    sync.value = {
+      collaborators: message.data.collaborators,
+      code: message.data.code,
+      difficulty: message.data.difficulty,
+    };
+    joined.value = true;
+  }
 
-    if (message.type === "error") {
-        joining = false;
-    }
-}
+  if (message.type === "error") {
+    joining = false;
+  }
+};
 
 function leaveRoom() {
-    joined.value = false;
-    joining = false;
+  joined.value = false;
+  joining = false;
 }
 </script>
 
 <template>
-    <Room v-if="joined" :state="state" :sync="sync" @leaveRoom="leaveRoom"></Room>
-    <Home v-else @joinRoom="joinRoom" @createRoom="createRoom"></Home>
+  <Room v-if="joined" :state="state" :sync="sync" @leaveRoom="leaveRoom"></Room>
+  <Home v-else @joinRoom="joinRoom" @createRoom="createRoom"></Home>
 </template>
