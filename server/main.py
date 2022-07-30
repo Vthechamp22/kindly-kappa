@@ -4,7 +4,7 @@ This server handles user connection, disconnection and events.
 """
 from __future__ import annotations
 
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, WebSocket
 
 from server.client import Client
 from server.connection_manager import ConnectionManager
@@ -45,9 +45,6 @@ async def room(websocket: WebSocket) -> None:
         await client.close()
         return
 
-    try:
-        while True:
-            event = await client.receive()
-            await handler(event, room_code)
-    except WebSocketDisconnect:
-        pass
+    while True:
+        event = await client.receive()
+        await handler(event, room_code)

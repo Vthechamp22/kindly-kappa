@@ -1,7 +1,5 @@
 from typing import cast
 
-from fastapi import WebSocketDisconnect
-
 from server.client import Client
 from server.codes import StatusCode
 from server.connection_manager import ConnectionManager
@@ -90,8 +88,6 @@ class EventHandler:
                         )
                         await self.manager.broadcast(response, room_code, sender=self.client)
             case EventType.DISCONNECT:
-                self.manager.disconnect(self.client, room_code)
-
                 collaborators = [{"id": c.id.hex, "username": c.username} for c in self.room.clients]
 
                 # Broadcast to other clients a sync event to update the
@@ -103,8 +99,7 @@ class EventHandler:
                 )
                 await self.manager.broadcast(response, room_code, sender=self.client)
 
-                WebSocketDisconnect.response = response  # type: ignore
-                raise WebSocketDisconnect
+                self.manager.disconnect(self.client, room_code)
             case EventType.MOVE:
                 move_data = cast(MoveData, event_data)
                 self.room.cursors[self.client.id] = move_data.position
@@ -112,14 +107,14 @@ class EventHandler:
                 # Broadcast to every client a move event to update the cursors'
                 # positions
                 response = EventResponse(type=EventType.MOVE, data=move_data, status_code=StatusCode.SUCCESS)
-                await self.manager.broadcast(response, room_code)
+                await self.manager.broadcast(response, room_code, sender=self.client)
             case EventType.REPLACE:
                 replace_data = cast(ReplaceData, event_data)
                 self.room.update_code(replace_data)
 
                 # Broadcast to every client a replace event to update the code
                 response = EventResponse(type=EventType.REPLACE, data=replace_data, status_code=StatusCode.SUCCESS)
-                await self.manager.broadcast(response, room_code)
+                await self.manager.broadcast(response, room_code, sender=self.client)
             case EventType.SEND_BUGS:
                 self.room.introduce_bugs()
 
@@ -131,7 +126,7 @@ class EventHandler:
                     data=SyncData(code=self.room.code, collaborators=collaborators),
                     status_code=StatusCode.SUCCESS,
                 )
-                await self.manager.broadcast(response, room_code)
+                await self.manager.broadcast(response, room_code, sender=self.client)
             case _:
                 # Anything that doesn't match the request.type
                 response = EventResponse(
@@ -140,6 +135,3 @@ class EventHandler:
                     status_code=StatusCode.DATA_NOT_FOUND,
                 )
                 await self.client.send(response)
-
-                NotImplementedError.response = response  # type: ignore
-                raise NotImplementedError
