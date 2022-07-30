@@ -21,7 +21,7 @@ onMounted(() => {
   });
   editor.getModel().onDidChangeContent(contentHandler);
   editor.getModel().setValue(code);
-  editor.getModel().setEOL(1);
+  editor.getModel().setEOL(0);
 });
 
 /**
@@ -30,7 +30,7 @@ onMounted(() => {
 function positionToIndex(line, col) {
   let index = 0;
   for (let i = 1; i < line; i++) {
-    index += code.split("\n")[i - 1].length + 2;
+    index += code.split("\n")[i - 1].length + 1;
   }
   return index + col - 1;
 }
