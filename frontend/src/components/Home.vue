@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { connect } from "../assets/js/main"
 import { ref, watch } from "vue";
 
 const emit = defineEmits(["join"]);

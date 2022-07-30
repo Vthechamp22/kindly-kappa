@@ -9,16 +9,16 @@ onMounted(() => {
   for (let theme of themes) {
     monaco.editor.defineTheme(theme.name, theme.theme);
   }
-  monaco.editor.setTheme("One Dark Pro");
+  const theme = document
+    .querySelector('body')
+    .getAttribute('data-theme')
 
-  var e = monaco.editor.create(document.getElementById("content"), {
+  let e = monaco.editor.create(document.getElementById("content"), {
     value: "",
     language: "python",
     insertSpaces: true,
-    theme: "OneDarkPro",
+    theme,
   });
-
-  window.setEditor(e);
 
   e.getModel()?.onDidChangeContent(window.handleContentChange);
 });
@@ -32,10 +32,10 @@ function leaveRoom() {
 <template>
   <div id="room">
     <div id="sidebar">
-      <h2 class="text-6xl text-white m-3">Collaborators</h2>
+      <h2 class="text-6xl m-3">Collaborators</h2>
       <ul id="collabul"></ul>
       <button class="btn btn-primary mt-auto" @click="leaveRoom()">
-        <i class="gg-log-out"></i>
+        <i class="gg-log-out mr-4"></i>
         Leave Room
       </button>
     </div>
@@ -57,7 +57,7 @@ function leaveRoom() {
 
 #sidebar,
 #content {
-  border: solid white;
+  border: solid hsl(var(--bc));
 }
 
 #sidebar {
@@ -89,18 +89,9 @@ li {
 
 li {
   text-align: left;
-  color: white;
+  color: hsl(var(--bc));
   font-size: 24px;
   margin-left: 48px;
   list-style: disc;
-}
-
-.fa-arrow-right-from-bracket {
-  -webkit-transform: scale(-1, 1);
-  -moz-transform: scale(-1, 1);
-  -ms-transform: scale(-1, 1);
-  -o-transform: scale(-1, 1);
-  transform: scale(-1, 1);
-  margin-right: 1em;
 }
 </style>
