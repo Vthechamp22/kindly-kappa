@@ -5,7 +5,7 @@ import { onedark } from "../assets/js/theme";
 
 const props = defineProps({
   state: Object,
-  sync: Object
+  sync: Object,
 });
 const emit = defineEmits(["leaveRoom"]);
 
