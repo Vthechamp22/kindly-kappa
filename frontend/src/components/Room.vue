@@ -20,7 +20,7 @@ onMounted(() => {
   }
   const theme = document.querySelector("body").getAttribute("data-theme");
 
-  let e = monaco.editor.create(document.getElementById("content"), {
+  editor = monaco.editor.create(document.getElementById("content"), {
     value: "",
     language: "python",
     insertSpaces: true,
@@ -78,6 +78,7 @@ function contentHandler(ev) {
 // skipcq: JS-0611
 props.state.websocket.onmessage = function (ev) {
   const message = JSON.parse(ev.data);
+  console.log(message.type);
 
   switch (message.type) {
     case "connect":
