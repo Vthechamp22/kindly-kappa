@@ -3,7 +3,10 @@ import * as monaco from "monaco-editor"; // skipcq: JS-C1003
 import { onMounted, ref, toRaw } from "vue";
 import { onedark } from "../assets/js/theme";
 
-const props = defineProps(["state", "sync"]);
+const props = defineProps({
+  state: Object,
+  sync: Object
+});
 const emit = defineEmits(["leaveRoom"]);
 
 let collaborators = ref(toRaw(props.sync.collaborators));
