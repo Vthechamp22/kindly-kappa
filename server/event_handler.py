@@ -178,7 +178,7 @@ class EventHandler:
                 response = EventResponse(
                     type=EventType.ERROR,
                     data=ErrorData(message="This has not been implemented yet."),
-                    status_code=StatusCode.DATA_NOT_FOUND,
+                    status_code=StatusCode.INVALID_REQUEST_DATA,
                 )
                 await self.client.send(response)
 
