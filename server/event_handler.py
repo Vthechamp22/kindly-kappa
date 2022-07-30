@@ -84,7 +84,7 @@ class EventHandler:
                         await self.client.send(response)
 
                         # Broadcast to other clients a connect event to update
-                        # the collaborators list
+                        # the collaborators' list
                         response = EventResponse(
                             type=EventType.CONNECT,
                             data=connect_data,
@@ -98,7 +98,7 @@ class EventHandler:
                 collaborators = [{"id": c.id.hex, "username": c.username} for c in self.room.clients]
 
                 # Broadcast to other clients a sync event to update the
-                # collaborators list
+                # collaborators' list
                 response = EventResponse(
                     type=EventType.SYNC,
                     data=SyncData(code=self.room.code, collaborators=collaborators),
@@ -112,7 +112,7 @@ class EventHandler:
                 move_data = cast(MoveData, event_data)
                 self.room.cursors[self.client.id] = move_data.position
 
-                # Broadcast to every client a move event to update the cursors
+                # Broadcast to every client a move event to update the cursors'
                 # positions
                 response = EventResponse(type=EventType.MOVE, data=move_data, status_code=StatusCode.SUCCESS)
                 await self.manager.broadcast(response, room_code)
