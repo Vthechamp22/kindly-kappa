@@ -47,13 +47,15 @@ let joining = false;
 function joinRoom({ username, roomCode }) {
   if (joining) return;
   joining = true;
+  
+  roomCode = roomCode.toUpperCase();
 
   websocket.send(
     JSON.stringify({
       type: "connect",
       data: {
         connection_type: "join",
-        room_code: roomCode.toUpperCase(),
+        room_code,
         username,
       },
     })
