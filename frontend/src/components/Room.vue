@@ -115,7 +115,7 @@ function leaveRoom() {
       </ul>
       <ul id="collabul"></ul>
       <button class="btn btn-primary mt-auto" @click="leaveRoom">
-        <fa-icon icon="fa-solid fa-arrow-right-from-bracket" />
+        <i class="gg-log-out mr-4"></i>
         Leave Room {{ props.state.roomCode }}
       </button>
     </div>
