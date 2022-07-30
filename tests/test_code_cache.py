@@ -1,5 +1,6 @@
 import pytest
 
+from server.events import ReplaceData
 from server.main import ConnectionManager
 
 
@@ -13,14 +14,14 @@ class DummyClient:
 def connection():
     manager = ConnectionManager()
     dummy_client = DummyClient()
-    manager.create_room(dummy_client, "CODE")
+    manager.create_room(dummy_client, "CODE", 1)
     return manager
 
 
 @pytest.fixture
 def update_cache(connection):
-    new_data = [{"from": 0, "to": 1, "value": "a"}]
-    connection._update_code_cache("CODE", new_data)
+    new_data = ReplaceData(code=[{"from": 0, "to": 1, "value": "a"}])
+    connection.update_code_cache("CODE", new_data)
 
 
 class TestCodeCache:
@@ -33,7 +34,7 @@ class TestCodeCache:
     def test_code_cache_replacement(self, connection: ConnectionManager, update_cache):
         assert connection._rooms["CODE"]["code"] == "a"
 
-        new_data = [{"from": 0, "to": 1, "value": "b"}]
-        connection._update_code_cache("CODE", new_data)
+        new_data = ReplaceData(code=[{"from": 0, "to": 1, "value": "b"}])
+        connection.update_code_cache("CODE", new_data)
 
         assert connection._rooms["CODE"]["code"] == "b"

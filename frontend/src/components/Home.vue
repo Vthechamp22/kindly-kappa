@@ -1,58 +1,31 @@
-<script setup lang="ts">
+<script setup>
 import { ref, watch } from "vue";
 
-const emit = defineEmits(["join"]);
+const emit = defineEmits(["joinRoom", "createRoom"]);
 
-const code = ref("");
-const username = ref("");
 const difficulty = ref(1);
-const theme = ref("onedarkpro");
-let connecting = false;
-
+const roomCode = ref("");
+const username = ref("");
 const errors = ref({
-  code: "",
+  roomCode: "",
   username: "",
 });
 
-const loading = ref(false);
-
+const theme = ref("onedarkpro");
 watch(theme, (newTheme) => {
   document
     .querySelector("body")
     .setAttribute("data-theme", newTheme.toLowerCase());
 });
 
-const hackyObject = {
-  switchToRoom: function () {
-    emit("join", { code: code.value, username: username.value });
-  },
-  reportMissingRoom: function () {
-    connecting = false;
-    alert("That room doesn't exist :/");
-  },
-  reportConnectionError: function () {
-    connecting = false;
-    alert(
-      "Well shit, if your reading this then somethings gone wrong.\nit genuinely is a bug, not a feature"
-    );
-  },
-  reportWSClose: function () {
-    connecting = false;
-  },
-};
-
 /**
- * Function for a client to join a room.
+ * Function to join a room.
  */
 function joinRoom() {
-  if (
-    !code.value ||
-    code.value.length != 4 ||
-    !/^[a-zA-Z]+$/.test(code.value)
-  ) {
-    errors.value.code = "Please enter a valid code!";
+  if (roomCode.value.length != 4 || !/^[a-zA-Z]+$/.test(roomCode.value)) {
+    errors.value.roomCode = "Please enter a valid code!";
   } else {
-    errors.value.code = "";
+    errors.value.roomCode = "";
   }
 
   if (!username.value) {
@@ -61,14 +34,11 @@ function joinRoom() {
     errors.value.username = "";
   }
 
-  if (errors.value.code || errors.value.username) {
+  if (errors.value.roomCode || errors.value.username) {
     return;
   }
 
-  if (!connecting) {
-    connecting = true;
-    connect(username.value, code.value, undefined, hackyObject);
-  }
+  emit("joinRoom", { username: username.value, roomCode: roomCode.value });
 }
 
 /**
@@ -77,15 +47,41 @@ function joinRoom() {
 function createRoom() {
   if (!username.value) {
     errors.value.username = "Please enter a username!";
-    return;
   } else {
     errors.value.username = "";
   }
 
-  if (!connecting) {
-    connecting = true;
-    connect(username.value, undefined, difficulty, hackyObject);
+  if (errors.value.roomCode || errors.value.username) {
+    return;
   }
+
+  emit("createRoom", {
+    username: username.value,
+    difficulty: difficulty.value,
+  });
+}
+
+/**
+ * Function to connect a client.
+ */
+function connect() {
+  if (roomCode.value.length != 4 || !/^[a-zA-Z]+$/.test(roomCode.value)) {
+    errors.value.roomCode = "Please enter a valid code!";
+  } else {
+    errors.value.roomCode = "";
+  }
+
+  if (!username.value) {
+    errors.value.username = "Please enter a username!";
+  } else {
+    errors.value.username = "";
+  }
+
+  if (errors.value.roomCode || errors.value.username) {
+    return;
+  }
+
+  emit("connect", { username: username.value, roomCode: roomCode.value });
 }
 </script>
 
@@ -117,11 +113,11 @@ function createRoom() {
             type="text"
             placeholder="Room code"
             class="input input-bordered border-primary w-full"
-            v-model="code"
+            v-model="roomCode"
           />
           <label class="label">
             <span class="label-text-alt text-error font-bold">{{
-              errors.code
+              errors.roomCode
             }}</span>
           </label>
           <input
@@ -136,8 +132,7 @@ function createRoom() {
             }}</span>
           </label>
           <button type="submit" class="btn btn-primary mt-4">
-            <i v-if="loading" class="gg-spinner"></i>
-            <span v-else>Join Room</span>
+            <span>Join Room</span>
           </button>
           <label
             for="create-room-modal"
