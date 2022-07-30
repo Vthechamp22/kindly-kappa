@@ -113,17 +113,6 @@ function connect() {
         <form @submit.prevent="joinRoom">
           <input
             type="text"
-            placeholder="Room code"
-            class="input input-bordered border-primary w-full"
-            v-model="roomCode"
-          />
-          <label class="label">
-            <span class="label-text-alt text-error font-bold">{{
-              errors.roomCode
-            }}</span>
-          </label>
-          <input
-            type="text"
             placeholder="Username"
             class="input input-bordered border-primary w-full"
             v-model="username"
@@ -131,6 +120,17 @@ function connect() {
           <label class="label">
             <span class="label-text-alt text-error font-bold">{{
               errors.username
+            }}</span>
+          </label>
+          <input
+            type="text"
+            placeholder="Room code"
+            class="input input-bordered border-primary w-full"
+            v-model="roomCode"
+          />
+          <label class="label">
+            <span class="label-text-alt text-error font-bold">{{
+              errors.roomCode
             }}</span>
           </label>
           <button type="submit" class="btn btn-primary mt-4">
