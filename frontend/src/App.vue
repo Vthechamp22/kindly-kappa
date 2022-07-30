@@ -22,6 +22,9 @@ websocket.onerror = function () {
   alert(`Oh no! Something has gone very wrong
 This genuinely is a bug, not a feature :(`);
 };
+websocket.onclose = function() {
+    alert(`The websocket closed... why?`)
+}
 
 const joined = ref(false);
 const state = ref({

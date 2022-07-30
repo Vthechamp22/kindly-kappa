@@ -22,6 +22,8 @@ watch(theme, (newTheme) => {
  * Function to join a room.
  */
 function joinRoom() {
+    roomCode.value = roomCode.value.toUpperCase();
+    
   if (roomCode.value.length != 4 || !/^[a-zA-Z]+$/.test(roomCode.value)) {
     errors.value.roomCode = "Please enter a valid code!";
   } else {
