@@ -96,12 +96,14 @@ props.state.websocket.onmessage = function (ev) {
 
 if (!collaborators.value.length) {
   setInterval(() => {
-    props.state?.websocket.send(JSON.stringify({
-      "type": "sync",
-      "data": {
-        "code": code
-      }
-    }));
+    props.state?.websocket.send(
+      JSON.stringify({
+        type: "sync",
+        data: {
+          code: code,
+        },
+      })
+    );
   }, 30000);
 }
 
