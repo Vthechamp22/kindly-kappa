@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import * as monaco from "monaco-editor"; // skipcq: JS-C1003
+import Timer from "./Timer.vue";
 import { onMounted, ref, toRaw } from "vue";
 import { onedark } from "../assets/js/theme";
 
@@ -9,9 +10,9 @@ const props = defineProps({
 });
 const emit = defineEmits(["leaveRoom"]);
 
-let collaborators = ref(toRaw(props.sync.collaborators));
-let code = props.sync.code; // skipcq: JS-V005
-let editor;
+let collaborators = ref(toRaw(props.sync?.collaborators));
+let code = props.sync?.code; // skipcq: JS-V005
+let editor: monaco.editor.IStandaloneCodeEditor;
 
 onMounted(() => {
   monaco.editor.defineTheme("OneDarkPro", onedark);
@@ -19,9 +20,9 @@ onMounted(() => {
   editor = monaco.editor.create(document.getElementById("container"), {
     language: "python",
   });
-  editor.getModel().onDidChangeContent(contentHandler);
-  editor.getModel().setValue(code);
-  editor.getModel().setEOL(0);
+  editor.getModel()?.onDidChangeContent(contentHandler);
+  editor.getModel()?.setValue(code);
+  editor.getModel()?.setEOL(0);
 });
 
 /**
@@ -39,7 +40,7 @@ function positionToIndex(line, col) {
  * Function to transform content into JSOn serializable content.
  */
 function contentHandler(ev) {
-  if (code === editor.getModel().getValue()) return;
+  if (code === editor.getModel()?.getValue()) return;
 
   const changes = ev.changes.map((change) => {
     return {
@@ -52,7 +53,7 @@ function contentHandler(ev) {
     };
   });
 
-  props.state.websocket.send(
+  props.state?.websocket.send(
     JSON.stringify({
       type: "replace",
       data: {
@@ -61,7 +62,7 @@ function contentHandler(ev) {
     })
   );
 
-  code = editor.getModel().getValue();
+  code = editor.getModel()?.getValue();
 }
 
 /**
@@ -93,11 +94,22 @@ props.state.websocket.onmessage = function (ev) {
   }
 };
 
+if (!collaborators.value.length) {
+  setInterval(() => {
+    props.state?.websocket.send(JSON.stringify({
+      "type": "sync",
+      "data": {
+        "code": code
+      }
+    }));
+  }, 30000);
+}
+
 /**
  * Function for a client to leave a room.
  */
 function leaveRoom() {
-  props.state.websocket.send(
+  props.state?.websocket.send(
     JSON.stringify({
       type: "disconnect",
       data: {},
@@ -116,10 +128,16 @@ function leaveRoom() {
           {{ collaborator.username }}
         </li>
       </ul>
+      <div id="info">
+        <Timer></Timer>
+        <p>Username: {{ props.state?.username }}</p>
+        <p>Room: {{ props.state?.roomCode }}</p>
+        <p>Owner: undefined</p>
+      </div>
       <ul id="collabul"></ul>
       <button class="btn btn-primary mt-auto" @click="leaveRoom">
         <i class="gg-log-out mr-4"></i>
-        Leave Room {{ props.state.roomCode }}
+        Leave Room {{ props.state?.roomCode }}
       </button>
     </div>
 
@@ -196,5 +214,14 @@ li {
   flex-direction: column;
   width: 100%;
   height: 100%;
+}
+
+#info {
+  position: absolute;
+  left: 20px;
+  bottom: 68px;
+  font-size: 24px;
+  text-align: left;
+  line-height: 24px;
 }
 </style>
