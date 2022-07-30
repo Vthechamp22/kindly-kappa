@@ -48,7 +48,6 @@ async def room(websocket: WebSocket) -> None:
     try:
         while True:
             event = await client.receive()
-            print(event)
             await handler(event, room_code)
     except WebSocketDisconnect:
         pass
