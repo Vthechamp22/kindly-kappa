@@ -7,6 +7,7 @@ from pydantic import BaseModel, validator
 
 from server.codes import StatusCode
 
+Time = TypedDict("Time", {"min": int, "sec": int, "mil": int})
 UserInfo = list[dict[str, str]]
 Position = TypedDict("Position", {"x": int, "y": int})
 Replacement = TypedDict("Replacement", {"from": int, "to": int, "value": str})
@@ -73,6 +74,7 @@ class SyncData(EventData):
 
     code: str
     collaborators: UserInfo
+    time: Time
 
 
 class MoveData(EventData):

@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-const min = ref(0);
-const sec = ref(0);
-const mil = ref(0);
+const props = defineProps(["time"]);
+
+const min = ref(props.time.min);
+const sec = ref(props.time.sec);
+const mil = ref(props.time.mil);
 
 setInterval(() => {
   mil.value = mil.value + 1;

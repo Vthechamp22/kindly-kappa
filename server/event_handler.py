@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import cast
 
 from server.client import Client
@@ -93,11 +94,16 @@ class EventHandler:
 
                         collaborators = [{"id": c.id.hex, "username": c.username} for c in self.room.clients]
 
+                        deltaseconds = (datetime.now() - self.room.epoch).total_seconds()
+                        minutes, remainder = divmod(deltaseconds, 60)
+                        seconds, milliseconds = divmod(remainder, 1)
+                        time = {"min": minutes, "sec": seconds, "mil": milliseconds}
+
                         # Send a sync event to the client to update the code and
                         # the collaborators' list
                         response = EventResponse(
                             type=EventType.SYNC,
-                            data=SyncData(code=self.room.code, collaborators=collaborators),
+                            data=SyncData(code=self.room.code, collaborators=collaborators, time=time),
                             status_code=StatusCode.SUCCESS,
                         )
                         await self.client.send(response)
@@ -107,11 +113,16 @@ class EventHandler:
 
                         collaborators = [{"id": c.id.hex, "username": c.username} for c in self.room.clients]
 
+                        deltaseconds = (datetime.now() - self.room.epoch).total_seconds()
+                        minutes, remainder = divmod(deltaseconds, 60)
+                        seconds, milliseconds = divmod(remainder, 1)
+                        time = {"min": minutes, "sec": seconds, "mil": milliseconds}
+
                         # Send a sync event to the client to update the code and
                         # the collaborators' list
                         response = EventResponse(
                             type=EventType.SYNC,
-                            data=SyncData(code=self.room.code, collaborators=collaborators),
+                            data=SyncData(code=self.room.code, collaborators=collaborators, time=time),
                             status_code=StatusCode.SUCCESS,
                         )
                         await self.client.send(response)

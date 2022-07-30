@@ -129,7 +129,7 @@ function leaveRoom() {
         </li>
       </ul>
       <div id="info">
-        <Timer></Timer>
+        <Timer :time="props.sync?.time"></Timer>
         <p>Username: {{ props.state?.username }}</p>
         <p>Room: {{ props.state?.roomCode }}</p>
         <p>Owner: undefined</p>

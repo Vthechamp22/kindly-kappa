@@ -37,6 +37,7 @@ const sync = ref({
   collaborators: [],
   code: "",
   difficulty: 0,
+  time: undefined
 });
 let joining = false;
 
@@ -101,6 +102,7 @@ websocket.onmessage = function (ev) {
       collaborators: message.data.collaborators,
       code: message.data.code,
       difficulty: message.data.difficulty,
+      time: message.data.time
     };
     joined.value = true;
   }
