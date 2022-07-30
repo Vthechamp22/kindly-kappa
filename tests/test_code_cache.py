@@ -19,9 +19,9 @@ def connection():
 
 
 @pytest.fixture
-def update_cache(connection):
+def update_code(connection):
     new_data = ReplaceData(code=[{"from": 0, "to": 1, "value": "a"}])
-    connection.update_code_cache("CODE", new_data)
+    connection._rooms["CODE"].update_code(new_data)
 
 
 class TestCodeCache:
@@ -35,6 +35,6 @@ class TestCodeCache:
         assert connection._rooms["CODE"].code == "a"
 
         new_data = ReplaceData(code=[{"from": 0, "to": 1, "value": "b"}])
-        connection.update_code_cache("CODE", new_data)
+        connection._rooms["CODE"].update_code(new_data)
 
         assert connection._rooms["CODE"].code == "b"
