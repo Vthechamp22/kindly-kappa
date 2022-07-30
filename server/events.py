@@ -201,6 +201,15 @@ class EventHandler:
                         if connect_data.difficulty is None:
                             return buggy, self.client, data
                         self.manager.create_room(self.client, connect_data.room_code, connect_data.difficulty)
+                        current_room = self.manager._rooms[room_code]
+                        collaborators = [{"id": c.id.hex, "username": c.username} for c in current_room["clients"]]
+                        await self.client.send(
+                            EventResponse(
+                                type=EventType.SYNC,
+                                data=SyncData(code=current_room["code"], collaborators=collaborators),
+                                status_code=StatusCode.SUCCESS,
+                            ),
+                        )
                     case "join":
                         self.manager.join_room(self.client, room_code)
                         current_room = self.manager._rooms[room_code]
