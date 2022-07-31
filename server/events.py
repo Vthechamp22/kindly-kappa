@@ -79,7 +79,7 @@ class SyncData(EventData):
     Fields:
         code: The code that already exists in the room.
         collaborators: The list of users that already collaborate in the room.
-        time: The elapsed time since the creation of the room.
+        time (optional): The elapsed time since the creation of the room.
         owner_id: The id of the owner of the room.
         difficulty: The level of difficulty.
     """
