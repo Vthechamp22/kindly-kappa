@@ -21,7 +21,7 @@ let app_errors = ref([]);
 
 /**
  * Function to add errors.
-*/
+ */
 function add_error(err) {
   let error = {
     id: generateCode(),
