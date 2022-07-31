@@ -156,8 +156,8 @@ class EventHandler:
                 if self.client.id != self.room.owner_id:
                     return
 
-                connect_data = cast(SyncData, event_data)
-                self.room.set_code(connect_data.code)
+                sync_data = cast(SyncData, event_data)
+                self.room.set_code(sync_data.code)
 
                 collaborators, time = self._get_sync_state()
 
@@ -165,7 +165,7 @@ class EventHandler:
                 response = EventResponse(
                     type=EventType.SYNC,
                     data=SyncData(
-                        code=cast(SyncData, event_data).code,
+                        code=sync_data.code,
                         collaborators=collaborators,
                         time=time,
                         owner_id=self.room.owner_id.hex,
