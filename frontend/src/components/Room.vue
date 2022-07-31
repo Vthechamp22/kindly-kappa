@@ -174,6 +174,9 @@ function leaveRoom() {
     <div id="sidebar">
       <h2 class="text-6xl m-3">Collaborators</h2>
       <ul style="margin-left: 20px">
+        <li style="color: orange">
+          {{ props.state?.username }}
+        </li>
         <li v-for="collaborator in collaborators" :key="collaborator.id">
           {{ collaborator.username }}
         </li>
@@ -189,7 +192,6 @@ function leaveRoom() {
           </button>
         </form>
         <Timer :time="props.sync?.time"></Timer>
-        <p>Username: {{ props.state?.username }}</p>
         <p>Room: {{ props.state?.roomCode }}</p>
         <p>Owner: undefined</p>
       </div>
