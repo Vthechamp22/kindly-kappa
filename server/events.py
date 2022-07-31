@@ -46,12 +46,14 @@ class ConnectData(EventData):
             "connection_type" is "create".
         room_code: The unique four-letters code that will represent the room.
         username: The username of the user creating or joining the room.
+        id: The id of the connected user.
     """
 
     connection_type: Literal["create", "join"]
     difficulty: int | None = None
     room_code: str
     username: str
+    id: str | None = None
 
     @validator("difficulty", pre=True, always=True)
     def valid_difficulty(cls, value, values):  # noqa: U100
@@ -78,13 +80,15 @@ class SyncData(EventData):
         code: The code that already exists in the room.
         collaborators: The list of users that already collaborate in the room.
         time: The elapsed time since the creation of the room.
-        owner: The id of the owner of the room.
+        owner_id: The id of the owner of the room.
+        difficulty: The level of difficulty.
     """
 
     code: str
     collaborators: UserInfo
-    time: Time
+    time: Time | None = None
     owner_id: str
+    difficulty: int
 
 
 class MoveData(EventData):

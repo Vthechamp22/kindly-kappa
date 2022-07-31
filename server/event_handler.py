@@ -77,6 +77,7 @@ class EventHandler:
         match request.type:
             case EventType.CONNECT:
                 connect_data = cast(ConnectData, event_data)
+                connect_data.id = self.client.id.hex
 
                 self.client.username = connect_data.username
                 self.room_code = connect_data.room_code
@@ -106,7 +107,16 @@ class EventHandler:
                                 collaborators=collaborators,
                                 time=time,
                                 owner_id=self.room.owner_id.hex,
+                                difficulty=self.room.difficulty,
                             ),
+                            status_code=StatusCode.SUCCESS,
+                        )
+                        await self.client.send(response)
+
+                        # Send a connect event to the client
+                        response = EventResponse(
+                            type=EventType.CONNECT,
+                            data=connect_data,
                             status_code=StatusCode.SUCCESS,
                         )
                         await self.client.send(response)
@@ -125,6 +135,7 @@ class EventHandler:
                                 collaborators=collaborators,
                                 time=time,
                                 owner_id=self.room.owner_id.hex,
+                                difficulty=self.room.difficulty,
                             ),
                             status_code=StatusCode.SUCCESS,
                         )
@@ -137,7 +148,7 @@ class EventHandler:
                             data=connect_data,
                             status_code=StatusCode.SUCCESS,
                         )
-                        await self.manager.broadcast(response, self.room_code, sender=self.client)
+                        await self.manager.broadcast(response, self.room_code)
             case EventType.DISCONNECT:
                 # Broadcast to other clients a disconnect event to update the
                 # collaborators' list
@@ -167,6 +178,7 @@ class EventHandler:
                         collaborators=collaborators,
                         time=time,
                         owner_id=self.room.owner_id.hex,
+                        difficulty=self.room.difficulty,
                     ),
                     status_code=StatusCode.SUCCESS,
                 )
@@ -195,7 +207,11 @@ class EventHandler:
                 response = EventResponse(
                     type=EventType.SYNC,
                     data=SyncData(
-                        code=self.room.code, collaborators=collaborators, time=time, owner_id=self.room.owner_id.hex
+                        code=self.room.code,
+                        collaborators=collaborators,
+                        time=time,
+                        owner_id=self.room.owner_id.hex,
+                        difficulty=self.room.difficulty,
                     ),
                     status_code=StatusCode.SUCCESS,
                 )

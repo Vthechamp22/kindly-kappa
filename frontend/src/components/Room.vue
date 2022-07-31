@@ -19,6 +19,9 @@ let evalText = ref("");
 let evalLoading = ref(false);
 let time = ref(toRaw(props.sync?.time));
 
+let syncinterval;
+let bugsinterval;
+
 onMounted(() => {
   for (let theme of themes) {
     monaco.editor.defineTheme(theme.name, theme.theme);
@@ -86,9 +89,12 @@ function contentHandler(ev) {
 // skipcq: JS-0611
 props.state.websocket.onmessage = function (ev) {
   const message = JSON.parse(ev.data);
+
   switch (message.type) {
     case "connect":
-      collaborators.value.push(message.data);
+      collaborators.value = message.data.collaborators.filter(c => {
+        return c.id != props.sync.ownID;
+      });
       break;
 
     case "disconnect":
@@ -113,24 +119,44 @@ props.state.websocket.onmessage = function (ev) {
       break;
 
     case "sync":
-      collaborators.value = message.data.collaborators;
+      collaborators.value = message.data.collaborators.filter(c => {
+        return c.id != props.sync.ownID;
+      });
       code = message.data.code;
       time.value = message.data.time;
       break;
   }
 };
 
+const bugTimes = {
+  1: 60_000,
+  2: 45_000,
+  3: 30_000
+}
+
 if (!collaborators.value.length) {
-  setInterval(() => {
+  syncinterval = setInterval(() => {
     props.state.websocket.send(
       JSON.stringify({
         type: "sync",
         data: {
+          collaborators: collaborators.value,
+          owner_id: props.sync?.owner_id,
           code: code,
+          difficulty: props.sync?.difficulty
         },
       })
     );
-  }, 30000);
+  }, 10000);
+
+  bugsinterval = setInterval(() => {
+    props.state.websocket.send(
+      JSON.stringify({
+        type: "bugs",
+        data: {},
+      })
+    );
+  }, bugTimes[props.sync?.difficulty]);
 }
 
 /**
@@ -144,7 +170,10 @@ function requestEval() {
     JSON.stringify({
       type: "sync",
       data: {
+        collaborators: collaborators.value,
+        owner_id: props.sync?.owner_id,
         code: code,
+        difficulty: props.sync?.difficulty
       },
     })
   );
@@ -177,6 +206,9 @@ function leaveRoom() {
       data: {},
     })
   );
+
+  clearInterval(syncinterval);
+  clearInterval(bugsinterval);
   emit("leaveRoom");
 }
 </script>
@@ -188,16 +220,10 @@ function leaveRoom() {
     <label for="evaluate-modal" class="modal cursor-pointer">
       <label id="modalactual" class="modal-box relative">
         <button @click="closeModal" class="btn my-4">Okay</button>
-        <label
-          for="evaluate-modal"
-          class="btn btn-sm btn-circle absolute right-2 top-2"
-        >
+        <label for="evaluate-modal" class="btn btn-sm btn-circle absolute right-2 top-2">
           <i class="gg-close-o" style="--ggs: 1.2"></i>
         </label>
-        <PulseLoader
-          v-if="evalLoading"
-          style="margin-bottom: 180px"
-        ></PulseLoader>
+        <PulseLoader v-if="evalLoading" style="margin-bottom: 180px"></PulseLoader>
         <div id="codebox" v-else>
           {{ evalText }}
         </div>
@@ -209,33 +235,26 @@ function leaveRoom() {
       <ul style="margin-left: 20px">
         <li style="color: orange">
           {{ props.state?.username }}
-          <span v-show="props.sync.ownerID === null" class="dot"></span>
+          <span v-show="props.sync.owner_id === props.sync.ownID" class="dot"></span>
         </li>
         <li v-for="collaborator in collaborators" :key="collaborator.id">
           {{ collaborator.username }}
-          <span
-            v-show="collaborator.id === props.sync.ownerID"
-            class="dot"
-          ></span>
+          <span v-show="collaborator.id === props.sync.owner_id" class="dot"></span>
         </li>
       </ul>
       <div id="info">
         <form id="aform">
-          <button
-            id="evalbut"
-            type="button"
-            @click="
-              () => {
-                requestEval();
-              }
-            "
-            class="btn btn-primary mt-4"
-          >
+          <button id="evalbut" type="button" @click="
+            () => {
+              requestEval();
+            }
+          " class="btn btn-primary mt-4">
             Evaluate Code
           </button>
         </form>
         <Timer :time="time"></Timer>
         <p>Room: {{ props.state?.roomCode }}</p>
+        <p>Difficulty: {{ props.sync?.difficulty }}</p>
       </div>
       <ul id="collabul"></ul>
       <button class="btn btn-primary mt-auto" @click="leaveRoom">
@@ -257,13 +276,13 @@ function leaveRoom() {
   min-height: 512px;
 }
 
-#modalactual > button {
+#modalactual>button {
   margin-bottom: 0;
 }
 
 #codebox {
   background-color: hsl(var(--nf, var(--n)));
-  border-radius: var(--rounded-box, 1rem);
+  border-radius: var(--rounded-btn, 0.5rem);
   text-align: left;
   padding: 16px;
   flex-grow: 1;
@@ -281,13 +300,13 @@ function leaveRoom() {
 /* Track */
 ::-webkit-scrollbar-track {
   background: hsl(var(--b1)) / var(--tw-bg-opacity);
-  border-radius: 4px;
+  border-radius: var(--rounded-btn, 0.5rem);;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
   background: hsl(var(--bc));
-  border-radius: 10px;
+  border-radius: var(--rounded-btn, 0.5rem);;
 }
 
 /* Handle on hover */
@@ -366,7 +385,7 @@ li {
 #info {
   position: absolute;
   left: 20px;
-  bottom: 68px;
+  bottom: 58px;
   font-size: 24px;
   text-align: left;
   line-height: 24px;
