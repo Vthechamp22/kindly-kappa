@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import PulseLoader from 'vue-spinner/src/PulseLoader.vue'
 import * as monaco from "monaco-editor"; // skipcq: JS-C1003
 import Timer from "./Timer.vue";
 import { onMounted, ref, toRaw } from "vue";
@@ -15,6 +16,7 @@ let code = props.sync?.code; // skipcq: JS-V005
 let editor: monaco.editor.IStandaloneCodeEditor;
 let joined = false;
 let evalText = ref("");
+let evalLoading = ref(false)
 
 onMounted(() => {
   for (let theme of themes) {
@@ -106,6 +108,7 @@ props.state.websocket.onmessage = function (ev) {
       break;
 
     case "evaluate":
+      evalLoading.value = false;
       evalText = message.data.result;
   }
 };
@@ -125,6 +128,7 @@ if (!collaborators.value.length) {
 
 function requestEval() {
   if (!joined) return;
+  evalLoading.value = true;
 
   props.state.websocket.send(
     JSON.stringify({
@@ -161,16 +165,17 @@ function leaveRoom() {
     <input type="checkbox" id="evaluate-modal" class="modal-toggle" />
     <label for="evaluate-modal" class="modal cursor-pointer">
       <label id="modalactual" class="modal-box relative">
+        <button @click="closeModal" class="btn my-4">Okay</button>
         <label
           for="evaluate-modal"
           class="btn btn-sm btn-circle absolute right-2 top-2"
         >
           <i class="gg-close-o" style="--ggs: 1.2"></i>
         </label>
-        <div style="width: 100%; height: 100%; overflow-y: auto">
+        <PulseLoader v-if="evalLoading" style="margin-bottom:180px"></PulseLoader>
+        <div v-else style="flex-grow: 1; overflow-y: auto">
           {{ evalText }}
         </div>
-        <button @click="closeModal" class="btn my-4">Okay</button>
       </label>
     </label>
 
