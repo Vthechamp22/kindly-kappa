@@ -48,7 +48,7 @@ function validateUsername(next_step) {
 
 /**
  * Function to join a room.
-*/
+ */
 function joinRoom() {
   if (!roomCode.value) {
     errors.value.roomCode = "Please enter a room code!";
