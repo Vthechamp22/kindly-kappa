@@ -111,7 +111,7 @@ props.state.websocket.onmessage = function (ev) {
     case "evaluate":
       evalLoading.value = false;
       evalText.value = message.data.result;
-    
+
     case "sync":
       collaborators.value = message.data.collaborators;
       code = message.data.code;
@@ -135,6 +135,15 @@ if (!collaborators.value.length) {
 function requestEval() {
   if (!joined) return;
   evalLoading.value = true;
+
+  props.state.websocket.send(
+    JSON.stringify({
+      type: "sync",
+      data: {
+        code: code,
+      },
+    })
+  );
 
   props.state.websocket.send(
     JSON.stringify({
@@ -172,16 +181,10 @@ function leaveRoom() {
     <label for="evaluate-modal" class="modal cursor-pointer">
       <label id="modalactual" class="modal-box relative">
         <button @click="closeModal" class="btn my-4">Okay</button>
-        <label
-          for="evaluate-modal"
-          class="btn btn-sm btn-circle absolute right-2 top-2"
-        >
+        <label for="evaluate-modal" class="btn btn-sm btn-circle absolute right-2 top-2">
           <i class="gg-close-o" style="--ggs: 1.2"></i>
         </label>
-        <PulseLoader
-          v-if="evalLoading"
-          style="margin-bottom: 180px"
-        ></PulseLoader>
+        <PulseLoader v-if="evalLoading" style="margin-bottom: 180px"></PulseLoader>
         <div v-else style="flex-grow: 1; overflow-y: auto">
           {{ evalText }}
         </div>
@@ -192,24 +195,19 @@ function leaveRoom() {
       <h2 class="text-6xl m-3">Collaborators</h2>
       <ul style="margin-left: 20px">
         <li style="color: orange">
-          {{ props.state?.username }} <span v-show="props.sync.ownerID===null" class="dot"></span>
+          {{ props.state?.username }} <span v-show="props.sync.ownerID === null" class="dot"></span>
         </li>
         <li v-for="collaborator in collaborators" :key="collaborator.id">
-          {{ collaborator.username }} <span v-show="collaborator.id===props.sync.ownerID" class="dot"></span>
+          {{ collaborator.username }} <span v-show="collaborator.id === props.sync.ownerID" class="dot"></span>
         </li>
       </ul>
       <div id="info">
         <form id="aform">
-          <button
-            id="evalbut"
-            type="button"
-            @click="
-              () => {
-                requestEval();
-              }
-            "
-            class="btn btn-primary mt-4"
-          >
+          <button id="evalbut" type="button" @click="
+            () => {
+              requestEval();
+            }
+          " class="btn btn-primary mt-4">
             Evaluate Code
           </button>
         </form>
@@ -236,7 +234,7 @@ function leaveRoom() {
   min-height: 512px;
 }
 
-#modalactual > button {
+#modalactual>button {
   margin-bottom: 0;
 }
 
