@@ -192,7 +192,10 @@ function leaveRoom() {
           v-if="evalLoading"
           style="margin-bottom: 180px"
         ></PulseLoader>
-        <div v-else style="flex-grow: 1; overflow-y: auto; white-space: pre-wrap;">
+        <div
+          v-else
+          style="flex-grow: 1; overflow-y: auto; white-space: pre-wrap"
+        >
           {{ evalText }}
         </div>
       </label>
