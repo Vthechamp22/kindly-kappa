@@ -61,4 +61,5 @@ class Room:
 
         modifier = Modifiers(self.code, self.difficulty)
 
-        self.code = modifier.output
+        for code_change in modifier.output.code:
+            self.update_code(ReplaceData(code=[code_change]))

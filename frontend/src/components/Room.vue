@@ -125,6 +125,7 @@ props.state.websocket.onmessage = function (ev) {
       });
       code = message.data.code;
       time.value = message.data.time;
+      editor.setValue(code);
       break;
   }
 };
