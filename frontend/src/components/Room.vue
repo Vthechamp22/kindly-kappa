@@ -17,6 +17,7 @@ let editor: monaco.editor.IStandaloneCodeEditor;
 let joined = false;
 let evalText = ref("");
 let evalLoading = ref(false);
+let time = ref(toRaw(props.sync?.time))
 
 onMounted(() => {
   for (let theme of themes) {
@@ -110,6 +111,11 @@ props.state.websocket.onmessage = function (ev) {
     case "evaluate":
       evalLoading.value = false;
       evalText = message.data.result;
+    
+    case "sync":
+      collaborators.value = message.data.collaborators;
+      code = message.data.code;
+      time.value = message.data.time;
   }
 };
 
@@ -207,7 +213,7 @@ function leaveRoom() {
             Evaluate Code
           </button>
         </form>
-        <Timer :time="props.sync?.time"></Timer>
+        <Timer :time="time"></Timer>
         <p>Room: {{ props.state?.roomCode }}</p>
         <p>Owner: undefined</p>
       </div>
