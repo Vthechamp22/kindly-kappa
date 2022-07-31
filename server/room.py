@@ -38,7 +38,7 @@ class Room:
 
             updated_code = current_code[:from_index] + new_value + current_code[to_index:]
             self.code = updated_code
-    
+
     def set_code(self, updated_code: str) -> None:
         """Sets the code.
 
