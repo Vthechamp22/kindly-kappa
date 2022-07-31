@@ -14,6 +14,7 @@ let collaborators = ref(toRaw(props.sync?.collaborators));
 let code = props.sync?.code; // skipcq: JS-V005
 let editor: monaco.editor.IStandaloneCodeEditor;
 let joined = false;
+let evalText = ref("")
 
 onMounted(() => {
   for (let theme of themes) {
@@ -103,6 +104,9 @@ props.state.websocket.onmessage = function (ev) {
       });
       editor.setValue(code);
       break;
+
+    case "evaluate":
+      evalText = message.data.result;
   }
 };
 
@@ -117,6 +121,23 @@ if (!collaborators.value.length) {
       })
     );
   }, 30000);
+}
+
+function requestEval() {
+  if (!joined) return;
+
+  props.state.websocket.send(
+    JSON.stringify({
+      type: "evaluate",
+      data: {},
+    })
+  );
+
+  document.querySelector('input#evaluate-modal').checked = true;
+}
+
+function closeModal() {
+  document.querySelector('input#evaluate-modal').checked = false;
 }
 
 /**
@@ -136,6 +157,20 @@ function leaveRoom() {
 
 <template>
   <div id="room">
+    <!-- Model for displaying code evaluation -->
+    <input type="checkbox" id="evaluate-modal" class="modal-toggle" />
+    <label for="evaluate-modal" class="modal cursor-pointer">
+      <label id="modalactual" class="modal-box relative">
+        <label for="evaluate-modal" class="btn btn-sm btn-circle absolute right-2 top-2">
+          <i class="gg-close-o" style="--ggs: 1.2"></i>
+        </label>
+        <div style="width:100%;height:100%;overflow-y: auto;">
+          {{ evalText }}
+        </div>
+        <button @click="closeModal" class="btn my-4">Okay</button>
+      </label>
+    </label>
+
     <div id="sidebar">
       <h2 class="text-6xl m-3">Collaborators</h2>
       <ul style="margin-left: 20px">
@@ -144,6 +179,15 @@ function leaveRoom() {
         </li>
       </ul>
       <div id="info">
+        <form id="aform">
+          <button id="evalbut" type="button" @click="
+            () => {
+              requestEval();
+            }
+          " class="btn btn-primary mt-4">
+            Evaluate Code
+          </button>
+        </form>
         <Timer :time="props.sync?.time"></Timer>
         <p>Username: {{ props.state?.username }}</p>
         <p>Room: {{ props.state?.roomCode }}</p>
@@ -163,6 +207,16 @@ function leaveRoom() {
 </template>
 
 <style scoped>
+#modalactual {
+  display: flex;
+  flex-direction: column-reverse;
+  min-height: 512px;
+}
+
+#modalactual>button {
+  margin-bottom: 0;
+}
+
 #room {
   height: 100%;
   display: grid;
@@ -229,5 +283,14 @@ li {
   font-size: 24px;
   text-align: left;
   line-height: 24px;
+}
+
+#aform {
+  text-align: center;
+}
+
+#evalbut {
+  margin-bottom: 28px;
+  width: 100%;
 }
 </style>
