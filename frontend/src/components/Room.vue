@@ -133,6 +133,9 @@ if (!collaborators.value.length) {
   }, 30000);
 }
 
+/**
+ * Function to request the evaluation of the current code.
+*/
 function requestEval() {
   if (!joined) return;
   evalLoading.value = true;
@@ -156,6 +159,9 @@ function requestEval() {
   document.querySelector("input#evaluate-modal").checked = true;
 }
 
+/**
+ * Function to close the Evaluate modal.
+*/
 function closeModal() {
   document.querySelector("input#evaluate-modal").checked = false;
 }
