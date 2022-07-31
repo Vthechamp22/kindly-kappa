@@ -6,8 +6,8 @@ import { onMounted, ref, toRaw } from "vue";
 import { themes } from "../assets/js/theme";
 
 const props = defineProps({
-  state: Object,
-  sync: Object,
+  state: Object, // skipcq: JS-0682
+  sync: Object, // skipcq: JS-0682
 });
 const emit = defineEmits(["leaveRoom"]);
 
