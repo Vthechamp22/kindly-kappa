@@ -54,13 +54,11 @@ class Room:
         """
         self.code = updated_code
 
-    def introduce_bugs(self) -> ReplaceData:
-        """Introduces bugs based on the current code.
+    def introduce_bugs(self) -> None:
+        """Introduces bugs based on the current code."""
+        if self.code.strip() == "":
+            return
 
-        Returns:
-            A list of changes to make to the code.
-        """
-        current_code = self.code
-        modifier = Modifiers(current_code, self.difficulty)
+        modifier = Modifiers(self.code, self.difficulty)
 
-        return modifier.output
+        self.code = modifier.output
