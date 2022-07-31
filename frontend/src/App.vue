@@ -131,7 +131,7 @@ websocket.onmessage = function (ev) {
     };
   }
   if (message.type === "connect") {
-    sync.value.ownID = message.data.userid;
+    sync.value.ownID = message.data.user_id;
     joined.value = true;
   }
 
