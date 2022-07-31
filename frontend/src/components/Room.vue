@@ -22,8 +22,6 @@ let time = ref(toRaw(props.sync?.time));
 let syncinterval;
 let bugsinterval;
 
-console.log(props.sync.ownID);
-
 onMounted(() => {
   for (let theme of themes) {
     monaco.editor.defineTheme(theme.name, theme.theme);
@@ -91,7 +89,6 @@ function contentHandler(ev) {
 // skipcq: JS-0611
 props.state.websocket.onmessage = function (ev) {
   const message = JSON.parse(ev.data);
-  console.log(message);
 
   switch (message.type) {
     case "connect":
