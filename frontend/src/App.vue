@@ -17,13 +17,31 @@ function generateCode(length = 4) {
   return code;
 }
 
-const websocket = new WebSocket("ws://localhost:8000/room");
-websocket.onerror = function () {
-  alert(`Oh no! Something has gone very wrong
-This genuinely is a bug, not a feature :(`);
+let err_id = 0
+let app_errors = ref([])
+
+function add_error(err){
+  app_errors.value.push({
+  id: err_id++,
+    err
+  })
+
+  setTimeout(() => {
+    app_errors.value = app_errors.value.filter(e => e.id !== err_id - 1)
+  }, 5000)
+}
+
+
+const websocket = new WebSocket();
+websocket = new WebSocket("ws://localhost:8000/room");
+websocket.onerror = function (err) {
+  console.error(err);
+  add_error(`Oh no! Something has gone very wrong. This genuinely is a bug, not a feature :( (${err})`)
 };
-websocket.onclose = function () {
-  alert(`The websocket closed... why?`);
+
+websocket.onclose = function (err) {
+  console.error(err);
+  add_error("The websocket closed... why?")
 };
 
 const joined = ref(false);
@@ -55,7 +73,7 @@ function joinRoom({ username, roomCode }) {
       type: "connect",
       data: {
         connection_type: "join",
-        room_code,
+        room_code: roomCode,
         username,
       },
     })
@@ -124,6 +142,30 @@ function leaveRoom() {
 </script>
 
 <template>
-  <Room v-if="joined" :state="state" :sync="sync" @leaveRoom="leaveRoom"></Room>
-  <Home v-else @joinRoom="joinRoom" @createRoom="createRoom"></Home>
+  <div class="h-full">
+    <div class="alerts">
+      <div v-for="error of app_errors" :key="error.id" class="animate__animated animate__fadeInLeft alert my-2 alert-error w-full m-auto">
+        <div>
+          <i class="gg-danger"></i>
+          <span>{{ error.err }}</span>
+        </div>
+      </div>
+    </div>
+    <Room v-if="joined" :state="state" :sync="sync" @leaveRoom="leaveRoom"></Room>
+    <Home v-else @joinRoom="joinRoom" @createRoom="createRoom"></Home>
+  </div>
 </template>
+
+<style scoped>
+.alerts {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 10000;
+}
+
+.alert.alert-error {
+  animation-duration: 0.3s;
+}
+</style>
