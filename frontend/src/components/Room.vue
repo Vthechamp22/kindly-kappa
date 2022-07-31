@@ -200,7 +200,7 @@ function leaveRoom() {
       </ul>
       <div id="info">
         <form id="aform">
-          <button v-if="!props.sync.ownerID"
+          <button
             id="evalbut"
             type="button"
             @click="
@@ -215,7 +215,6 @@ function leaveRoom() {
         </form>
         <Timer :time="time"></Timer>
         <p>Room: {{ props.state?.roomCode }}</p>
-        <p>Owner: undefined</p>
       </div>
       <ul id="collabul"></ul>
       <button class="btn btn-primary mt-auto" @click="leaveRoom">
