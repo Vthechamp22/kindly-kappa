@@ -80,8 +80,8 @@ class SyncData(EventData):
     """
 
     code: str
-    collaborators: UserInfo
-    time: Time
+    collaborators: UserInfo | None = None
+    time: Time | None = None
 
 
 class MoveData(EventData):

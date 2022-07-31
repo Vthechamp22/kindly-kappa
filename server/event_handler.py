@@ -147,6 +147,25 @@ class EventHandler:
                 await self.manager.broadcast(response, self.room_code, sender=self.client)
 
                 self.manager.disconnect(self.client, self.room_code)
+            case EventType.SYNC:
+                # Validate the sender is the room owner
+                if self.client.id != self.room.owner_id:
+                    return
+
+                collaborators = [{"id": c.id.hex, "username": c.username} for c in self.room.clients if c.id != self.client.id]
+                
+                deltaseconds = (datetime.now() - self.room.epoch).total_seconds()
+                minutes, remainder = divmod(deltaseconds, 60)
+                seconds, milliseconds = divmod(remainder, 1)
+                time = {"min": minutes, "sec": seconds, "mil": milliseconds}
+
+                # Broadcast to every client (including sender) a sync event
+                response = EventResponse(
+                    type=EventType.SYNC,
+                    data=SyncData(code=cast(SyncData, event_data).code, collaborators=collaborators, time=time),
+                    status_code=StatusCode.SUCCESS,
+                )
+                await self.manager.broadcast(response, self.room_code)
             case EventType.MOVE:
                 move_data = cast(MoveData, event_data)
                 self.room.cursors[self.client.id] = move_data.position
