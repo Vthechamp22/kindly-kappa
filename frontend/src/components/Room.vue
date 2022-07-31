@@ -111,7 +111,7 @@ props.state.websocket.onmessage = function (ev) {
     case "evaluate":
       evalLoading.value = false;
       evalText.value = message.data.result;
-    
+
     case "sync":
       collaborators.value = message.data.collaborators;
       code = message.data.code;
@@ -192,15 +192,21 @@ function leaveRoom() {
       <h2 class="text-6xl m-3">Collaborators</h2>
       <ul style="margin-left: 20px">
         <li style="color: orange">
-          {{ props.state?.username }} <span v-show="props.sync.ownerID===null" class="dot"></span>
+          {{ props.state?.username }}
+          <span v-show="props.sync.ownerID === null" class="dot"></span>
         </li>
         <li v-for="collaborator in collaborators" :key="collaborator.id">
-          {{ collaborator.username }} <span v-show="collaborator.id===props.sync.ownerID" class="dot"></span>
+          {{ collaborator.username }}
+          <span
+            v-show="collaborator.id === props.sync.ownerID"
+            class="dot"
+          ></span>
         </li>
       </ul>
       <div id="info">
         <form id="aform">
-          <button v-if="!props.sync.ownerID"
+          <button
+            v-if="!props.sync.ownerID"
             id="evalbut"
             type="button"
             @click="
