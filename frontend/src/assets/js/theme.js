@@ -1,8 +1,8 @@
-import { onedark } from "./themes/onedark";
 import { dracula } from "./themes/dracula";
-import { nightowl } from "./themes/nightowl";
 import { emerald } from "./themes/emerald";
 import { greenery } from "./themes/greenery";
+import { nightowl } from "./themes/nightowl";
+import { onedark } from "./themes/onedark";
 import { winter } from "./themes/winter";
 
 export const themes = [
