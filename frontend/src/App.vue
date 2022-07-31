@@ -31,8 +31,7 @@ function add_error(err) {
   }, 5000);
 }
 
-const websocket = new WebSocket();
-websocket = new WebSocket("ws://localhost:8000/room");
+const websocket = new WebSocket("ws://localhost:8000/room");
 websocket.onerror = function (err) {
   console.error(err);
   add_error(
