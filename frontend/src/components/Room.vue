@@ -22,6 +22,8 @@ let time = ref(toRaw(props.sync?.time));
 let syncinterval;
 let bugsinterval;
 
+console.log(props.sync.ownID)
+
 onMounted(() => {
   for (let theme of themes) {
     monaco.editor.defineTheme(theme.name, theme.theme);
@@ -89,17 +91,16 @@ function contentHandler(ev) {
 // skipcq: JS-0611
 props.state.websocket.onmessage = function (ev) {
   const message = JSON.parse(ev.data);
+  console.log(message)
 
   switch (message.type) {
     case "connect":
-      collaborators.value = message.data.collaborators.filter(c => {
-        return c.id != props.sync.ownID;
-      });
+      collaborators.value.push({id: message.data.id, username: message.data.username});
       break;
 
     case "disconnect":
       collaborators.value = collaborators.value.filter((c) => {
-        return c.id !== message.data.id;
+        return c.id !== message.data.user[0].id;
       });
       break;
 
@@ -235,11 +236,11 @@ function leaveRoom() {
       <ul style="margin-left: 20px">
         <li style="color: orange">
           {{ props.state?.username }}
-          <span v-show="props.sync.owner_id === props.sync.ownID" class="dot"></span>
+          <span v-show="props.sync.owner_id === props.sync.ownID">👑</span>
         </li>
         <li v-for="collaborator in collaborators" :key="collaborator.id">
           {{ collaborator.username }}
-          <span v-show="collaborator.id === props.sync.owner_id" class="dot"></span>
+          <span v-show="collaborator.id === props.sync.owner_id"> 👑</span>
         </li>
       </ul>
       <div id="info">

@@ -168,7 +168,7 @@ class EventHandler:
                 sync_data = cast(SyncData, event_data)
                 self.room.set_code(sync_data.code)
 
-                collaborators, time = self._get_sync_state()
+                collaborators, time = self._get_sync_state(all_clients=True)
 
                 # Broadcast to every client (including sender) a sync event
                 response = EventResponse(
