@@ -9,6 +9,7 @@ from server.events import (
     ConnectData,
     DisconnectData,
     ErrorData,
+    EvaluateData,
     EventRequest,
     EventResponse,
     EventType,
@@ -17,6 +18,7 @@ from server.events import (
     SyncData,
 )
 from server.room import Room
+from server.snekbox import evaluate
 
 
 class EventHandler:
@@ -193,6 +195,16 @@ class EventHandler:
                 response = EventResponse(
                     type=EventType.SYNC,
                     data=SyncData(code=self.room.code, collaborators=collaborators),
+                    status_code=StatusCode.SUCCESS,
+                )
+                await self.manager.broadcast(response, self.room_code)
+            case EventType.EVALUATE:
+                result = evaluate(self.room.code)
+
+                # Broadcast to every client an evaluate event to show the result
+                response = EventResponse(
+                    type=EventType.EVALUATE,
+                    data=EvaluateData(result=result),
                     status_code=StatusCode.SUCCESS,
                 )
                 await self.manager.broadcast(response, self.room_code)

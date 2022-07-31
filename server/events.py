@@ -26,6 +26,7 @@ class EventType(str, Enum):
     REPLACE = "replace"
     ERROR = "error"
     SEND_BUGS = "bugs"
+    EVALUATE = "evaluate"
 
 
 class EventData(BaseModel):
@@ -118,6 +119,17 @@ class SendBugsData(EventData):
     """The data of a bugs introduction event."""
 
 
+class EvaluateData(EventData):
+    """The data of a code evaluation event.
+
+    Fields:
+        result (optional): The result of the evaluation. Only required when it's
+            a response from the server.
+    """
+
+    result: str | None
+
+
 class EventRequest(BaseModel):
     """A WebSocket request event.
 
@@ -148,6 +160,8 @@ class EventRequest(BaseModel):
                 value = ErrorData(**value)
             case EventType.SEND_BUGS:
                 value = SendBugsData(**value)
+            case EventType.EVALUATE:
+                value = EvaluateData(**value)
         return value
 
 
