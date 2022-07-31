@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import PulseLoader from 'vue-spinner/src/PulseLoader.vue'
+import PulseLoader from "vue-spinner/src/PulseLoader.vue";
 import * as monaco from "monaco-editor"; // skipcq: JS-C1003
 import Timer from "./Timer.vue";
 import { onMounted, ref, toRaw } from "vue";
@@ -16,7 +16,7 @@ let code = props.sync?.code; // skipcq: JS-V005
 let editor: monaco.editor.IStandaloneCodeEditor;
 let joined = false;
 let evalText = ref("");
-let evalLoading = ref(false)
+let evalLoading = ref(false);
 
 onMounted(() => {
   for (let theme of themes) {
@@ -172,7 +172,10 @@ function leaveRoom() {
         >
           <i class="gg-close-o" style="--ggs: 1.2"></i>
         </label>
-        <PulseLoader v-if="evalLoading" style="margin-bottom:180px"></PulseLoader>
+        <PulseLoader
+          v-if="evalLoading"
+          style="margin-bottom: 180px"
+        ></PulseLoader>
         <div v-else style="flex-grow: 1; overflow-y: auto">
           {{ evalText }}
         </div>
