@@ -182,20 +182,11 @@ function leaveRoom() {
     <label for="evaluate-modal" class="modal cursor-pointer">
       <label id="modalactual" class="modal-box relative">
         <button @click="closeModal" class="btn my-4">Okay</button>
-        <label
-          for="evaluate-modal"
-          class="btn btn-sm btn-circle absolute right-2 top-2"
-        >
+        <label for="evaluate-modal" class="btn btn-sm btn-circle absolute right-2 top-2">
           <i class="gg-close-o" style="--ggs: 1.2"></i>
         </label>
-        <PulseLoader
-          v-if="evalLoading"
-          style="margin-bottom: 180px"
-        ></PulseLoader>
-        <div
-          v-else
-          style="flex-grow: 1; overflow-y: auto; white-space: pre-wrap"
-        >
+        <PulseLoader v-if="evalLoading" style="margin-bottom: 180px"></PulseLoader>
+        <div id="codebox" v-else>
           {{ evalText }}
         </div>
       </label>
@@ -210,24 +201,16 @@ function leaveRoom() {
         </li>
         <li v-for="collaborator in collaborators" :key="collaborator.id">
           {{ collaborator.username }}
-          <span
-            v-show="collaborator.id === props.sync.ownerID"
-            class="dot"
-          ></span>
+          <span v-show="collaborator.id === props.sync.ownerID" class="dot"></span>
         </li>
       </ul>
       <div id="info">
         <form id="aform">
-          <button
-            id="evalbut"
-            type="button"
-            @click="
-              () => {
-                requestEval();
-              }
-            "
-            class="btn btn-primary mt-4"
-          >
+          <button id="evalbut" type="button" @click="
+            () => {
+              requestEval();
+            }
+          " class="btn btn-primary mt-4">
             Evaluate Code
           </button>
         </form>
@@ -254,8 +237,42 @@ function leaveRoom() {
   min-height: 512px;
 }
 
-#modalactual > button {
+#modalactual>button {
   margin-bottom: 0;
+}
+
+#codebox {
+  background-color: hsl(var(--nf, var(--n)));
+  border-radius: var(--rounded-box, 1rem);
+  text-align: left;
+  padding: 16px;
+  flex-grow: 1;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  font-family: monospace;
+  color: hsl(var(--pc));
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: hsl(var(--b1)) / var(--tw-bg-opacity);
+  border-radius: 4px;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--bc));
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
 }
 
 .dot {
