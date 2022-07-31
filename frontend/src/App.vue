@@ -17,31 +17,32 @@ function generateCode(length = 4) {
   return code;
 }
 
-let err_id = 0
-let app_errors = ref([])
+let err_id = 0;
+let app_errors = ref([]);
 
-function add_error(err){
+function add_error(err) {
   app_errors.value.push({
-  id: err_id++,
-    err
-  })
+    id: err_id++,
+    err,
+  });
 
   setTimeout(() => {
-    app_errors.value = app_errors.value.filter(e => e.id !== err_id - 1)
-  }, 5000)
+    app_errors.value = app_errors.value.filter((e) => e.id !== err_id - 1);
+  }, 5000);
 }
-
 
 const websocket = new WebSocket();
 websocket = new WebSocket("ws://localhost:8000/room");
 websocket.onerror = function (err) {
   console.error(err);
-  add_error(`Oh no! Something has gone very wrong. This genuinely is a bug, not a feature :( (${err})`)
+  add_error(
+    `Oh no! Something has gone very wrong. This genuinely is a bug, not a feature :( (${err})`
+  );
 };
 
 websocket.onclose = function (err) {
   console.error(err);
-  add_error("The websocket closed... why?")
+  add_error("The websocket closed... why?");
 };
 
 const joined = ref(false);
@@ -144,14 +145,23 @@ function leaveRoom() {
 <template>
   <div class="h-full">
     <div class="alerts">
-      <div v-for="error of app_errors" :key="error.id" class="animate__animated animate__fadeInLeft alert my-2 alert-error w-full m-auto">
+      <div
+        v-for="error of app_errors"
+        :key="error.id"
+        class="animate__animated animate__fadeInLeft alert my-2 alert-error w-full m-auto"
+      >
         <div>
           <i class="gg-danger"></i>
           <span>{{ error.err }}</span>
         </div>
       </div>
     </div>
-    <Room v-if="joined" :state="state" :sync="sync" @leaveRoom="leaveRoom"></Room>
+    <Room
+      v-if="joined"
+      :state="state"
+      :sync="sync"
+      @leaveRoom="leaveRoom"
+    ></Room>
     <Home v-else @joinRoom="joinRoom" @createRoom="createRoom"></Home>
   </div>
 </template>
