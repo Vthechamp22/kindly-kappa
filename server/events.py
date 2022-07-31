@@ -65,7 +65,7 @@ class DisconnectData(EventData):
     """The data of a disconnection event.
 
     Fields:
-        user: A list of users that are disconnecting
+        user (optional): A list of users that are disconnecting
     """
 
     user: UserInfo | None = None
