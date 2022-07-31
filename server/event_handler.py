@@ -117,7 +117,7 @@ class EventHandler:
                         # the collaborators' list
                         response = EventResponse(
                             type=EventType.SYNC,
-                            data=SyncData(code=self.room.code, collaborators=collaborators, time=time),
+                            data=SyncData(code=self.room.code, collaborators=collaborators, time=time, ownerID=self.room.owner_id.hex),
                             status_code=StatusCode.SUCCESS,
                         )
                         await self.client.send(response)

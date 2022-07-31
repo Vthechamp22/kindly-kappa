@@ -78,11 +78,13 @@ class SyncData(EventData):
         code: The code that already exists in the room.
         collaborators: The list of users that already collaborate in the room.
         time: The elapsed time since the creation of the room.
+        owner: The id of the owner of the room.
     """
 
     code: str
     collaborators: UserInfo | None = None
     time: Time | None = None
+    ownerID: str | None = None
 
 
 class MoveData(EventData):
