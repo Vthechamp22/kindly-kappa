@@ -17,17 +17,17 @@ function generateCode(length = 4) {
   return code;
 }
 
-let err_id = 0;
 let app_errors = ref([]);
 
 function add_error(err) {
-  app_errors.value.push({
-    id: err_id++,
+  let error = {
+    id: generateCode(),
     err,
-  });
+  }
+  app_errors.value.push(error);
 
   setTimeout(() => {
-    app_errors.value = app_errors.value.filter((e) => e.id !== err_id - 1);
+    app_errors.value = app_errors.value.filter(e => e.id !== error.id);
   }, 5000);
 }
 
@@ -35,7 +35,7 @@ const websocket = new WebSocket("ws://localhost:8000/room");
 websocket.onerror = function (err) {
   console.error(err);
   add_error(
-    `Oh no! Something has gone very wrong. This genuinely is a bug, not a feature :( (${err})`
+    "Oh no! Something has gone very wrong. This genuinely is a bug, not a feature :("
   );
 };
 
