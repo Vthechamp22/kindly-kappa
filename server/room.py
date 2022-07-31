@@ -38,6 +38,14 @@ class Room:
 
             updated_code = current_code[:from_index] + new_value + current_code[to_index:]
             self.code = updated_code
+    
+    def set_code(self, updated_code: str) -> None:
+        """Sets the code.
+
+        Args:
+            updated_code: A string containing the new code.
+        """
+        self.code = updated_code
 
     def introduce_bugs(self) -> ReplaceData:
         """Introduces bugs based on the current code.

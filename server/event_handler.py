@@ -151,6 +151,9 @@ class EventHandler:
                 # Validate the sender is the room owner
                 if self.client.id != self.room.owner_id:
                     return
+                
+                connect_data = cast(SyncData, event_data)
+                self.room.set_code(connect_data.code)
 
                 collaborators = [{"id": c.id.hex, "username": c.username} for c in self.room.clients if c.id != self.client.id]
                 
