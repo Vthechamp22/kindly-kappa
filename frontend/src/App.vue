@@ -23,11 +23,11 @@ function add_error(err) {
   let error = {
     id: generateCode(),
     err,
-  }
+  };
   app_errors.value.push(error);
 
   setTimeout(() => {
-    app_errors.value = app_errors.value.filter(e => e.id !== error.id);
+    app_errors.value = app_errors.value.filter((e) => e.id !== error.id);
   }, 5000);
 }
 
