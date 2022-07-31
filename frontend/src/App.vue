@@ -19,6 +19,9 @@ function generateCode(length = 4) {
 
 let app_errors = ref([]);
 
+/**
+ * Function to add errors.
+ */
 function add_error(err) {
   let error = {
     id: generateCode(),
@@ -33,14 +36,12 @@ function add_error(err) {
 
 const websocket = new WebSocket("ws://localhost:8000/room");
 websocket.onerror = function (err) {
-  console.error(err);
   add_error(
     "Oh no! Something has gone very wrong. This genuinely is a bug, not a feature :("
   );
 };
 
 websocket.onclose = function (err) {
-  console.error(err);
   add_error("The websocket closed... why?");
 };
 
