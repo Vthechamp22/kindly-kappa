@@ -17,7 +17,7 @@ let editor: monaco.editor.IStandaloneCodeEditor;
 let joined = false;
 let evalText = ref("");
 let evalLoading = ref(false);
-let time = ref(toRaw(props.sync?.time))
+let time = ref(toRaw(props.sync?.time));
 
 onMounted(() => {
   for (let theme of themes) {
