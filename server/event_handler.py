@@ -16,6 +16,8 @@ from server.events import (
     MoveData,
     ReplaceData,
     SyncData,
+    Time,
+    UserInfo,
 )
 from server.room import Room
 from server.snekbox import evaluate
@@ -95,12 +97,7 @@ class EventHandler:
                         self.manager.create_room(self.client, connect_data.room_code, connect_data.difficulty)
                         self.room = self.manager._rooms[self.room_code]
 
-                        collaborators = [{"id": c.id.hex, "username": c.username} for c in self.room.clients if c.id != self.client.id]
-
-                        deltaseconds = (datetime.now() - self.room.epoch).total_seconds()
-                        minutes, remainder = divmod(deltaseconds, 60)
-                        seconds, milliseconds = divmod(remainder, 1)
-                        time = {"min": minutes, "sec": seconds, "mil": milliseconds}
+                        collaborators, time = self._get_sync_state()
 
                         # Send a sync event to the client to update the code and
                         # the collaborators' list
@@ -114,12 +111,7 @@ class EventHandler:
                         self.manager.join_room(self.client, self.room_code)
                         self.room = self.manager._rooms[self.room_code]
 
-                        collaborators = [{"id": c.id.hex, "username": c.username} for c in self.room.clients if c.id != self.client.id]
-
-                        deltaseconds = (datetime.now() - self.room.epoch).total_seconds()
-                        minutes, remainder = divmod(deltaseconds, 60)
-                        seconds, milliseconds = divmod(remainder, 1)
-                        time = {"min": minutes, "sec": seconds, "mil": milliseconds}
+                        collaborators, time = self._get_sync_state()
 
                         # Send a sync event to the client to update the code and
                         # the collaborators' list
@@ -153,16 +145,11 @@ class EventHandler:
                 # Validate the sender is the room owner
                 if self.client.id != self.room.owner_id:
                     return
-                
+
                 connect_data = cast(SyncData, event_data)
                 self.room.set_code(connect_data.code)
 
-                collaborators = [{"id": c.id.hex, "username": c.username} for c in self.room.clients if c.id != self.client.id]
-                
-                deltaseconds = (datetime.now() - self.room.epoch).total_seconds()
-                minutes, remainder = divmod(deltaseconds, 60)
-                seconds, milliseconds = divmod(remainder, 1)
-                time = {"min": minutes, "sec": seconds, "mil": milliseconds}
+                collaborators, time = self._get_sync_state()
 
                 # Broadcast to every client (including sender) a sync event
                 response = EventResponse(
@@ -189,7 +176,7 @@ class EventHandler:
             case EventType.SEND_BUGS:
                 self.room.introduce_bugs()
 
-                collaborators = [{"id": c.id.hex, "username": c.username} for c in self.room.clients]
+                collaborators, _ = self._get_sync_state(all_clients=True)
 
                 # Broadcast to every client a sync event to update the code
                 response = EventResponse(
@@ -218,3 +205,27 @@ class EventHandler:
                 await self.client.send(response)
 
         return False
+
+    def _get_sync_state(self, all_clients: bool = False) -> tuple[UserInfo, Time]:
+        """Get the current state of a Room for syncing.
+
+        Args:
+            all_clients: To include all clients in the collaborators list.
+            Defaults to False.
+
+        Returns:
+            The list of collaborators as well as the current time for syncing.
+        """
+        if all_clients:
+            collaborators = [{"id": c.id.hex, "username": c.username} for c in self.room.clients]
+        else:
+            collaborators = [
+                {"id": c.id.hex, "username": c.username} for c in self.room.clients if c.id != self.client.id
+            ]
+
+        deltaseconds = (datetime.now() - self.room.epoch).total_seconds()
+        minutes, remainder = divmod(deltaseconds, 60)
+        seconds, milliseconds = divmod(remainder, 1)
+        time = {"min": minutes, "sec": seconds, "mil": milliseconds}
+
+        return collaborators, time
