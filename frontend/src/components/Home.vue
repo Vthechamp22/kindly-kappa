@@ -49,6 +49,8 @@ function validateUsername(next_step) {
 function joinRoom() {
   if (!roomCode.value) {
     errors.value.roomCode = "Please enter a room code!";
+  } else if (roomCode.value.length != 4) {
+    errors.value.roomCode = "Please enter 4 characters";
   } else {
     errors.value.roomCode = "";
   }

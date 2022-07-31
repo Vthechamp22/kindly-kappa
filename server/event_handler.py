@@ -54,14 +54,12 @@ class EventHandler:
                 status_code=StatusCode.INVALID_REQUEST_DATA,
             )
             await self.client.send(response)
-            await self.client.close()
             return
 
         try:
             await self(initial_event)
         except (RoomNotFoundError, RoomAlreadyExistsError) as err:
             await self.client.send(err.response)
-            await self.client.close()
 
     async def __call__(self, request: EventRequest) -> bool:
         """Handle a request received.
