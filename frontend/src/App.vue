@@ -57,7 +57,7 @@ const sync = ref({
   difficulty: 0,
   time: undefined,
   ownerID: "",
-  ownID: ""
+  ownID: "",
 });
 
 let joining = false;
@@ -131,7 +131,7 @@ websocket.onmessage = function (ev) {
     };
   }
   if (message.type === "connect") {
-    sync.value.ownID = message.data.id
+    sync.value.ownID = message.data.id;
     joined.value = true;
   }
 
