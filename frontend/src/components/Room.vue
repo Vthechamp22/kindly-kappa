@@ -40,7 +40,7 @@ onMounted(() => {
 });
 
 /**
- * Function to conver the editor lines to index positions.
+ * Function to convert the editor lines to index positions.
  */
 function positionToIndex(line, col) {
   let index = 0;
