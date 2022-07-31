@@ -92,7 +92,7 @@ props.state.websocket.onmessage = function (ev) {
 
   switch (message.type) {
     case "connect":
-      collaborators.value = message.data.collaborators.filter(c => {
+      collaborators.value = message.data.collaborators.filter((c) => {
         return c.id != props.sync.ownID;
       });
       break;
@@ -119,7 +119,7 @@ props.state.websocket.onmessage = function (ev) {
       break;
 
     case "sync":
-      collaborators.value = message.data.collaborators.filter(c => {
+      collaborators.value = message.data.collaborators.filter((c) => {
         return c.id != props.sync.ownID;
       });
       code = message.data.code;
@@ -131,8 +131,8 @@ props.state.websocket.onmessage = function (ev) {
 const bugTimes = {
   1: 60_000,
   2: 45_000,
-  3: 30_000
-}
+  3: 30_000,
+};
 
 if (!collaborators.value.length) {
   syncinterval = setInterval(() => {
@@ -143,7 +143,7 @@ if (!collaborators.value.length) {
           collaborators: collaborators.value,
           owner_id: props.sync?.owner_id,
           code: code,
-          difficulty: props.sync?.difficulty
+          difficulty: props.sync?.difficulty,
         },
       })
     );
@@ -173,7 +173,7 @@ function requestEval() {
         collaborators: collaborators.value,
         owner_id: props.sync?.owner_id,
         code: code,
-        difficulty: props.sync?.difficulty
+        difficulty: props.sync?.difficulty,
       },
     })
   );
@@ -220,10 +220,16 @@ function leaveRoom() {
     <label for="evaluate-modal" class="modal cursor-pointer">
       <label id="modalactual" class="modal-box relative">
         <button @click="closeModal" class="btn my-4">Okay</button>
-        <label for="evaluate-modal" class="btn btn-sm btn-circle absolute right-2 top-2">
+        <label
+          for="evaluate-modal"
+          class="btn btn-sm btn-circle absolute right-2 top-2"
+        >
           <i class="gg-close-o" style="--ggs: 1.2"></i>
         </label>
-        <PulseLoader v-if="evalLoading" style="margin-bottom: 180px"></PulseLoader>
+        <PulseLoader
+          v-if="evalLoading"
+          style="margin-bottom: 180px"
+        ></PulseLoader>
         <div id="codebox" v-else>
           {{ evalText }}
         </div>
@@ -235,20 +241,31 @@ function leaveRoom() {
       <ul style="margin-left: 20px">
         <li style="color: orange">
           {{ props.state?.username }}
-          <span v-show="props.sync.owner_id === props.sync.ownID" class="dot"></span>
+          <span
+            v-show="props.sync.owner_id === props.sync.ownID"
+            class="dot"
+          ></span>
         </li>
         <li v-for="collaborator in collaborators" :key="collaborator.id">
           {{ collaborator.username }}
-          <span v-show="collaborator.id === props.sync.owner_id" class="dot"></span>
+          <span
+            v-show="collaborator.id === props.sync.owner_id"
+            class="dot"
+          ></span>
         </li>
       </ul>
       <div id="info">
         <form id="aform">
-          <button id="evalbut" type="button" @click="
-            () => {
-              requestEval();
-            }
-          " class="btn btn-primary mt-4">
+          <button
+            id="evalbut"
+            type="button"
+            @click="
+              () => {
+                requestEval();
+              }
+            "
+            class="btn btn-primary mt-4"
+          >
             Evaluate Code
           </button>
         </form>
@@ -276,7 +293,7 @@ function leaveRoom() {
   min-height: 512px;
 }
 
-#modalactual>button {
+#modalactual > button {
   margin-bottom: 0;
 }
 
@@ -300,13 +317,13 @@ function leaveRoom() {
 /* Track */
 ::-webkit-scrollbar-track {
   background: hsl(var(--b1)) / var(--tw-bg-opacity);
-  border-radius: var(--rounded-btn, 0.5rem);;
+  border-radius: var(--rounded-btn, 0.5rem);
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
   background: hsl(var(--bc));
-  border-radius: var(--rounded-btn, 0.5rem);;
+  border-radius: var(--rounded-btn, 0.5rem);
 }
 
 /* Handle on hover */
