@@ -131,6 +131,8 @@ websocket.onmessage = function (ev) {
 
   if (message.type === "error") {
     joining = false;
+
+    add_error(message.data.message);
   }
 };
 
@@ -171,8 +173,8 @@ function leaveRoom() {
 .alerts {
   position: fixed;
   top: 0;
-  left: 0;
-  width: 100%;
+  left: 8px;
+  width: calc(100% - 16px);
   z-index: 10000;
 }
 
