@@ -1,7 +1,6 @@
 import { onedark } from "./themes/onedark";
 import { dracula } from "./themes/dracula";
 import { nightowl } from "./themes/nightowl";
-import { ghlight } from "./themes/github-light";
 import { emerald } from "./themes/emerald";
 import { greenery } from "./themes/greenery";
 import { winter } from "./themes/winter";
