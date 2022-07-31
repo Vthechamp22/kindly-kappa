@@ -86,7 +86,6 @@ function contentHandler(ev) {
 // skipcq: JS-0611
 props.state.websocket.onmessage = function (ev) {
   const message = JSON.parse(ev.data);
-
   switch (message.type) {
     case "connect":
       collaborators.value.push(message.data);
@@ -111,11 +110,13 @@ props.state.websocket.onmessage = function (ev) {
     case "evaluate":
       evalLoading.value = false;
       evalText.value = message.data.result;
+      break;
 
     case "sync":
       collaborators.value = message.data.collaborators;
       code = message.data.code;
       time.value = message.data.time;
+      break;
   }
 };
 
@@ -191,7 +192,7 @@ function leaveRoom() {
           v-if="evalLoading"
           style="margin-bottom: 180px"
         ></PulseLoader>
-        <div v-else style="flex-grow: 1; overflow-y: auto">
+        <div v-else style="flex-grow: 1; overflow-y: auto; white-space: pre-wrap;">
           {{ evalText }}
         </div>
       </label>
