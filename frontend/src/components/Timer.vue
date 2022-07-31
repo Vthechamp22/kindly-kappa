@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
-const props = defineProps(["time"]);
+const props = defineProps(["time"]); // skipcq: JS-0683
 
 const min = ref(props.time.min);
 const sec = ref(props.time.sec);
