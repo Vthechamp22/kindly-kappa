@@ -77,7 +77,7 @@ class EventHandler:
         match request.type:
             case EventType.CONNECT:
                 connect_data = cast(ConnectData, event_data)
-                connect_data.id = self.client.id.hex
+                connect_data.userid = self.client.id.hex
 
                 self.client.username = connect_data.username
                 self.room_code = connect_data.room_code

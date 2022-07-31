@@ -46,14 +46,14 @@ class ConnectData(EventData):
             "connection_type" is "create".
         room_code: The unique four-letters code that will represent the room.
         username: The username of the user creating or joining the room.
-        id: The id of the connected user.
+        userid: The userid of the connected user.
     """
 
     connection_type: Literal["create", "join"]
     difficulty: int | None = None
     room_code: str
     username: str
-    id: str | None = None
+    userid: str | None = None
 
     @validator("difficulty", pre=True, always=True)
     def valid_difficulty(cls, value, values):  # noqa: U100
