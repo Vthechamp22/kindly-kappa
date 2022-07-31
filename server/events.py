@@ -82,9 +82,9 @@ class SyncData(EventData):
     """
 
     code: str
-    collaborators: UserInfo | None = None
-    time: Time | None = None
-    ownerID: str | None = None
+    collaborators: UserInfo
+    time: Time
+    owner_id: str
 
 
 class MoveData(EventData):

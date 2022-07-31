@@ -103,7 +103,12 @@ class EventHandler:
                         # the collaborators' list
                         response = EventResponse(
                             type=EventType.SYNC,
-                            data=SyncData(code=self.room.code, collaborators=collaborators, time=time),
+                            data=SyncData(
+                                code=self.room.code,
+                                collaborators=collaborators,
+                                time=time,
+                                owner_id=self.room.owner_id.hex,
+                            ),
                             status_code=StatusCode.SUCCESS,
                         )
                         await self.client.send(response)
@@ -117,7 +122,12 @@ class EventHandler:
                         # the collaborators' list
                         response = EventResponse(
                             type=EventType.SYNC,
-                            data=SyncData(code=self.room.code, collaborators=collaborators, time=time, ownerID=self.room.owner_id.hex),
+                            data=SyncData(
+                                code=self.room.code,
+                                collaborators=collaborators,
+                                time=time,
+                                owner_id=self.room.owner_id.hex,
+                            ),
                             status_code=StatusCode.SUCCESS,
                         )
                         await self.client.send(response)
@@ -154,7 +164,12 @@ class EventHandler:
                 # Broadcast to every client (including sender) a sync event
                 response = EventResponse(
                     type=EventType.SYNC,
-                    data=SyncData(code=cast(SyncData, event_data).code, collaborators=collaborators, time=time),
+                    data=SyncData(
+                        code=cast(SyncData, event_data).code,
+                        collaborators=collaborators,
+                        time=time,
+                        owner_id=self.room.owner_id.hex,
+                    ),
                     status_code=StatusCode.SUCCESS,
                 )
                 await self.manager.broadcast(response, self.room_code)
@@ -176,12 +191,14 @@ class EventHandler:
             case EventType.SEND_BUGS:
                 self.room.introduce_bugs()
 
-                collaborators, _ = self._get_sync_state(all_clients=True)
+                collaborators, time = self._get_sync_state(all_clients=True)
 
                 # Broadcast to every client a sync event to update the code
                 response = EventResponse(
                     type=EventType.SYNC,
-                    data=SyncData(code=self.room.code, collaborators=collaborators),
+                    data=SyncData(
+                        code=self.room.code, collaborators=collaborators, time=time, owner_id=self.room.owner_id.hex
+                    ),
                     status_code=StatusCode.SUCCESS,
                 )
                 await self.manager.broadcast(response, self.room_code)
