@@ -22,7 +22,7 @@ let time = ref(toRaw(props.sync?.time));
 let syncinterval;
 let bugsinterval;
 
-console.log(props.sync.ownID)
+console.log(props.sync.ownID);
 
 onMounted(() => {
   for (let theme of themes) {
@@ -91,11 +91,14 @@ function contentHandler(ev) {
 // skipcq: JS-0611
 props.state.websocket.onmessage = function (ev) {
   const message = JSON.parse(ev.data);
-  console.log(message)
+  console.log(message);
 
   switch (message.type) {
     case "connect":
-      collaborators.value.push({id: message.data.id, username: message.data.username});
+      collaborators.value.push({
+        id: message.data.id,
+        username: message.data.username,
+      });
       break;
 
     case "disconnect":
