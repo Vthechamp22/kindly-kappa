@@ -14,7 +14,7 @@ let collaborators = ref(toRaw(props.sync?.collaborators));
 let code = props.sync?.code; // skipcq: JS-V005
 let editor: monaco.editor.IStandaloneCodeEditor;
 let joined = false;
-let evalText = ref("")
+let evalText = ref("");
 
 onMounted(() => {
   for (let theme of themes) {
@@ -133,11 +133,11 @@ function requestEval() {
     })
   );
 
-  document.querySelector('input#evaluate-modal').checked = true;
+  document.querySelector("input#evaluate-modal").checked = true;
 }
 
 function closeModal() {
-  document.querySelector('input#evaluate-modal').checked = false;
+  document.querySelector("input#evaluate-modal").checked = false;
 }
 
 /**
@@ -161,10 +161,13 @@ function leaveRoom() {
     <input type="checkbox" id="evaluate-modal" class="modal-toggle" />
     <label for="evaluate-modal" class="modal cursor-pointer">
       <label id="modalactual" class="modal-box relative">
-        <label for="evaluate-modal" class="btn btn-sm btn-circle absolute right-2 top-2">
+        <label
+          for="evaluate-modal"
+          class="btn btn-sm btn-circle absolute right-2 top-2"
+        >
           <i class="gg-close-o" style="--ggs: 1.2"></i>
         </label>
-        <div style="width:100%;height:100%;overflow-y: auto;">
+        <div style="width: 100%; height: 100%; overflow-y: auto">
           {{ evalText }}
         </div>
         <button @click="closeModal" class="btn my-4">Okay</button>
@@ -183,11 +186,16 @@ function leaveRoom() {
       </ul>
       <div id="info">
         <form id="aform">
-          <button id="evalbut" type="button" @click="
-            () => {
-              requestEval();
-            }
-          " class="btn btn-primary mt-4">
+          <button
+            id="evalbut"
+            type="button"
+            @click="
+              () => {
+                requestEval();
+              }
+            "
+            class="btn btn-primary mt-4"
+          >
             Evaluate Code
           </button>
         </form>
@@ -215,7 +223,7 @@ function leaveRoom() {
   min-height: 512px;
 }
 
-#modalactual>button {
+#modalactual > button {
   margin-bottom: 0;
 }
 
