@@ -23,7 +23,7 @@ This game provides a fun and interactive environment to learn more about the dub
 - Logical errors are introduced by mixing up booleans.
 - Type keywords, such as `int` or `bool`, are mixed up.
 
-We introduce difficulty levels for the more experienced who want to challenge themselves by increasing the frequency of bugs introduced. The difficulty also scales based on the amount of code that is written in the editor.
+We introduce difficulty levels for the more experienced who want to challenge themselves by increasing the frequency of bugs introduced. The difficulty also scales based on the amount of code that is written in the editor. As an added feature, regardless of the level you choose, the timer may malfunction and your cursor may also reset back to the start of the editor.
 
 | Level | Frequency (s) |
 | :---: | :-----------: |
