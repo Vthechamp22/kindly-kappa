@@ -1,6 +1,35 @@
 # Kindly Kappa
 
-## Backend
+Have you had trouble learning about debugging in python? Do you perhaps just want a continuous challenge? Then look no further!
+
+This game provides a fun and interactive environment to learn more about the dubugging process by _slowly_ introducing bugs into the code you right. By doing this, we give you the chance to become more familiar with common python errors earlier so you are well equipped to for future projects. We have several different types of bugs that we introduce to cause specific errors.
+
+## Syntax Errors
+- Colons are removed from if statements, for and while loops, and type annotations.
+- Python keywords are changed at random.
+- Equality operators are replaced with assignments.
+- Brackets (`()[]`) are randomly added or removed.
+
+## Indentation Errors
+- Indentation is de-indented by two spaces.
+- Insertion of empty if statements.
+
+## Others
+- Lines of code are commented out.
+- Function names when called are replaced.
+- Logical errors are introduced by mixing up booleans.
+- Type keywords, such as `int` or `bool`, are mixed up.
+
+
+We introduce difficulty levels for the more experienced who want to challenge themselves by increasing the frequency of bugs introduced. The difficulty also scales based on the amount of code that is written in the editor.
+
+| Level | Frequency (s) |
+|:-----:|:-------------:|
+|   1   |       60      |
+|   2   |       45      |
+|   3   |       30      |
+
+# Backend
 
 The backend was made using [fastapi](https://fastapi.tiangolo.com/) and [starlette](https://www.starlette.io/). To get started:
 
@@ -18,7 +47,7 @@ The backend was made using [fastapi](https://fastapi.tiangolo.com/) and [starlet
 
 The backend is now up and running!
 
-## Frontend
+# Frontend
 
 The frontend for this project was made using Vite and Vue. In order to run it, you need to first install node. This project has been tested with v16.16.0, v17.2 and v18.6.0
 
