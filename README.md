@@ -2,7 +2,7 @@
 
 Have you had trouble learning about debugging in python? Do you perhaps just want a continuous challenge? Then look no further!
 
-This game provides a fun and interactive environment to learn more about the dubugging process by _slowly_ introducing bugs into the code you right. By doing this, we give you the chance to become more familiar with common python errors earlier so you are well equipped to for future projects. We have several different types of bugs that we introduce to cause specific errors.
+This game provides a fun and interactive environment to learn more about the dubugging process by _slowly_ introducing bugs into the code you write. By doing this, we give you the chance to become more familiar with common python errors earlier so you are well equipped to for future projects. We have several different types of bugs that we introduce to cause specific errors.
 
 ## Syntax Errors
 - Colons are removed from if statements, for and while loops, and type annotations.
