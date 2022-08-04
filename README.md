@@ -31,7 +31,9 @@ We introduce difficulty levels for the more experienced who want to challenge th
 |   2   |      45       |
 |   3   |      30       |
 
-# Backend
+# Installation
+
+## Backend
 
 The backend was made using [fastapi](https://fastapi.tiangolo.com/) and [starlette](https://www.starlette.io/). To get started:
 
@@ -49,7 +51,7 @@ The backend was made using [fastapi](https://fastapi.tiangolo.com/) and [starlet
 
 The backend is now up and running!
 
-# Frontend
+## Frontend
 
 The frontend for this project was made using Vite and Vue. In order to run it, you need to first install node. This project has been tested with v16.16.0, v17.2 and v18.6.0
 
