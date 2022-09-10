@@ -1,7 +1,7 @@
 import pytest
 
 from server.events import ReplaceData
-from server.modifiers import FOUR_SPACES, STATEMENTS, TYPES, Modifiers
+from server.modifiers import STATEMENTS, TYPES, Modifiers
 
 test_input = 'def say_hello() -> str:\n    return "Hello!"\nsay_hello()\n\n'
 
@@ -34,7 +34,7 @@ class TestModifiers:
         value = create_instance.remove_indentation()
 
         assert isinstance(value, Modifiers)
-        assert value.file_contents[1].startswith(FOUR_SPACES)
+        assert value.file_contents[1].startswith("    ")
         print(value.modified_contents)
         assert value.modified_contents == ["def say_hello() -> str:\n", '  return "Hello!"\n', "say_hello()\n", "\n"]
 
