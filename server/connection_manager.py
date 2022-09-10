@@ -66,9 +66,8 @@ class ConnectionManager:
             sender (optional): The client who sent the request.
         """
         for connection in self._rooms[room_code].clients:
-            if connection == sender:
-                continue
-            await connection.send(data)
+            if connection != sender:
+                await connection.send(data)
 
     def _room_exists(self, room_code: str) -> bool:
         """Checks if a room exists.
