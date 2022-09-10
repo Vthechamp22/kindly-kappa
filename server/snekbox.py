@@ -1,6 +1,6 @@
-import requests
+import os
 
-EVAL_URL = "http://localhost:8060/eval"
+import requests
 
 
 def evaluate(code: str) -> str:
@@ -9,5 +9,7 @@ def evaluate(code: str) -> str:
     Args:
         code: The code to evaluate.
     """
-    response = requests.post(EVAL_URL, json={"input": code})
+    eval_url = os.environ.get("EVAL_URL", default="http://localhost:8060/eval")
+
+    response = requests.post(eval_url, json={"input": code})
     return response.json()["stdout"]
