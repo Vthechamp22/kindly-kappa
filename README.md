@@ -6,7 +6,7 @@ This game provides a fun and interactive environment to learn more about the dub
 
 ## Syntax Errors
 
-- Colons are removed from if statements, for and while loops, and type annotations.
+- Colons are removed from `if` statements, `for` and `while` loops, and type annotations.
 - Python keywords are changed at random.
 - Equality operators are replaced with assignments.
 - Brackets (`()[]`) are randomly added or removed.
