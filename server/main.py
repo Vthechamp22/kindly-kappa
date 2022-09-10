@@ -11,8 +11,6 @@ from server.connection_manager import ConnectionManager
 from server.event_handler import EventHandler
 
 app = FastAPI()
-
-
 manager = ConnectionManager()
 
 
