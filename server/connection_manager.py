@@ -38,7 +38,7 @@ class ConnectionManager:
         Args:
             client: The client that will join to the new room.
             room_code: The room to which the client will be connected.
-            difficulty: The difficuty of the room.
+            difficulty: The difficuty of the room. Valid values are 1-3.
         """
         if not self._room_exists(room_code):
             self._rooms[room_code] = Room(client.id, {client}, difficulty)
@@ -66,9 +66,8 @@ class ConnectionManager:
             sender (optional): The client who sent the request.
         """
         for connection in self._rooms[room_code].clients:
-            if connection == sender:
-                continue
-            await connection.send(data)
+            if connection != sender:
+                await connection.send(data)
 
     def _room_exists(self, room_code: str) -> bool:
         """Checks if a room exists.

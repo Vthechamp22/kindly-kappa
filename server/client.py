@@ -56,7 +56,6 @@ class Client:
                     status_code=StatusCode.INVALID_REQUEST_DATA,
                 ),
             )
-            return self.default_replacement
         except (KeyError, ValidationError):
             await self.send(
                 EventResponse(
@@ -65,7 +64,7 @@ class Client:
                     status_code=StatusCode.DATA_NOT_FOUND,
                 ),
             )
-            return self.default_replacement
+        return self.default_replacement
 
     async def close(self) -> None:
         """Closes the WebSocket connection."""

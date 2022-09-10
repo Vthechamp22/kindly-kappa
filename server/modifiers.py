@@ -1,15 +1,13 @@
 import difflib
-import keyword
 import random
 import re
+from keyword import kwlist as python_keywords
 from operator import methodcaller
 
 from typing_extensions import Self
 
 from server.events import ReplaceData
 
-FOUR_SPACES = "    "
-TWO_SPACES = "  "
 STATEMENTS = ["cj9_kappa", "kindly_kappas", "buggy_feature", "jammers"]
 TYPES = ["bool", "int", "float", "bin", "str", "list", "tuple"]
 
@@ -29,7 +27,8 @@ class Modifiers:
 
         Args:
             file_contents: The raw data received from the websocket.
-            difficulty: The level of difficulty selected. Defaults to 1.
+            difficulty: The level of difficulty selected. Defaults to 1
+                with a max of 3.
         """
         _list_of_lines = [f"{line}\n" for line in file_contents.split("\n")][:-1]
         self.file_contents = _list_of_lines.copy()
@@ -67,12 +66,12 @@ class Modifiers:
         """
         line_numbers = []
         for num, line in enumerate(self.file_contents):
-            if line.startswith(FOUR_SPACES):
+            if line.startswith("    "):
                 line_numbers.append(num)
 
         line_subset = random.sample(line_numbers, min(self.difficulty, len(line_numbers)))
         for num in line_subset:
-            self.modified_contents[num] = self.modified_contents[num].replace(FOUR_SPACES, TWO_SPACES)
+            self.modified_contents[num] = self.modified_contents[num].replace("    ", "  ")
         self.modified_count += 1
 
         return self
@@ -106,8 +105,6 @@ class Modifiers:
         Returns:
             The modifier instance.
         """
-        python_keywords = keyword.kwlist
-
         number_keyword_pairs = []
         for num, line in enumerate(self.file_contents):
             if any(key in line for key in python_keywords):
@@ -160,7 +157,7 @@ class Modifiers:
                     continue
 
                 # If the method is a property, don't use it as it's not callable
-                if self.file_contents[num - 1] == f"{FOUR_SPACES}@property\n":
+                if self.file_contents[num - 1] == "    @property\n":
                     continue
 
                 function_names.append((num, func_name))

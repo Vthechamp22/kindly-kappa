@@ -43,7 +43,7 @@ class ConnectData(EventData):
         connection_type: "create" if the user wants to create the room, "join"
             if the user wants to join the room.
         difficulty (optional): The difficulty of the room, only needed if the
-            "connection_type" is "create".
+            "connection_type" is "create". Valid values are 1-3.
         room_code: The unique four-letters code that will represent the room.
         username: The username of the user creating or joining the room.
         user_id (optional): The user_id of the connected user.
@@ -81,7 +81,7 @@ class SyncData(EventData):
         collaborators: The list of users that already collaborate in the room.
         time (optional): The elapsed time since the creation of the room.
         owner_id: The id of the owner of the room.
-        difficulty: The level of difficulty.
+        difficulty: The level of difficulty. Valid values are 1-3.
     """
 
     code: str

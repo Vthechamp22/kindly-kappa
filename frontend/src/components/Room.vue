@@ -149,7 +149,7 @@ if (!collaborators.value.length) {
         },
       })
     );
-  }, 10000);
+  }, 60000);
 
   bugsinterval = setInterval(() => {
     props.state.websocket.send(
