@@ -15,7 +15,7 @@ class Room:
         Args:
             owner_id: The id of the owner of the room.
             clients: The connected clients.
-            difficulty: The difficulty of the room.
+            difficulty: The difficulty of the room. Valid values are 1-3.
         """
         self.owner_id = owner_id
         self.clients = clients

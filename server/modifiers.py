@@ -27,7 +27,8 @@ class Modifiers:
 
         Args:
             file_contents: The raw data received from the websocket.
-            difficulty: The level of difficulty selected. Defaults to 1.
+            difficulty: The level of difficulty selected. Defaults to 1
+                with a max of 3.
         """
         _list_of_lines = [f"{line}\n" for line in file_contents.split("\n")][:-1]
         self.file_contents = _list_of_lines.copy()

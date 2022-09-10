@@ -38,7 +38,7 @@ class ConnectionManager:
         Args:
             client: The client that will join to the new room.
             room_code: The room to which the client will be connected.
-            difficulty: The difficuty of the room.
+            difficulty: The difficuty of the room. Valid values are 1-3.
         """
         if not self._room_exists(room_code):
             self._rooms[room_code] = Room(client.id, {client}, difficulty)
