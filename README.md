@@ -1,8 +1,6 @@
 # Kindly Kappa
 
-
 https://user-images.githubusercontent.com/72104527/189496430-ef5800d9-2e1d-40d0-928c-664d5f3b073c.mp4
-
 
 Have you had trouble learning about debugging in python? Do you perhaps just want a continuous challenge? Then look no further!
 
