@@ -1,5 +1,9 @@
 # Kindly Kappa
 
+
+https://user-images.githubusercontent.com/72104527/189496430-ef5800d9-2e1d-40d0-928c-664d5f3b073c.mp4
+
+
 Have you had trouble learning about debugging in python? Do you perhaps just want a continuous challenge? Then look no further!
 
 This game provides a fun and interactive environment to learn more about the dubugging process by _slowly_ introducing bugs into the code you write. By doing this, we give you the chance to become more familiar with common python errors earlier so you are well equipped for future projects. We have several different types of bugs that we introduce to cause specific errors.
