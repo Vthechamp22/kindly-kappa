@@ -1,7 +1,7 @@
 import difflib
-import keyword
 import random
 import re
+from keyword import kwlist as python_keywords
 from operator import methodcaller
 
 from typing_extensions import Self
@@ -105,8 +105,6 @@ class Modifiers:
         Returns:
             The modifier instance.
         """
-        python_keywords = keyword.kwlist
-
         number_keyword_pairs = []
         for num, line in enumerate(self.file_contents):
             if any(key in line for key in python_keywords):
